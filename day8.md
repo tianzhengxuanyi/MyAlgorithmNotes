@@ -130,3 +130,95 @@ function bestArrange(program: Program[], start = 0) {
 }
 ```
 
+**IPO**
+
+给定初始资金和最多做几个项目，最大化资本
+
+先给定一个花费组织排序的小根堆，锁住，在给定一个大根堆，以利润组织
+![IPO](image/day8-2.png)
+```js
+class Heap {
+    constructor(cmp = (x,y) => x > y) {
+        this.heap = []
+        this.cmp = cmp
+    }
+    insert(data) {
+        const {heap, cmp, swap} = this
+        heap.push(data)
+        let index = this.size() - 1
+        while (index) {
+            let parentIndex = (index-1)>>1
+            if (!cmp(heap[index], heap[parentIndex])) return 
+            swap(heap, index, parentIndex)
+            index = parentIndex
+        } 
+    }
+    pop() {
+        const {heap, swap} = this
+        if (!this.size()) {
+            return null;
+        }
+        swap(heap, 0, this.size() - 1)
+        let res = heap.pop();
+
+        let len = this.size()
+        // 有可能没有右孩子但是又左孩子，所以以左孩子进行判断
+        let index = 0, left = index * 2 + 1
+
+        while (left < len) {
+            let largestIndex = left + 1 < len && heap[left + 1] > heap[left] ? left + 1 : left
+            if (this.cmp(heap[index], heap[largestIndex])) {
+                break 
+            }
+            swap(heap, index, largestIndex)
+            index = largestIndex
+            left = index * 2 + 1
+        }
+
+
+        return res
+    }
+    swap(arr, i, j) {
+        [arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    size() {
+        return this.heap.length
+    }
+    peak() {
+        return this.heap[0]
+    }
+    isEmpty() {
+        return !this.heap.length
+    }
+}
+var findMaximizedCapital = function(k, w, profits, capital) {
+    let n = capital.length
+    let minCosts = []
+    let maxProfit = new Heap()
+    for (let i = 0; i < n; i++) {
+        minCosts.push([profits[i], capital[i]])
+    }
+    minCosts.sort((a, b) => a[1] - b[1])
+    let curr = 0
+    for (let i = 0; i < k; i++) {
+        while (curr <  n && minCosts[curr][1] <= w) {
+            maxProfit.insert(minCosts[curr++][0])
+        }
+        if (!maxProfit.size()) {
+            return w
+        }
+        w += maxProfit.pop()
+    }
+    return w
+};
+```
+
+**取中位数**
+
+一个数据流中，随时可以取得中位数
+
+先给一个数字，放入大根堆的堆顶；第二个数字cur是否小于等于大根堆顶，是，cur入大，不是，入小；接着看大根堆和小根堆的size，如果size差距大于等于2，则较大的那个堆顶弹出进另外一个。
+
+```js
+
+```
