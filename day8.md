@@ -328,3 +328,60 @@ MedianFinder.prototype.findMedian = function() {
  * var param_2 = obj.findMedian()
  */
 ```
+
+**N皇后**
+[N皇后](image/day8-3.png)
+
+**思路：暴力递归**
+1. 用record记录皇后位置，下标i代表行，record[i]代表列
+2. 递归函数process(i, record, n)，递归每一行，并传递record
+3. 递归中循环判断第i行的所有j是否满足条件，满足就将j记录到record中并递归下一行
+4. 当递归到第n行后，表明此时record中记录的位置信息满足所有条件，添加到返回结果中
+```js
+/**
+ * @param {number} n
+ * @return {string[][]}
+ */
+var solveNQueens = function(n) {
+    if (n === 1) {
+        return [["Q"]]
+    }
+    let res = []
+    let record = new Array(n) // 记录第i行皇后放在第几列上，下标i代表行，record[i]代表列
+    process(0, record, n)
+    function process(i, record, n) {
+    if (i === n) {
+        res.push(toString(record, n))
+        return
+    }
+    for (let j = 0; j < n; j++) {
+        if (isValid(record, i, j)) {
+            record[i] = j
+            process(i+1, record,  n)
+        }
+    }
+}
+function isValid(record, i, j) {
+    for (let k = 0; k < i; k++) {
+        if (record[k] === j || Math.abs(i - k) === Math.abs(record[k] - j)) {
+            return false;
+        }
+    }
+    return true
+}
+function toString(record, n) {
+    let res = []
+    for (let i = 0; i < n; i++) {
+        let strArr = new Array(n).fill('.')
+        let j = record[i]
+        strArr[j] = 'Q'
+        res.push(strArr.join(''))
+    }
+    return res
+}
+
+return res
+// console.log(res)
+};
+
+```
