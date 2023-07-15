@@ -17,9 +17,29 @@
     1. 将 1 到 i-1 个圆盘移动到 other
     2. 将第 i 个圆盘移动到 to
     3. 将 1 到 i-1 个圆盘移动到 to
-       其中第一和第三步递归主函数
+    4. 其中第一和第三步递归主函数
 -   base case 只剩最后一个直接移动
 
+```js
+var hanota = function(A, B, C) {
+    process(A, C, B, A.length)
+    return C
+};
+
+function process(from, to, other, i) {
+    if (i === 1) {
+        // base case 只剩最后一个直接移动
+        to.push(from.pop())
+        return 
+    }
+    // 将 1 到 i-1 个圆盘移动到 other
+    process(from, other, to, i - 1)
+    // 将第 i 个圆盘移动到 to
+    to.push(from.pop())
+    // 将 1 到 i-1 个圆盘移动到 to
+    process(other, to, from, i - 1)
+}
+```
 ### 字符串的全部子序列
 
 打印一个字符串全部子序列，包括空字符串

@@ -248,45 +248,42 @@ function kruskalMST(graph) {
 -   在 hashMap 中找为被锁定最小距离的节点（此时只有 source）
 -   获取当前节点的 distance，遍历其所有的边，判断 toNode 是否存在于 hashMap 中，如果不存在此时 source 到节点的路径为无穷大，此时更新距离时直接将权重和路径求和；否则更新为之前的 distance 和 distance+weight 中较小值。将当前节点加入 hashSet 中锁死。
 
-```java
-public static HashMap<Node, Integer> dijkstra1(Node head) {
-    //从head出发到所有点的最小距离
-    //key:从head出发到key
-    //value : 从head出发到达key的最小距离
-    //如果在表中，没有T的记录，含义是从head出发到T这个点的距离为正无穷
-    HashMap<Node, Integer> distanceMap = new HashMap<>();
-    distanceMap.put(head, 0);
-    //已经求过距离的节点，存在selectedNodes中，再也不碰
-    HashSet<Node> selectedNodes = new HashSet<>();
-    Node minNode = getMinDistanceAndUnselectedNode(distanceMap, selectedNodes);
-    while(minNode != null){
-        int distance = distanceMap.get(minNode);
-        for(Edge edge :  minNode.edges){
-            Node toNode = edge.to;
-            if(!distanceMap.containsKey(toNode)){
-                distanceMap.put(toNode, distance + edge.weight);
+```js
+function dijkstra(head) {
+    let hashMap = new Map();
+    let hashSet = new Set();
+
+    hashMap.set(head, 0);
+    let minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet);
+    while (minNode !== null) {
+        let currDistance = hashMap.get(minNode);
+
+        let edges = minNode.edges;
+        for (let edge of edges) {
+            if (!hashMap.has(edge.to)) {
+                hashMap.set(edge.to, currDistance + edge.weight);
             }
-            distacneMap.put(edge.to, Math.min(distanceMap.get(toNode),distance + egde.weight));
+
+            let distance = hashMap.get(edge.to);
+            hashMap.set(edge.to, Math.min(distance, currDistance + edge.weight));
         }
-            selectedNodes.add(minNode);
-            minNode = getMinDistanceAndUnselectedNode(distanceMap, selectedNodes);
+        hashSet.add(minNode)
+        minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet)
     }
-        return distanceMap;
+    return hashMap;
 }
 
-public static Node getMinDistanceAndUnselectedNode(HashMap<Node, Integer> distanceMap,
-			HashSet<Node> touchedNodes) {
-		Node minNode = null;
-		int minDistance = Integer.MAX_VALUE;
-		for (Entry<Node, Integer> entry : distanceMap.entrySet()) {
-			Node node = entry.getKey();
-			int distance = entry.getValue();
-			if (!touchedNodes.contains(node) && distance < minDistance) {
-				minNode = node;
-				minDistance = distance;
-			}
-		}
-		return minNode;
-	}
+function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
+    let minDistance = Infinity;
+    let minNode = null;
+
+    for (let node of hashMap.keys()) {
+        if (hashMap.get(node) < minDistance && !hashSet.has(node)) {
+            minNode = node;
+        }
+    }
+
+    return minNode;
+}
 
 ```

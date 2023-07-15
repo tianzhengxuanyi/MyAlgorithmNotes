@@ -61,41 +61,93 @@ G.edges.add(edge4);
 G.edges.add(edge5);
 G.edges.add(edge6);
 
+// function dijkstra(head) {
+//     let hashMap = new Map();
+//     let hashSet = new Set();
+
+//     hashMap.set(head, 0);
+//     let minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet);
+//     while (minNode !== null) {
+//         let currDistance = hashMap.get(minNode);
+
+//         let edges = minNode.edges;
+//         for (let edge of edges) {
+//             if (!hashMap.has(edge.to)) {
+//                 hashMap.set(edge.to, currDistance + edge.weight);
+//             }
+
+//             let distance = hashMap.get(edge.to);
+//             hashMap.set(edge.to, Math.min(distance, currDistance + edge.weight));
+//         }
+//         hashSet.add(minNode)
+//         minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet)
+//     }
+//     return hashMap;
+// }
+
+// function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
+//     let minDistance = Infinity;
+//     let minNode = null;
+
+//     for (let node of hashMap.keys()) {
+//         if (hashMap.get(node) < minDistance && !hashSet.has(node)) {
+//             minNode = node;
+//         }
+//     }
+
+//     return minNode;
+// }
+
 function dijkstra(head) {
+    // 记录节点和最小路径
     let hashMap = new Map();
+    // 记录锁定的节点
     let hashSet = new Set();
-
     hashMap.set(head, 0);
-    let minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet);
-    while (minNode !== null) {
-        let currDistance = hashMap.get(minNode);
 
-        let edges = minNode.edges;
-        for (let edge of edges) {
-            if (!hashMap.has(edge.to)) {
-                hashMap.set(edge.to, currDistance + edge.weight);
+    let curr = head;
+
+    while (curr) {
+        let distance =hashMap.get(curr)
+        for (let edge of curr.edges) {
+            let toNode = edge.to
+            // 未加入map，此时路径为无穷大
+            if (!hashMap.has(toNode)) {
+                hashMap.set(toNode, distance + edge.weight)
+            } else {
+                hashMap.set(toNode, Math.min(distance + edge.weight, hashMap.get(toNode)))
             }
-
-            let distance = hashMap.get(edge.to);
-            hashMap.set(edge.to, Math.min(distance, currDistance + edge.weight));
         }
-        hashSet.add(minNode)
-        minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet)
+        hashSet.add(curr)
+        curr = getMinDistanceAndUnSelectNode(hashMap, hashSet)
     }
+
     return hashMap;
 }
 
-function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
+function getMinDistanceAndUnSelectNode(hashMap, hashSet) {
     let minDistance = Infinity;
-    let minNode = null;
+    let minNode;
 
     for (let node of hashMap.keys()) {
-        if (hashMap.get(node) < minDistance && !hashSet.has(node)) {
+        if (!hashSet.has(node) && hashMap.get(node) < minDistance) {
             minNode = node;
+            minDistance = hashMap.get(node)
         }
     }
 
     return minNode;
 }
+
+class Heap {
+    constructor(cmp = (x,y) => x > y) {
+        this.heap = []
+        this.cmp = cmp
+    }
+    insertHeapify() {
+        
+    }
+}
+
 
 console.log(dijkstra(node1));
