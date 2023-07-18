@@ -28,7 +28,7 @@
 
 - 我们已经有了一个大根堆结构
 
-![](D:\Fuser\Course\算法\笔记\image\day3-1.jpg)
+![](image\day3-1.jpg)
 
 ```java
 public static void heapInsert(int[] arr, int index) { 
@@ -83,7 +83,7 @@ public static void heapify(int[] arr, int index, int heapSize){
 
 ### 堆排序`heapSort`
 
-![](D:\Fuser\Course\算法\笔记\image\day3-2.jpg)
+![](image\day3-2.jpg)
 
 
 代码：
@@ -110,7 +110,7 @@ public static void heapSort(int[] arr){
 
 问题：给一组数，怎么变成大根堆
 
-![](D:\Fuser\Course\算法\笔记\image\day3-3.jpg)
+![](image\day3-3.jpg)
 
 
 
@@ -135,7 +135,7 @@ public static void heapSort(int[] arr){
 ```
 ### 堆排序扩展题目
 
-![](D:\Fuser\Course\算法\笔记\image\day3-4.jpg)
+![](image\day3-4.jpg)
 
 ```java
 	public void sortedArrDistanceLessK(int[] arr, int k) {
@@ -175,11 +175,11 @@ Java中现存的堆排序是一个黑盒，不支持已形成的堆结构修改�
 ## 不基于比较的排序
 ### 计数排序
 
-![](D:\Fuser\Course\算法\笔记\image\day3-5.jpg)
+![](image\day3-5.jpg)
 
 ### 基数排序
 
-![](D:\Fuser\Course\算法\笔记\image\day3-6.jpg)
+![](image\day3-6.jpg)
 
 ```java
 //only for no-negative value

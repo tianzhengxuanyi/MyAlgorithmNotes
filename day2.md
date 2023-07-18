@@ -16,7 +16,7 @@ public static int process(int[] arr, int L, int R){
 
 举例：
 
-![](D:\Fuser\Course\算法\笔记\image\day2-1.jpg)
+![](image\day2-1.jpg)
 
 将递归过程理解为一个多叉树，计算所有数节点的过程可理解为利用栈进行了一次后续遍历，每个节点都通过子节点的汇总的信息进行向上返回。栈空间是整棵树的高度。
 
@@ -43,7 +43,7 @@ o(N^d)：除去子问题的调用外剩下的过程的时间复杂度
 ## 归并排序
 即就是一个简单递归，左边排好序，右边排好序，让整体有序，让整体有序的过程利用了外排序的方法。
 
-![](D:\Fuser\Course\算法\笔记\image\day2-2.jpg)
+![](image\day2-2.jpg)
 
 ```java
 public static void process(int[] arr, int L, int R){
