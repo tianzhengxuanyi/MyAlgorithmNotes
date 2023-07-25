@@ -174,33 +174,30 @@ function quickSort(arr) {
   if (arr === null || arr.length < 2) {
     return;
   }
+  function process(arr, L, R) {
+    if (L < R) {
+      swap(arr, Math.floor((R - L + 1) * Math.random() + L), R);
+      const p = partition(arr, L, R);
+      process(arr, L, p[0] - 1);
+      process(arr, p[1] + 1, R);
+    }
+  }
+  function partition(arr, L, R) {
+    let left = L - 1;
+    let right = R;
+    while (L < right) {
+      if (arr[L] < arr[R]) {
+        swap(arr, ++left, L++);
+      } else if (arr[L] > arr[R]) {
+        swap(arr, --right, L);
+      } else {
+        L++;
+      }
+    }
+    swap(arr, right, R)
+    return [left + 1, right];
+  }
   process(arr, 0, arr.length - 1);
-}
-function process(arr, L, R) {
-  if (L < R) {
-    swap(arr, R, parseInt(Math.random() * (R - L + 1) + L));
-    const { left, right } = partition(arr, L, R);
-    process(arr, L, left);
-    process(arr, right, R);
-  }
-}
-function partition(arr, L, R) {
-  let left = L - 1;
-  let right = R + 1;
-  let pivot = arr[R];
-  let i = L;
-  while (i < right) {
-    if (arr[i] < pivot) {
-      swap(arr, ++left, i++);
-    }
-    if (arr[i] === pivot) {
-      i++;
-    }
-    if (arr[i] > pivot) {
-      swap(arr, --right, i);
-    }
-  }
-  return { left, right };
 }
 ```
 
@@ -214,6 +211,49 @@ function partition(arr, L, R) {
 
 **算法步骤：**
 
+- 将数组利用heapInsert或者heapfiy变成大根堆，此时数组中最大值在堆顶，堆size为数组长度
+- 将数组第一项和最后一项交换，堆size减一，并对堆从第一项进行heapfiy；
+- 循环执行直到堆size为0
+  
+```js
+function heapSort(arr) {
+  if (arr === null || arr.length < 2) {
+    return;
+  }
+  for (let i = 0; i < arr.length; i++) {
+    heapInsert(arr, i);
+  }
+  let heapSize = arr.length;
+  swap(arr, 0, --heapSize);
+
+  while (heapSize > 0) {
+    heapfiy(arr, 0, heapSize);
+    swap(arr, 0, --heapSize);
+  }
+}
+
+function heapInsert(arr, i) {
+  while (arr[i] > arr[(i - 1) >> 1]) {
+    swap(arr, i, (i - 1) >> 1);
+    i = (i - 1) >> 1;
+  }
+}
+
+function heapfiy(arr, i, heapSize) {
+  let left = 2 * i + 1;
+
+  while (left < heapSize) {
+    let maxIndex =
+      left + 1 < heapSize && arr[left + 1] > arr[left] ? left + 1 : left;
+    if (arr[i] > arr[maxIndex]) {
+      break;
+    }
+    swap(arr, i, maxIndex);
+    i = maxIndex;
+    left = 2 * i + 1;
+  }
+}
+```
 
 ## 排序总结
 
