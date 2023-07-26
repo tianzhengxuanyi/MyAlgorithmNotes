@@ -54,3 +54,10 @@ function reverseListRecursive(head) {
 
 console.log(reverseListRecursive(head))
 
+class Node {
+    constructor(value, next, last) {
+        this.value = value;
+        this.next = next;
+        this.last = last;
+    }
+}
