@@ -1,5 +1,6 @@
 ## 哈希函数
 Hash，一般翻译做"散列"，也有直接音译为"哈希"的，就是把任意长度的输入（又叫做预映射， pre-image），通过散列算法，变换成固定长度的输出，该输出就是散列值。
+
 **性质：**
 - 输入可以是无穷大，输出是有限范围内
 - 同样的输入，同样的输出
@@ -28,13 +29,13 @@ Hash，一般翻译做"散列"，也有直接音译为"哈希"的，就是把任
 - 此时，取模后的结果将均匀分布在0~15上，将key按照取模后的结果放置在对应的内存中，同个内存中的记录用链表串联；
 - 查询和删除时，将key按照size取模的结果找到对应内存地址，然后对链表遍历寻找；
 - 所以当链表长度过长时影响效率，需要进行扩容操作；
-- 如当链表长度大于8时进行扩容。先申请32个内存地址，并对之前所有的记录重新用32进行哈希函数映射和取模并放入对应的新内存中，此时链表长度将会近似等于4；
+- 假设当链表长度大于8时进行扩容。先申请32个内存地址，并对之前所有的记录重新用32进行哈希函数映射和取模并放入对应的新内存中，此时链表长度将会近似等于4；
 
 时间复杂度：
 
 - 单个值采用哈希函数进行映射并对16取模  O(1)
 - 遍历小长度链表 O(1)
-- 插入N个值需要扩容logN次 O(N*logN)
+- 插入N个值需要扩容logN次，每次扩容代价为N O(N*logN)
 - 单次插入的平均时间复杂度 O(logN)
 - 查找和删除 O(1)
 
@@ -90,4 +91,46 @@ Insert、delete和getRandom方法的时间复杂度都是O(1)
 - 插入时，分别在KeyMap和IndexMap中插入对应记录，size加1；
 - 删除key1时，将index 等于 size - 1的key在KeyMap和IndexMap中更改index为要删除key1的index，然后删除key1；
 - 返回随机key，随机生成0~size-1的整数，返回对应index的key；
+
+```js
+class RandomPool {
+  constructor() {
+    this.keyMap = new Map();
+    this.indexMap = new Map();
+    this.size = 0;
+  }
+  insert(key) {
+    if (!this.keyMap.has(key)) {
+      this.keyMap.set(key, this.size);
+      this.indexMap.set(this.size++, key);
+    }
+  }
+  delete(key) {
+    if (this.keyMap.has(key)) {
+      // 获取key对应的index
+      const index = this.keyMap.get(key);
+      // 获取最后的index
+      const lastIndex = --this.size;
+      // 获取最后一个key
+      const keyLast = this.indexMap.get(lastIndex);
+      // 将keyLast的index设置成key的index
+      this.keyMap.set(keyLast, index);
+      // 将index对应的key换成keyLast
+      this.indexMap.set(index, keyLast);
+      // 删除key
+      this.keyMap.delete(key);
+      // 删除最后的index
+      this.indexMap.delete(lastIndex);
+    }
+  }
+  getRandom() {
+    if (this.size === 0) {
+      return null;
+    }
+    const index = parseInt(Math.random() * this.size);
+    return this.indexMap.get(index);
+  }
+}
+
+```
 
