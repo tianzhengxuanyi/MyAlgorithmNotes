@@ -134,3 +134,51 @@ class RandomPool {
 
 ```
 
+## 布隆过滤器
+
+布隆过滤器就是一个大的**位图** 设m个bit 范围是0 ~ m-1，实际占用m/8字节。
+
+### [位图](https://blog.csdn.net/ETalien_/article/details/90752420)
+
+位图是用数组实现的，数组的每一个元素的每一个二进制位都可以表示一个数据在或者不在，0表示数据存在，1表示数据不存在。所以位图其实就是一种直接定址法的哈希，只不过位图只能表示这个值在或者不在。
+
+![位图](../../image/hash-1.png)
+
+**将对应的比特位置变成1**
+
+![将对应的比特位置变成1](../../image/hash-2.png)
+
+```js
+const set = (i) => {
+  const index = i / 32 // 计算是数组的第几段
+  const num = i % 32 // 计算在段中的第几位
+
+  this.bit[index] = this.bit[index] | (1 << num)
+}
+```
+
+**将对应的比特位置变成0**
+
+![将对应的比特位置变成0](../../image/hash-3.png)
+
+```js
+const reset = (i) => {
+  const index = i / 32 // 计算是数组的第几段
+  const num = i % 32 // 计算在段中的第几位
+
+  this.bit[index] = this.bit[index] & (~(1 << num))
+}
+```
+
+**判断对应的比特位是0（不存在）还是1（存在）**
+
+![判断对应的比特位是0（不存在）还是1（存在）](../../image/hash-4.png)
+
+```js
+const test = (i) => {
+  const index = i / 32 // 计算是数组的第几段
+  const num = i % 32 // 计算在段中的第几位
+
+  this.bit[index] = this.bit[index] & (~(1 << num))
+}
+```
