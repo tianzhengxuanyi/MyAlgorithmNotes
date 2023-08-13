@@ -189,6 +189,8 @@ var postorderTraversal = function (root) {
 
 Morris 遍历的实质: 通过来回标记遍历整棵树
 
+二叉树题目的最优解：如果要用第三次信息的强整合要用递归套路，如果不需要第三次信息的强整合morris遍历是最优解。
+
 #### Morris 遍历细节
 
 假设来到当前节点 cur，开始时 cur 来到头节点位置
@@ -399,18 +401,18 @@ function morrisPos(head) {
 ```js
 var levelOrder = function (root) {
     if (root === null) return [];
-    let queen = [];
+    let queue = [];
     let curr = null;
     let arr = [];
-    queen.push(root);
+    queue.push(root);
 
-    while (queen.length !== 0) {
-        curr = queen.shift();
+    while (queue.length !== 0) {
+        curr = queue.shift();
         if (curr.left) {
-            queen.push(curr.left);
+            queue.push(curr.left);
         }
         if (curr.right) {
-            queen.push(curr.right);
+            queue.push(curr.right);
         }
         arr.push(curr.val);
     }
@@ -479,10 +481,10 @@ var widthOfBinaryTree = function (root) {
     // 记录当前层最后一个节点（上一层最后一个节点的右节点）
     if (root === null) return 0;
     let curr = null;
-    let queen = [];
+    let queue = [];
     let arr = [[]];
     root.val = 1;
-    queen.push(root);
+    queue.push(root);
 
     // 判断是否是当前层
     // 根据hashmap中的currNodeLevel和currLevel对比
@@ -494,8 +496,8 @@ var widthOfBinaryTree = function (root) {
     let mod = 10000000007;
     // 返回的最大值
     let max = -Infinity;
-    while (queen.length !== 0) {
-        curr = queen.shift();
+    while (queue.length !== 0) {
+        curr = queue.shift();
         currNodeLevel = hashMap.get(curr);
         console.log(curr.val);
         if (currNodeLevel !== currLevel) {
@@ -507,12 +509,12 @@ var widthOfBinaryTree = function (root) {
             // 下标
             curr.left.val = (2 * curr.val - 1) % mod;
             hashMap.set(curr.left, currLevel + 1);
-            queen.push(curr.left);
+            queue.push(curr.left);
         }
         if (curr.right) {
             curr.right.val = (2 * curr.val) % mod;
             hashMap.set(curr.right, currLevel + 1);
-            queen.push(curr.right);
+            queue.push(curr.right);
         }
     }
     for (let i = 0; i < arr.length; i++) {
@@ -558,7 +560,7 @@ var widthOfBinaryTree = function (root) {
 };
 ```
 
-## 树型 DP（动态规划）解法套路
+## 3. 树型 DP（动态规划）解法套路
 
 使用前提：如果题目求解目标是S规则，则求解流程可以定成以每一个节点为头结点的子树在S规则下的每一个答案，并且最终答案一定在其中。
 
@@ -765,7 +767,7 @@ function getMaxHappiness(head) {
 }
 ```
 
-## 二叉树题目
+## 4. 二叉树题目
 
 ### 如何判断一颗二叉树是完全二叉树？
 
@@ -775,20 +777,20 @@ function getMaxHappiness(head) {
 
 1. 宽度优先遍历整棵树
 2. 任一节点，**有右子树，无左子树**，返回 false
-3. 在(2）不成立时，如果遇到了第一个左右两个孩子不双全，**后续节点必须是叶子节点**，否则返回 false
+3. 在(2)成立时，如果遇到了第一个左右两个孩子不双全，**后续节点必须是叶子节点**，否则返回 false
 
 **解：**
 
 ```js
 var isCompleteTree = function (root) {
     // 宽度优先遍历
-    let queen = [];
+    let queue = [];
     let curr = null;
     // 记录后续节点是否需要为叶子节点
     let isLeaf = false;
-    queen.push(root);
-    while (queen.length !== 0) {
-        curr = queen.shift();
+    queue.push(root);
+    while (queue.length !== 0) {
+        curr = queue.shift();
         if (curr.left === null && curr.right !== null) {
             // 有右子树 无左子树 返回false
             return false;
@@ -802,10 +804,10 @@ var isCompleteTree = function (root) {
             isLeaf = true;
         }
         if (curr.left !== null) {
-            queen.push(curr.left);
+            queue.push(curr.left);
         }
         if (curr.right !== null) {
-            queen.push(curr.right);
+            queue.push(curr.right);
         }
     }
     return true;
@@ -898,20 +900,20 @@ function isBalancedProcess(root) {
 ```js
 var lowestCommonAncestor = function (root, p, q) {
     let hashMap = new Map();
-    let queen = [];
+    let queue = [];
     let curr = null;
-    queen.push(root);
+    queue.push(root);
     hashMap.set(root, root);
 
-    while (queen.length !== 0) {
-        curr = queen.shift();
+    while (queue.length !== 0) {
+        curr = queue.shift();
 
         if (curr.left) {
-            queen.push(curr.left);
+            queue.push(curr.left);
             hashMap.set(curr.left, curr);
         }
         if (curr.right) {
-            queen.push(curr.right);
+            queue.push(curr.right);
             hashMap.set(curr.right, curr);
         }
     }
@@ -957,7 +959,7 @@ var lowestCommonAncestor = function (root, p, q) {
     let right = lowestCommonAncestor(root.right, p, q);
 
     if (left !== null && right !== null) {
-        // p和 q不互为 `LCA`, 要往上才能找到
+        // p和q一路向上传递，直到在LCA处汇聚，返回LCA
         return root;
     }
     return left !== null ? left : right;
