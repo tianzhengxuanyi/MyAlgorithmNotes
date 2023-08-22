@@ -158,9 +158,10 @@ function colorLeftRight2(s) {
     // 记录0~i范围内有多少个R
     let leftGList = [];
     let rightRList = [];
+    // 包括i
     leftGList[0] = arr[0] === "G" ? 1 : 0;
+    // 不包括i
     rightRList[arr.length - 1] = 0;
-    // rightRList[arr.length - 1] = arr[arr.length - 1] === "R" ? 1 : 0;
     for (let i = 1; i < arr.length; i++) {
         leftGList[i] = arr[i] === "G" ? leftGList[i - 1] + 1 : leftGList[i - 1];
     }
@@ -172,10 +173,105 @@ function colorLeftRight2(s) {
         let temp = leftGList[i] + rightRList[i];
         res = Math.min(temp, res);
     }
-    console.log(leftGList)
-    console.log(rightRList)
     return res;
 }
 
 console.log("colorLeftRight", colorLeftRight("RGRGR"));
 console.log("colorLeftRight", colorLeftRight2("RGRGR"));
+
+function maxOneBorderSize(matrix) {
+    let res = 0;
+    let N = matrix.length;
+    // 遍历矩阵
+    for (let row = 0; row < N; row++) {
+        for (let col = 0; col < N; col++) {
+            // 遍历可能的border
+            for (let border = 1; row + border - 1 < N && col + border - 1 < N; border++) {
+                let flag = true;
+                // 上
+                for (let i = col; i <= col + border - 1; i++) {
+                    if (matrix[row][i] === 0) {
+                        flag = false
+                        break
+                    }
+                }
+                // 下
+                for (let i = col; i <= col + border - 1; i++) {
+                    if (matrix[row+border-1][i] === 0) {
+                        flag = false
+                        break
+                    }
+                }
+                // 左
+                for (let i = row; i <= row + border - 1; i++) {
+                    if (matrix[i][col] === 0) {
+                        flag = false
+                        break
+                    }
+                }
+                // 右
+                for (let i = row; i <= row + border - 1; i++) {
+                    if (matrix[i][col+border-1] === 0) {
+                        flag = false
+                        break
+                    }
+                }
+                if (flag) {
+                    res = Math.max(res, border)
+                }
+            }
+        }
+    }
+    return res;
+}
+
+function maxOneBorderSize2(matrix) {
+    let res = 0;
+    const N = matrix.length;
+    const right = new Array(N);
+    for (let i = 0; i < N; i++) {
+        right[i] = new Array(N);
+        for (let j = N - 1; j >= 0; j--) {
+            if (j === N - 1) {
+                right[i][j] = matrix[i][j]
+            } else {
+                right[i][j] = matrix[i][j] === 0 ? 0 : matrix[i][j] + right[i][j+1]
+            }
+        }
+    }
+    const down = new Array(N);
+    for (let i = 0; i < N; i++) {
+        down[i] = new Array(N);
+    }
+    for (let j = 0; j < N; j++) {
+        for (let i = N - 1; i >= 0; i--) {
+            if (i === N - 1) {
+                down[i][j] = matrix[i][j]
+            } else {
+                down[i][j] = matrix[i][j] === 0 ? 0 : matrix[i][j] + down[i+1][j]
+            }
+        }
+    }
+    
+    // 遍历矩阵
+    for (let row = 0; row < N; row++) {
+        for (let col = 0; col < N; col++) {
+            // 遍历border
+            for (let border = 1; row + border - 1 < N && col + border - 1 < N; border++) {
+                // 判断边是否为1
+                if (
+                    right[row][col] < border || 
+                    right[row + border - 1][col] < border || 
+                    down[row][col] < border || 
+                    down[row][col + border - 1] < border) {
+                    continue;
+                }
+                res = Math.max(res, border);
+            }
+        }
+    }
+    return res;
+}
+
+console.log("maxOneBorderSize", maxOneBorderSize([[0,1,1,1,1], [0,1,0,0,1], [0,1,0,0,1], [0,1,1,1,1], [0,1,0,1,1]]))
+console.log("maxOneBorderSize", maxOneBorderSize2([[0,1,1,1,1], [0,1,0,0,1], [0,1,0,0,1], [0,1,1,1,1], [0,1,0,1,1]]))
