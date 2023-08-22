@@ -186,38 +186,42 @@ function maxOneBorderSize(matrix) {
     for (let row = 0; row < N; row++) {
         for (let col = 0; col < N; col++) {
             // 遍历可能的border
-            for (let border = 1; row + border - 1 < N && col + border - 1 < N; border++) {
+            for (
+                let border = 1;
+                row + border - 1 < N && col + border - 1 < N;
+                border++
+            ) {
                 let flag = true;
                 // 上
                 for (let i = col; i <= col + border - 1; i++) {
                     if (matrix[row][i] === 0) {
-                        flag = false
-                        break
+                        flag = false;
+                        break;
                     }
                 }
                 // 下
                 for (let i = col; i <= col + border - 1; i++) {
-                    if (matrix[row+border-1][i] === 0) {
-                        flag = false
-                        break
+                    if (matrix[row + border - 1][i] === 0) {
+                        flag = false;
+                        break;
                     }
                 }
                 // 左
                 for (let i = row; i <= row + border - 1; i++) {
                     if (matrix[i][col] === 0) {
-                        flag = false
-                        break
+                        flag = false;
+                        break;
                     }
                 }
                 // 右
                 for (let i = row; i <= row + border - 1; i++) {
-                    if (matrix[i][col+border-1] === 0) {
-                        flag = false
-                        break
+                    if (matrix[i][col + border - 1] === 0) {
+                        flag = false;
+                        break;
                     }
                 }
                 if (flag) {
-                    res = Math.max(res, border)
+                    res = Math.max(res, border);
                 }
             }
         }
@@ -233,9 +237,10 @@ function maxOneBorderSize2(matrix) {
         right[i] = new Array(N);
         for (let j = N - 1; j >= 0; j--) {
             if (j === N - 1) {
-                right[i][j] = matrix[i][j]
+                right[i][j] = matrix[i][j];
             } else {
-                right[i][j] = matrix[i][j] === 0 ? 0 : matrix[i][j] + right[i][j+1]
+                right[i][j] =
+                    matrix[i][j] === 0 ? 0 : matrix[i][j] + right[i][j + 1];
             }
         }
     }
@@ -246,24 +251,30 @@ function maxOneBorderSize2(matrix) {
     for (let j = 0; j < N; j++) {
         for (let i = N - 1; i >= 0; i--) {
             if (i === N - 1) {
-                down[i][j] = matrix[i][j]
+                down[i][j] = matrix[i][j];
             } else {
-                down[i][j] = matrix[i][j] === 0 ? 0 : matrix[i][j] + down[i+1][j]
+                down[i][j] =
+                    matrix[i][j] === 0 ? 0 : matrix[i][j] + down[i + 1][j];
             }
         }
     }
-    
+
     // 遍历矩阵
     for (let row = 0; row < N; row++) {
         for (let col = 0; col < N; col++) {
             // 遍历border
-            for (let border = 1; row + border - 1 < N && col + border - 1 < N; border++) {
+            for (
+                let border = 1;
+                row + border - 1 < N && col + border - 1 < N;
+                border++
+            ) {
                 // 判断边是否为1
                 if (
-                    right[row][col] < border || 
-                    right[row + border - 1][col] < border || 
-                    down[row][col] < border || 
-                    down[row][col + border - 1] < border) {
+                    right[row][col] < border ||
+                    right[row + border - 1][col] < border ||
+                    down[row][col] < border ||
+                    down[row][col + border - 1] < border
+                ) {
                     continue;
                 }
                 res = Math.max(res, border);
@@ -273,5 +284,89 @@ function maxOneBorderSize2(matrix) {
     return res;
 }
 
-console.log("maxOneBorderSize", maxOneBorderSize([[0,1,1,1,1], [0,1,0,0,1], [0,1,0,0,1], [0,1,1,1,1], [0,1,0,1,1]]))
-console.log("maxOneBorderSize", maxOneBorderSize2([[0,1,1,1,1], [0,1,0,0,1], [0,1,0,0,1], [0,1,1,1,1], [0,1,0,1,1]]))
+console.log(
+    "maxOneBorderSize",
+    maxOneBorderSize([
+        [0, 1, 1, 1, 1],
+        [0, 1, 0, 0, 1],
+        [0, 1, 0, 0, 1],
+        [0, 1, 1, 1, 1],
+        [0, 1, 0, 1, 1],
+    ])
+);
+console.log(
+    "maxOneBorderSize",
+    maxOneBorderSize2([
+        [0, 1, 1, 1, 1],
+        [0, 1, 0, 0, 1],
+        [0, 1, 0, 0, 1],
+        [0, 1, 1, 1, 1],
+        [0, 1, 0, 1, 1],
+    ])
+);
+
+function f() {
+    return Math.floor(Math.random() * 5) + 1;
+}
+function rand5ToRand7(f) {
+    // 将f函数改成0 1发生器
+    function r() {
+        let res = 0;
+        do {
+            res = f();
+        } while (res === 3)
+        return res < 3 ? 0 : 1;
+    }
+    function g() {
+        let res = 0;
+        do {
+            res = (r() << 2) + (r() << 1) + r()
+        } while (res === 7)
+        return res + 1;
+    }
+    return g;
+}
+const g = rand5ToRand7(f)
+// let map = new Map();
+// for (let i = 0; i < 10000; i++) {
+    
+//     let rand = g();
+//     if (map.has(rand)) {
+//         map.set(rand, map.get(rand) + 1)
+//     } else {
+//         map.set(rand, 0)
+//     }
+// }
+// console.log(map)
+
+function uniqueBST(n) {
+    function process(n) {
+        if (n < 0) {
+            return 0;
+        }
+        if (n === 0 || n === 1) {
+            return 1;
+        }
+        if (n === 2) {
+            return 2;
+        }
+        let res = 0;
+        for (let i = 0; i < n; i++) {
+            let leftWays = process(i);
+            let rightWays =  process(n-i-1);
+            res += leftWays * rightWays
+        }
+        return res;
+    }
+    return process(n)
+}
+
+// 动态规划
+function uniqueBST2(n) {
+    const dp = new Array(n);
+    dp[0] = 1;
+    dp[1] = 1;
+    dp[2] = 2;
+}
+
+console.log("uniqueBST", uniqueBST(10))
