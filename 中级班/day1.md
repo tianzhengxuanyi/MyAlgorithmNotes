@@ -117,7 +117,12 @@ function appleMinBags2(n) {
 
 ### 题目二（打表扩展）
 
-N份草，先手和后手都只能吃4的n次方份草，返回谁会赢；假如甲先手、乙后手
+牛牛和羊羊都很喜欢青草。今天他们决定玩青草游戏。
+
+最初有一个装有n份青草的箱子,牛牛和羊羊依次进行,牛牛先开始。在每个回合中,每个玩家必须吃一些箱子中的青草,所吃的青草份数必须是4的x次幂,比如1,4,16,64等等。
+不能在箱子中吃到有效份数青草的玩家落败。
+
+假定牛牛和羊羊都是按照最佳方法进行游戏,请输出胜利者的名字。
 
 举例： 2份草，先1后1，后赢 ；4份草 先4，先赢。。。
 
@@ -406,16 +411,85 @@ function rand5ToRand7(f) {
 
 给定一个非负整数 n，代表二叉树的节点个数。返回能形成多少种不同的二叉树结构
 
-**思路：**
+**思路1：**
 
 1. 遍历左树可能的节点个数i(0~n-1)，总个数为process(i)*process(n-i-1) 左树结构数×右树结构数
+
+```js
+function uniqueBST(n) {
+    function process(n) {
+        if (n < 0) {
+            return 0;
+        }
+        if (n === 0 || n === 1) {
+            return 1;
+        }
+        if (n === 2) {
+            return 2;
+        }
+        let res = 0;
+        for (let i = 0; i < n; i++) {
+            let leftWays = process(i);
+            let rightWays =  process(n-i-1);
+            res += leftWays * rightWays
+        }
+        return res;
+    }
+    return process(n)
+}
+```
+
+**动态规划：**
+
+```js
+// 动态规划
+function uniqueBST2(n) {
+    const dp = new Array(n+1).fill(0);
+    dp[0] = 1;
+    for (let i = 1; i <= n; i++) {
+        // 左子树的节点个数 0 ~ i- 1
+        for (let j = 0; j < i; j++) {
+            dp[i] += dp[j] * dp[i-j-1]
+        }
+    }
+    return dp[n]
+}
+```
 
 ### 题目七
 
 一个完整的括号字符串定义规则如下:
-① 空字符串是完整的。
-② 如果 s 是完整的字符串，那么(s)也是完整的。
-③ 如果 s 和 t 是完整的字符串，将它们连接起来形成的 st 也是完整的。
+1. 空字符串是完整的。
+2. 如果 s 是完整的字符串，那么(s)也是完整的。
+3. 如果 s 和 t 是完整的字符串，将它们连接起来形成的 st 也是完整的。
+   
 例如，"(()())", ""和"(())()"是完整的括号字符串，"())(", "()(" 和 ")" 是不完整的括号字符串。
+
 牛牛有一个括号字符串 s,现在需要在其中任意位置尽量少地添加括号,将其转化
 为一个完整的括号字符串。请问牛牛至少需要添加多少个括号。
+
+**思路：**
+
+1. 将字符串转化为数组，用变量count辅助记录，遍历数组，如果当前为“(” count加一，如果为“)” count减一；
+2. 如果遍历过程中count变为-1，则说明需要在此下标前加入“(”配对，res加一，并将count重置为0；
+3. 如果遍历结束count大于0，则说明需要在结尾加入count个“)”，res加count；
+
+```js
+function needParentheses(str) {
+    let arr = str.split('');
+    let count = 0;
+    let res = 0;
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === "(") {
+            count++
+        } else {
+            count--
+        }
+        if (count < 0) {
+            res++
+            count = 0
+        }
+    }
+    return count + res;
+}
+```
