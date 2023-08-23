@@ -226,15 +226,78 @@ function parenthesesDeep(str) {
 
 **思路：**
 
-1. 
+1. 遍历字符串数组，用dp记录以当前下标为结尾的最长有效括号子串的长度；
+2. 如果当前为index，值为cur。如果cur===“（”，此时`dp[index] = 0`;
+3. 如果cur === “）”，判断`index- 1 - dp[index-1]`的值：
+   - 如果值为“）”则`dp[index] = dp[index-1]`;
+   - 如果值为“（”则`dp[index] = dp[index-1] + 2 + dp[index-2-dp[index-1]]`;
+
+```js
+function parenthesesMaxValidLength(str) {
+    const arr = str.split("");
+    const dp = new Array(arr.length).fill(0);
+    let res = 0
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] === ")") {
+            let prevIndex = i - 1 - dp[i-1];
+            if (prevIndex >= 0 &&  arr[prevIndex] === "(") {
+                dp[i] = dp[i-1] + 2 + (prevIndex - 1 < 0 ? 0 : dp[prevIndex - 1])
+            }
+        }
+        res = Math.max(res, dp[i])
+    }
+    return res
+} 
+```
 
 ### 题目五
 
 请编写一个程序，对一个栈里的整型数据，按升序进行排序（即排序前，栈里的数据是无序的，排序后最大元素位于栈顶），要求最多只能使用一个额外的栈存放临时数据，但不得将元素复制到别的数据结构中。
 
+**思路：** 
+
+1. 准备辅助栈helpStack，依次将stack中栈顶元素cur弹出，如果helpStack为空cur直接入栈，否则比较cur和helpStack栈顶元素helpCur的大小：
+   - cur <= helpCur，cur直接压栈；
+   - cur > helpCur，helpStack弹出元素压入stack中，直到helpStack栈顶大于cur或者helpStack为空，将cur放入；
+2. 当stack为空，依次弹出helpStack压入stack；
+
+```js
+function stackSortStack(stack) {
+    const helpStack = [];
+    while (stack.length > 0) {
+        let cur = stack.pop();
+        while (helpStack.length > 0 && helpStack[helpStack.length-1] < cur) {
+            stack.push(helpStack.pop());
+        }
+        helpStack.push(cur);
+    }
+    while (helpStack.length > 0) {
+        stack.push(helpStack.pop())
+    }
+    return stack;
+}
+```
+
 ### 题目六
 
 二叉树每个结点都有一个int型权值，给定一棵二叉树，要求计算出从根结点到叶结点的所有路径中，权值和最大的值为多少。
 
+**思路：**
 
-### 题目七
+1. 权值的最大值为当前node的权值加上Max(以左子节点为头的最大权值和，以右子节点为头的最大权值和)；
+2. 如果head为null返回0（base case）；
+
+```js
+function MaxSumInTree(head) {
+    function process(head) {
+        if (head === null) {
+            return 0;
+        }
+        let leftMaxSum = process(head.left);
+        let rightMaxSum = process(head.right);
+        return head.val + Math.max(leftMaxSum, rightMaxSum);
+    }
+
+    return process(head);
+}
+```

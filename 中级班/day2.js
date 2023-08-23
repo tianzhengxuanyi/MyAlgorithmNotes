@@ -141,3 +141,65 @@ function parenthesesDeep(str) {
 
 console.log("parenthesesDeep", parenthesesDeep("()()()"))
 console.log("parenthesesDeep", parenthesesDeep("((()))"))
+
+function parenthesesMaxValidLength(str) {
+    const arr = str.split("");
+    const dp = new Array(arr.length).fill(0);
+    let res = 0
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] === ")") {
+            let prevIndex = i - 1 - dp[i-1];
+            if (prevIndex >= 0 &&  arr[prevIndex] === "(") {
+                dp[i] = dp[i-1] + 2 + (prevIndex - 1 < 0 ? 0 : dp[prevIndex - 1])
+            }
+        }
+        res = Math.max(res, dp[i])
+    }
+    return res
+} 
+
+console.log("parenthesesMaxValidLength", parenthesesMaxValidLength("())()(())()))("))
+
+function stackSortStack(stack) {
+    const helpStack = [];
+    while (stack.length > 0) {
+        let cur = stack.pop();
+        while (helpStack.length > 0 && helpStack[helpStack.length-1] < cur) {
+            stack.push(helpStack.pop());
+        }
+        helpStack.push(cur);
+    }
+    while (helpStack.length > 0) {
+        stack.push(helpStack.pop())
+    }
+    return stack;
+}
+
+console.log("stackSortStack", stackSortStack([1,4,2,6,3]))
+
+function MaxSumInTree(head) {
+    function process(head) {
+        if (head === null) {
+            return 0;
+        }
+        let leftMaxSum = process(head.left);
+        let rightMaxSum = process(head.right);
+        return head.val + Math.max(leftMaxSum, rightMaxSum);
+    }
+
+    return process(head);
+}
+
+function Node(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+}
+
+let head = new Node(4);
+head.left = new Node(1);
+head.left.right = new Node(5);
+head.right = new Node(-7);
+head.right.left = new Node(3);
+
+console.log("MaxSumInTree", MaxSumInTree(head))
