@@ -2,13 +2,98 @@
 
 给定一个元素为非负整数的二维数组matrix，每行和每列都是从小到大有序的。再给定一个非负整数aim，请判断aim是否在matrix中
 
-拓展：返回1最多的一行
+示例:
+
+现有矩阵 matrix 如下：
+```
+[
+  [1,   4,  7, 11, 15],
+  [2,   5,  8, 12, 19],
+  [3,   6,  9, 16, 22],
+  [10, 13, 14, 17, 24],
+  [18, 21, 23, 26, 30]
+]
+```
+给定 target = 5，返回 true。
+
+给定 target = 20，返回 false。
+
+**思路：**
+
+1. 从右上角开始寻找，如果cur小于target则row++，否则col--
+2. 左边越界和下边越界则不存在；
+
+```js
+var findNumberIn2DArray = function (matrix, target) {
+    // 1. 从右上角开始寻找,如果cur小于target，j++，如果cur大于target，i--
+    if (matrix.length === 0 || matrix[0]?.length === 0) {
+        return false;
+    }
+    let row = 0;
+    let col = matrix[0].length - 1;
+    while (row < matrix.length && col >= 0) {
+        if (target === matrix[row][col]) {
+            return true;
+        } else if (target > matrix[row][col]) {
+            row++;
+        } else {
+            col--;
+        }
+    }
+
+    return false;
+};
+```
+
+**拓展：** 每一行 0 肯定是会在 1 的左边，让你找到 matrix 里面含有最多 1 的那一行。
+
+例如：
+
+```
+[
+    [0,0,0,0,0,1,1,1,1],
+    [0,0,0,0,0,0,0,1,1],
+    [0,0,0,0,1,1,1,1,1],
+    [0,0,0,0,1,1,1,1,1],
+    [0,0,0,0,0,0,0,0,0],
+    [0,1,1,1,1,1,1,1,1],
+]
+```
+
+**思路：**
+
+1. 从右上开始，向左如果next为1则继续，如果为0则向下；
+2. 每一行都先向左尝试；如果越界则结束；
+
+```js
+function findMaxRow(matrix) {
+    if (matrix.length === 0 || matrix[0]?.length === 0) {
+        return -1;
+    }
+    let maxRowOneCount = 0;
+    let maxRow = -1;
+    let col = matrix[0].length - 1;
+    for (let row = 0; row < matrix.length; row++) {
+        let ans = matrix[0].length - 1 - col;
+        while (matrix[row][col] === 1) {
+            ans++;
+            if (col > 0 && matrix[row][col-1] === 0) {
+                break;
+            }
+            col--;
+        }
+        maxRow = maxRowOneCount > ans ? maxRow : row;
+        maxRowOneCount = maxRowOneCount > ans ? maxRowOneCount : ans;
+    }
+    return [maxRow, maxRowOneCount]
+}
+```
 
 ### 题目二
 
 有n个打包机器从左到右一字排开，上方有一个自动装置会抓取一批放物品到每个打包机上，放到每个机器上的这些物品数量有多有少，由于物品数量不相同，需要工人将每个机器上的物品进行移动从而到达物品数量相等才能打包。
 
-每个物品重量太大、每次只能搬一个物品进行移动，为了省力，只在相邻的机器上移动。
+每个物品重量太大、每次只能搬一个物品进行移动，为了省力，只在相邻的机器上移动。物体从位置i搬动到位置j算一轮。
 
 请计算在搬动最小轮数的前提下，使每个机器上的物品数量相等。
 
@@ -25,6 +110,44 @@
 移动了3轮，每个机器上的物品相等，所以返回3
 
 例如[2,2,3]表示有3个机器，每个机器上分别有2、2、3个物品，这些物品不管怎么移动，都不能使三个机器上物品数量相等，返回-1
+
+**思路（贪心）：**
+
+1. 计算每个机器上需要的物品数量（avg），如果不能等分返回1；
+2. 遍历数组，假设当前下标为index，值为cur，计算index左边和右边整体分别多出的物品数leftMore和rightMore
+   -  如果leftMore>0 rightMore>0，说明index左右两边物品都多了需要移动到index上，至少需要移动Max(leftMore, rightMore);
+   -  如果leftMore<0 rightMore<0，说明index左右两边物品都缺少，需要从index移动到左右两边，至少需要abs(leftMore + rightMore);
+   -  如果leftMore和rightMore一正一负，至少需要Max(abs(leftMore), abs(rightMore));
+
+```js
+function packingMachine(arr) {
+    if (arr === null || arr.length === 0) {
+        return -1;
+    }
+    let sum = 0;
+    let sumArr = [];
+    let res = 0;
+    for (let i = 0; i < arr.length; i++) {
+        sum += arr[i];
+        sumArr.push(sum)
+    }
+    if (sum % arr.length !== 0) {
+        return -1;
+    }
+    let avg = sum / arr.length;
+
+    for (let i = 0; i < arr.length; i++) {
+        let leftMore = i === 0 ? 0 : sumArr[i-1] - avg * (i - 1);
+        let rightMore = i === arr.length - 1 ? 0 : sum - sumArr[i] - avg * (arr.length - i - 1);
+        if (leftMore < 0 && rightMore < 0) {
+            res = Math.max(res, Math.abs(leftMore+rightMore));
+        } else {
+            res = Math.max(res, Math.max(Math.abs(leftMore), Math.abs(rightMore)));
+        }
+    }
+    return res;
+}
+```
 
 ### 题目三
 
