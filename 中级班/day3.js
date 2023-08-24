@@ -91,3 +91,80 @@ function packingMachine(arr) {
 
 console.log("packingMachine", packingMachine([1,0,5]))
 console.log("packingMachine", packingMachine([2,2,3]))
+
+function zigzag(matrix) {
+    let row = matrix.length;
+    let col = matrix[0].length;
+
+    let ar = 0;
+    let ac = 0;
+    let br = 0;
+    let bc = 0;
+    let deg = false;
+
+    while (ac !== col) {
+        printZigZag(ar, ac, br, bc, deg)
+        ac = ar === row - 1 ? ac + 1 : ac;
+        ar = ar === row - 1 ? ar : ar + 1;
+        br = bc === col - 1 ? br + 1 : br;
+        bc = bc === col - 1 ? bc : bc + 1;
+        deg = !deg;
+    }
+
+    function printZigZag(ar, ac, br, bc, deg) {
+        if (deg) {
+            while (bc >= ac) {
+                console.log(matrix[br++][bc--])
+            }
+        } else {
+            while (ar >= br) {
+                console.log(matrix[ar--][ac++])
+            }
+        }
+    }
+}
+
+let zigzagMatrix = [
+    [0,1,2,3],
+    [4,5,6,7],
+    [8,9,10,11]
+]
+
+zigzag(zigzagMatrix)
+
+function rotateMatrix(matrix) {
+    let row = matrix.length;
+    let col = matrix[0].length;
+
+    let ar = 0;
+    let ac = 0;
+    let br = row - 1;
+    let bc = col - 1;
+    debugger
+    while (ar <= br && ac <= bc) {
+        printEdge(ar++, ac++, br--, bc--)
+    }
+
+    function printEdge(ar, ac, br, bc) {
+        if (ar === br) {
+            for (let i = ac; i <= bc; i++) {
+                console.log(matrix[ar][i])
+            }
+        } else if (ac === bc) {
+            for (let i = ar; i <= br; i++) {
+                console.log(matrix[i][ac])
+            }
+        } else {
+           let curR = ar;
+           let curC = ac;
+        }
+    }
+}
+
+let rotate = [
+    [0, 1, 2,  3],
+    [4, 5, 6,  7],
+    [8, 9, 10, 11],
+]
+console.log("rotateMatrix")
+rotateMatrix(rotate)
