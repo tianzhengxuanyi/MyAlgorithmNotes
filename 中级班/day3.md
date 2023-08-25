@@ -211,10 +211,53 @@ function zigzag(matrix) {
 
 1. 定位左上角a和右下角b可以形成一个正方形，顺时针打印这个正方形边框上的数；
 2. 两个对角点向内移(ar++,ac++,br--,bc--)，顺时针打印边框；
-3. 当ar>=br时停止；
+3. 需要注意特殊状况ar等于br或者ac等于bc
+4. 当ar>=br时停止；
 
 ```js
+function rotateMatrix(matrix) {
+  let row = matrix.length;
+  let col = matrix[0].length;
 
+  let ar = 0;
+  let ac = 0;
+  let br = row - 1;
+  let bc = col - 1;
+  while (ar <= br && ac <= bc) {
+    printEdge(ar++, ac++, br--, bc--);
+  }
+
+  function printEdge(ar, ac, br, bc) {
+    if (ar === br) {
+      for (let i = ac; i <= bc; i++) {
+        console.log(matrix[ar][i]);
+      }
+    } else if (ac === bc) {
+      for (let i = ar; i <= br; i++) {
+        console.log(matrix[i][ac]);
+      }
+    } else {
+      let curR = ar;
+      let curC = ac;
+      //  向右
+      while (curC < bc) {
+        console.log(matrix[curR][curC++]);
+      }
+      //  向下
+      while (curR < br) {
+        console.log(matrix[curR++][curC]);
+      }
+      // 向左
+      while (curC > 0) {
+        console.log(matrix[curR][curC--]);
+      }
+      // 向上
+      while (curR > 0) {
+        console.log(matrix[curR--][curC]);
+      }
+    }
+  }
+}
 ```
 
 ### 题目五
@@ -256,6 +299,37 @@ function zigzag(matrix) {
          11
    13    
 ```
+3. 遍历每一组，交换组内四个点的位置（matrix[ar][ac+i]、matrix[br-i][ac]、matrix[br][bc-i]、matrix[ar+i][bc]）
+
+```js
+function printMatrixSpiralOrder(matrix) {
+    const row = matrix.length;
+    const col = matrix[0].length;
+
+    let ar = 0;
+    let ac = 0;
+    let br = row - 1;
+    let bc = col - 1;
+
+    while (ar <= br) {
+        spiralOrder(ar++, ac++, br--, bc--);
+    }
+
+    console.log(matrix)
+
+    function spiralOrder(ar, ac, br, bc) {
+        let step = br - ar;
+        for (let i = 0; i < step; i++) {
+            let temp = matrix[ar][ac+i]
+            matrix[ar][ac+i] = matrix[br-i][ac]
+            matrix[br-i][ac] = matrix[br][bc-i]
+            matrix[br][bc-i] = matrix[ar+i][bc]
+            matrix[ar+i][bc] = temp;
+        }
+    }
+}
+```
+
 ### 题目六
 
 假设s和m初始化，s = "a"; m = s;
@@ -271,6 +345,167 @@ s = s + m;
 ```
 求最小的操作步骤数，可以将s拼接到长度等于n
 
+**思路：**
+
+1. 如果n是质数，调用n-1次操作二是最小的；如果调用操作一会导致s中存在公因数（假设当前s=k，调用操作一后s=2k，m=k。之后无论怎么操作s中都包含公因数k，无法拼成n）
+2. 如果n不是质数，则可以将n分解成质数相乘，假设可以分解成x*y*z*p，如果当前s=x*y*z，在进行调用p-1次操作二可以完成目标；所以总操作数为x+y+z+p-4
+
+```js
+function splitNbySm(n) {
+  if (n < 2) {
+    return 0;
+  }
+  if (isPrim(n)) {
+    return n-1
+  }
+  const {sum, count} = divSumAndCount(n)
+  return sum - count;
+}
+
+// 判断一个数是否是质数
+function isPrim(n) {
+  if (n < 2) {
+    return false;
+  }
+  let max = Math.sqrt(n);
+  for (let i = 2; i <= max; i++) {
+    if (n % i === 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * 
+ * @param {number} n 质数
+ * @returns {object} sum: 因子和 count: 因子个数
+ */
+function divSumAndCount(n) {
+  let sum = 0;
+  let count = 0;
+  for (let i = 2; i <= n; i++) {
+    while ( n % i === 0) {
+      sum += i;
+      count++;
+      n = n / i
+    }
+  }
+  return {sum, count}
+}
+
+```
+
 ### 题目七
 
 给定一个字符串类型的数组arr，求其中出现次数最多的前K个
+
+**例子：**
+
+arr = ["a","b","c","a","x","y","a","b","c", "x", "x", "x"]
+
+其中a3 b2 c2 x4 y1 出现次数最多的前2个为x4 a3
+
+**思路：**
+
+1. 用hash表记录词频表；
+2. 用大根堆存储每个词频，以count排序
+
+
+```js
+class Heap {
+  constructor(cmp = (x, y) => x >= y) {
+    this.cmp = cmp;
+    this.heap = [];
+  }
+  insert(data) {
+    const { cmp, heap } = this;
+    heap.push(data);
+    let index = this.size() - 1;
+    let parentIndex = (index - 1) >> 1;
+    while (index > 0 && cmp(heap[index], heap[parentIndex])) {
+      this.swap(parentIndex, index);
+      index = parentIndex;
+      parentIndex = (index - 1) >> 1;
+    }
+  }
+  pop() {
+    const { heap } = this;
+    if (this.isEmpty()) {
+      return null;
+    }
+    this.swap(0, this.size() - 1);
+    let res = heap.pop();
+    this.heapfiy(0);
+
+    return res;
+  }
+  heapfiy(index) {
+    const { heap, cmp } = this;
+
+    let left = 2 * index + 1;
+
+    while (left < this.size()) {
+      let maxIndex =
+        left + 1 < this.size() && cmp(heap[left + 1], heap[left]) ? left + 1 : left;
+      if (cmp(heap[maxIndex], heap[index])) {
+        this.swap(maxIndex, index);
+        index = maxIndex;
+        left = 2 * index + 1;
+      }
+    }
+  }
+  size() {
+    return this.heap.length;
+  }
+  isEmpty() {
+    return !this.heap.length;
+  }
+  peek() {
+    return this.heap[0];
+  }
+  swap(i, j) {
+    let temp = this.heap[i];
+    this.heap[i] = this.heap[j];
+    this.heap[j] = temp;
+  }
+}
+
+function TimesNode(str, times) {
+  this.str = str;
+  this.times = times;
+}
+
+function TopKTimes(arr, k) {
+  const hashMap = new Map();
+  for (let i = 0; i < arr.length; i++) {
+    if (hashMap.has(arr[i])) {
+      hashMap.set(arr[i], hashMap.get(arr[i])  + 1);
+    } else {
+      hashMap.set(arr[i], 1);
+    }
+  }
+  let heap = new Heap((x, y) => x.times >= y.times)
+  for (let key of hashMap.keys()) {
+    let node = new TimesNode(key, hashMap.get(key));
+    heap.insert(node);
+  }
+  let res = [];
+  for (let i = 0; i < k; i++) {
+    res.push(heap.pop())
+  }
+  return res;
+}
+```
+
+**扩展：**
+
+设计结构，这个结构可以接受用户给的字符串add（str），且可以随时显示目前排名前k的字符串（动态结构）（大根堆/小根堆（门槛））
+
+思路：改堆
+
+词频表（key 字符串， value 词频）
+
+堆[初始k个长度] heapsize = 0；
+
+记录某个字符串在堆上的位置 map(key 字符串 ， value 位置)
