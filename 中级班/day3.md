@@ -502,10 +502,119 @@ function TopKTimes(arr, k) {
 
 设计结构，这个结构可以接受用户给的字符串add（str），且可以随时显示目前排名前k的字符串（动态结构）（大根堆/小根堆（门槛））
 
-思路：改堆
+**思路：改堆**
 
 词频表（key 字符串， value 词频）
 
-堆[初始k个长度] heapsize = 0；
+小根堆[初始k个长度] heapsize = 0；以堆顶元素为门槛限制数据是否入堆；insert和heapfiy操作要更改位置map的记录
 
 记录某个字符串在堆上的位置 map(key 字符串 ， value 位置)
+
+1. 生成以上三个数据结构；
+2. 当用户添加字符串时，更新词频表；
+   -  如果位置 map显示在堆上，直接修改堆中数据，如果不在做如下判断；
+   -  如果堆不满，将词频（node）加入堆（insert），位置map中记录词频；
+   -  如果堆满，当前词频大于等于堆顶门槛，当前词频入堆，堆顶弹出，位置map中弹出词频位置标成-1；
+   -  如果堆满，当前词频小于堆顶门槛，当前词频不入堆，位置map中位置标为-1；
+
+```js
+class ModifyHeap {
+  constructor(cmp = (x,y) => x <= y, positionMap) {
+    this.cmp = cmp;
+    this.heap = [];
+    this.positionMap = positionMap;
+  }
+  modifyheap(i, times) {
+    this.heap[i].times = times;
+    this.heapfiy(i)
+  }
+  insert(data) {
+    this.heap.push(data);
+    this.positionMap.set(data.str, this.size() -1)
+    let index = this.size() - 1;
+    while (index) {
+      let parentIndex = (index - 1) >> 1;
+      if (!this.cmp(this.heap[parentIndex], this.heap[index])) {
+        this.swap(index, parentIndex)
+      }
+      index = parentIndex;
+    }
+  }
+  pop() {
+    if (this.size() === 0) {
+      return null;
+    }
+    this.swap(0, this.size() - 1);
+    let res = this.heap.pop();
+    this.positionMap.set(res, -1);
+    this.heapfiy(0);
+    return res;
+  }
+  heapfiy(index) {
+    let left = 2 * index + 1;
+    while (left < this.size()) {
+      let lessIndex = left + 1 < this.size() && this.heap[left+1] <= this.heap[left] ? left + 1 : left;
+      if (!this.cmp(this.heap[index], this.heap[lessIndex])) {
+        this.swap(lessIndex, index);
+        index = lessIndex;
+        left = 2 * index + 1;
+      } else {
+        break;
+      }
+    }
+  }
+  swap(i, j) {
+    this.positionMap.set(this.heap[i].str, j)
+    this.positionMap.set(this.heap[j].str, i)
+    let temp = this.heap[i];
+    this.heap[i] = this.heap[j];
+    this.heap[j] = temp;
+  }
+  isEmpty() {
+    return !this.heap.length;
+  }
+  size() {
+    return this.heap.length;
+  }
+  peak() {
+    return this.heap[0];
+  }
+}
+
+class TopKDynamic {
+  frequencyMap = new Map();
+  positionMap = new Map();
+  heap = new ModifyHeap((x, y) => x.times <= y.times, this.positionMap);
+
+  constructor(k) {
+    this.k = k;
+  }
+
+  add(str) {
+    // 添加进词频表
+    if (this.frequencyMap.has(str)) {
+      this.frequencyMap.set(str, this.frequencyMap.get(str) + 1);
+    } else {
+      this.frequencyMap.set(str, 1);
+    }
+    if (this.positionMap.has(str) && this.positionMap.get(str) >= 0) {
+      this.heap.modifyheap(this.positionMap.get(str), this.frequencyMap.get(str));
+    } else {
+      // 如果堆不满
+      if (this.heap.size() < this.k) {
+        this.heap.insert(new TimesNode(str, this.frequencyMap.get(str)));
+      } else {
+        // 如果当前词频大于门槛入堆
+        if (this.frequencyMap.get(str) >= this.heap.peak().times) {
+          this.positionMap.set(this.heap.pop().str, -1);
+          this.heap.insert(new TimesNode(str,  this.frequencyMap.get(str)))
+        } else {
+          this.positionMap.set(str, -1);
+        }
+      }
+    }
+
+    console.log("Top3", this.heap.heap)
+  }
+}
+```

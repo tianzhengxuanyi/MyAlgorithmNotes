@@ -354,3 +354,113 @@ let topKTimesArr = ["a","b","c","a","x","y","a","b","c", "x", "x", "x"]
 console.log(TopKTimes(topKTimesArr, 3))
 
 
+class ModifyHeap {
+  constructor(cmp = (x,y) => x <= y, positionMap) {
+    this.cmp = cmp;
+    this.heap = [];
+    this.positionMap = positionMap;
+  }
+  modifyheap(i, times) {
+    this.heap[i].times = times;
+    this.heapfiy(i)
+  }
+  insert(data) {
+    this.heap.push(data);
+    this.positionMap.set(data.str, this.size() -1)
+    let index = this.size() - 1;
+    while (index) {
+      let parentIndex = (index - 1) >> 1;
+      if (!this.cmp(this.heap[parentIndex], this.heap[index])) {
+        this.swap(index, parentIndex)
+      }
+      index = parentIndex;
+    }
+  }
+  pop() {
+    if (this.size() === 0) {
+      return null;
+    }
+    this.swap(0, this.size() - 1);
+    let res = this.heap.pop();
+    this.positionMap.set(res, -1);
+    this.heapfiy(0);
+    return res;
+  }
+  heapfiy(index) {
+    let left = 2 * index + 1;
+    while (left < this.size()) {
+      let lessIndex = left + 1 < this.size() && this.heap[left+1] <= this.heap[left] ? left + 1 : left;
+      if (!this.cmp(this.heap[index], this.heap[lessIndex])) {
+        this.swap(lessIndex, index);
+        index = lessIndex;
+        left = 2 * index + 1;
+      } else {
+        break;
+      }
+    }
+  }
+  swap(i, j) {
+    this.positionMap.set(this.heap[i].str, j)
+    this.positionMap.set(this.heap[j].str, i)
+    let temp = this.heap[i];
+    this.heap[i] = this.heap[j];
+    this.heap[j] = temp;
+  }
+  isEmpty() {
+    return !this.heap.length;
+  }
+  size() {
+    return this.heap.length;
+  }
+  peak() {
+    return this.heap[0];
+  }
+}
+
+class TopKDynamic {
+  frequencyMap = new Map();
+  positionMap = new Map();
+  heap = new ModifyHeap((x, y) => x.times <= y.times, this.positionMap);
+
+  constructor(k) {
+    this.k = k;
+  }
+
+  add(str) {
+    // 添加进词频表
+    if (this.frequencyMap.has(str)) {
+      this.frequencyMap.set(str, this.frequencyMap.get(str) + 1);
+    } else {
+      this.frequencyMap.set(str, 1);
+    }
+    if (this.positionMap.has(str) && this.positionMap.get(str) >= 0) {
+      this.heap.modifyheap(this.positionMap.get(str), this.frequencyMap.get(str));
+    } else {
+      // 如果堆不满
+      if (this.heap.size() < this.k) {
+        this.heap.insert(new TimesNode(str, this.frequencyMap.get(str)));
+      } else {
+        // 如果当前词频大于门槛入堆
+        if (this.frequencyMap.get(str) >= this.heap.peak().times) {
+          this.positionMap.set(this.heap.pop().str, -1);
+          this.heap.insert(new TimesNode(str,  this.frequencyMap.get(str)))
+        } else {
+          this.positionMap.set(str, -1);
+        }
+      }
+    }
+
+    console.log("Top3", this.heap.heap)
+  }
+}
+
+const topK = new TopKDynamic(3);
+
+topK.add('a')
+topK.add('b')
+topK.add('x')
+topK.add('c')
+topK.add('a')
+topK.add('a')
+topK.add('b')
+topK.add('f')
