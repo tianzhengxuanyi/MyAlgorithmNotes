@@ -21,7 +21,7 @@
 
 ### 如何判断一颗二叉树是否是搜索二叉树？
 
-![](D:\Fuser\Course\算法\笔记\image\day6-1.png)
+![](.\image\day6-1.png)
 
 **解1：**
 
