@@ -38,7 +38,10 @@ public static class Cat extends Pet {
 
 实现一个特殊的栈，在实现栈的基本功能的基础上，再实现返回栈中最小元素
 的操作。
-要求：1.pop、push、getMin操作的时间复杂度都是O(1)；2.设计的栈类型可以
+
+要求：
+1. pop、push、getMin操作的时间复杂度都是O(1)；
+2. 设计的栈类型可以
 使用现成的栈结构
 
 **思路：**
@@ -47,6 +50,32 @@ public static class Cat extends Pet {
 2. push一个值时，如果最小值栈为空直接push，如果不为空，值小于等于最小值栈栈顶时压入，否则最小值栈不操作；
 3. pop一个值时，如果这个值等于最小值栈栈顶，则最小值栈pop栈顶；
 
+```ts
+class MinStack {
+    stack: number[];
+    minStack: number[];
+    constructor() {
+        this.stack = [];
+        this.minStack = [];
+    }
+    push(num: number): void {
+        this.stack.push(num);
+        if (this.minStack.length === 0 || this.minStack[this.minStack.length - 1] > num) {
+            this.minStack.push(num);
+        }
+    }
+    pop(): number|null {
+        let res = this.stack.length > 0 ? (this.stack.pop() as number) : null
+        if (res === this.minStack[this.minStack.length - 1]) {
+            this.minStack.pop();
+        }
+        return res
+    }
+    getMin(): number|null {
+        return this.minStack.length > 0 ? this.minStack[this.minStack.length - 1] : null
+    }
+}
+```
 ### 题目三
 
 如何仅用队列结构实现栈结构?
@@ -57,13 +86,71 @@ public static class Cat extends Pet {
 2. 一开始用户push数据时加入队列a中，当用户开始pop时，将队列a中数据只剩下一个，其他从队尾出加入队列b中，将队列a中最后一个值最为pop的数据；
 3. 接下来如果push数据则在队列b中操作，如果pop则按照2进行操作；
 
+```ts
+class TwoQueueStack {
+    queueA: any[];
+    queueB: any[];
+    curQueue: boolean;
+    constructor() {
+        this.queueA = [];
+        this.queueB = [];
+        this.curQueue = true;
+    }
+    push(data:any) {
+        if (this.curQueue) {
+            this.queueA.push(data);
+        } else {
+            this.queueB.push(data);
+        }
+    }
+    pop(): any {
+        let cur = this.curQueue ? this.queueA : this.queueB;
+        let anotherQueue = !this.curQueue ? this.queueA : this.queueB;
+        while (cur.length > 1) {
+            anotherQueue.push(cur.shift())
+        }
+        this.curQueue = !this.curQueue;
+        return cur.shift();
+    }
+}
+```
+
 如何仅用栈结构实现队列结构?
 
 **思路：**
 
 1. 用两个栈来实现，一个push栈，一个pop栈；
 2. 当用户push后，如果pop栈为空，将push栈所有数据弹出压入pop栈；如果pop栈不为空则不操作；
-3. 当用回pop时，如果pop栈为空，则将push栈中的所有数据弹出压入pop栈再弹出；如果不为空直接弹出；
+3. 当用户pop时，如果pop栈为空，则将push栈中的所有数据弹出压入pop栈再弹出；如果不为空直接弹出；
+
+```ts
+class TwoStackQueue {
+    pushStack: any[];
+    popStack: any[];
+    constructor() {
+        this.pushStack = [];
+        this.popStack = [];
+    }
+
+    push(data: any) {
+        this.pushStack.push(data);
+        if (this.popStack.length === 0) {
+            while (this.pushStack.length !== 0) {
+                this.popStack.push(this.pushStack.pop());
+            }
+        }
+    }
+
+    pop() {
+        if (this.popStack.length === 0) {
+            while (this.pushStack.length !== 0) {
+                this.popStack.push(this.pushStack.pop());
+            }
+        }
+        return this.popStack.length === 0 ? null : this.popStack.pop();
+    }
+}
+```
 
 ### 题目四
 
@@ -89,8 +176,7 @@ public static class Cat extends Pet {
 
 **题目：**
 
-给你一个二维数组matrix，其中每个数都是正数，要求从左上角走到右下角。每
-一步只能向右或者向下，沿途经过的数字要累加起来。最后请返回最小的路径和。
+给你一个二维数组matrix，其中每个数都是正数，要求从左上角走到右下角。每一步只能向右或者向下，沿途经过的数字要累加起来。最后请返回最小的路径和。
 
 
 **题目五（leetcode42）**
