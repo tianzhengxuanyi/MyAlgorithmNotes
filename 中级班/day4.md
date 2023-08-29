@@ -174,10 +174,30 @@ class TwoStackQueue {
 
 三维动态规划也可以压缩：临近的层依赖，则可以只申请两个层不断更新；
 
-**题目：**
+**题目（leetcode64）：**
 
 给你一个二维数组matrix，其中每个数都是正数，要求从左上角走到右下角。每一步只能向右或者向下，沿途经过的数字要累加起来。最后请返回最小的路径和。
 
+```ts
+function minPathSum(grid: number[][]): number {
+    let row = grid.length;
+    let col = grid[0].length;
+
+    const dp = new Array(col);
+    dp[0] = grid[0][0];
+
+    for (let i = 0; i < row; i++) {
+        for (let j = 0; j < col; j++) {
+            if (i == 0 && j == 0) {
+                continue;
+            }
+            dp[j] = grid[i][j] + ((i !== 0 && j !== 0) ? Math.min(dp[j], dp[j - 1]) : (i == 0 ? dp[j - 1] : dp[j]))
+        }
+    }
+
+    return dp[col - 1];
+};
+```
 
 **题目五（leetcode42）**
 
@@ -196,6 +216,29 @@ class TwoStackQueue {
 3. 总水量为所有下标可接水量和；
 4. 时间复杂度O(n)、空间复杂度O(n);
 
+```ts
+function trap(height: number[]): number {
+    const leftMax = new Array(height.length);
+    const rightMax = new Array(height.length);
+    let max = 0;
+    for (let i = 0; i < height.length; i++) {
+        leftMax[i] = max;
+        max = max > height[i] ? max : height[i];
+    }
+    max = 0;
+    for (let i = height.length - 1; i >= 0; i--) {
+        rightMax[i] = max;
+        max = max > height[i] ? max : height[i];
+    }
+    let ans = 0;
+    for (let i = 1; i < height.length - 1; i++) {
+        let temp = Math.min(leftMax[i], rightMax[i]) - height[i]
+        ans += temp > 0 ? temp : 0;
+    }
+    return ans
+};
+```
+
 **思路2（双指针，优化流程结算过程，减少空间复杂度）：**
 
 1. 用变量all表示可接的水量；
@@ -204,6 +247,26 @@ class TwoStackQueue {
 4. 从leftMax和rightMax中较小一侧的指针开始移动（假设leftMax较小，此时left指针所指向的下标左侧最大值已经确定，而右侧最大值不会小于rightMax，且leftMax < rightMax，所以此时下标left的瓶颈为leftMax）。比较left(right)和leftMax(rightMax)确定此时可接的水量，更新all、leftMax、left；
 5. 重复操作4，直到left > right;
 6. 时间复杂度O(n)，空间复杂度O(1)
+
+```ts
+function trap(height: number[]): number {
+    let ans = 0;
+    let left = 1, right = height.length - 2;
+    let leftMax = height[0], rightMax = height[height.length - 1];
+    while (left <= right) {
+        if (leftMax < rightMax) {
+            ans += (leftMax - height[left]) > 0 ? (leftMax - height[left]) : 0;
+            leftMax = leftMax > height[left] ? leftMax : height[left];
+            left++;
+        } else {
+            ans += (rightMax - height[right]) > 0 ? (rightMax - height[right]) : 0;
+            rightMax = rightMax > height[right] ? rightMax :   height[right];
+            right--;
+        }
+    }
+    return ans
+};
+```
 
 ### 题目六
 
