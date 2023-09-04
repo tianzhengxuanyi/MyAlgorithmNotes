@@ -171,3 +171,39 @@ twoStackQueue.push(3)
 twoStackQueue.push(4)
 twoStackQueue.push(5)
 console.log("twoStackQueue", twoStackQueue.pop())
+
+function MaxABSBetweenLeftAndRight(arr: number[]): number {
+    let maxABS = 0;
+    const leftMax: number[] = new Array(arr.length);
+    const rightMax: number[] = new Array(arr.length);
+    let max = arr[0];
+    for (let i = 0; i < arr.length; i++) {
+        max = max > arr[i] ? max : arr[i];
+        leftMax[i] = max;
+    }
+    max = arr[arr.length - 1]
+    for (let j = arr.length - 1; j >= 0; j--) {
+        rightMax[j] = max;
+        max = max > arr[j] ? max : arr[j];
+    }
+
+    for (let i = 0; i <= arr.length - 2; i++) {
+        maxABS = maxABS > Math.abs(leftMax[i] - rightMax[i]) ? maxABS : Math.abs(leftMax[i] - rightMax[i])
+    }
+
+    return maxABS;
+}
+
+function MaxABSBetweenLeftAndRight2(arr: number[]): number {
+    let max = -Infinity;
+    for (let i = 0; i < arr.length; i++) {
+        max = max > arr[i] ? max : arr[i];
+    }
+    let leftMaxABS = Math.abs(max - arr[arr.length -1]);
+    let rightMaxABS = Math.abs(max - arr[0]);
+
+    return leftMaxABS > rightMaxABS ? leftMaxABS : rightMaxABS;
+}
+
+console.log("MaxABSBetweenLeftAndRight", MaxABSBetweenLeftAndRight([4,2,5,8,3,2]))
+console.log("MaxABSBetweenLeftAndRight", MaxABSBetweenLeftAndRight2([4,2,5,8,3,2]))

@@ -279,6 +279,30 @@ function trap(height: number[]): number {
 2. 遍历数组，求出每个下标的|leftMax - rightMax|，返回最大值；
 3. 时间复杂度O(n)，空间复杂度O(n)
 
+```ts
+function MaxABSBetweenLeftAndRight(arr: number[]): number {
+    let maxABS = 0;
+    const leftMax: number[] = new Array(arr.length);
+    const rightMax: number[] = new Array(arr.length);
+    let max = arr[0];
+    for (let i = 0; i < arr.length; i++) {
+        max = max > arr[i] ? max : arr[i];
+        leftMax[i] = max;
+    }
+    max = arr[arr.length - 1]
+    for (let j = arr.length - 1; j >= 0; j--) {
+        rightMax[j] = max;
+        max = max > arr[j] ? max : arr[j];
+    }
+
+    for (let i = 0; i <= arr.length - 2; i++) {
+        maxABS = maxABS > Math.abs(leftMax[i] - rightMax[i]) ? maxABS : Math.abs(leftMax[i] - rightMax[i])
+    }
+
+    return maxABS;
+}
+```
+
 **思路2（根据标准优化）**
 
 1. 遍历数组得出全局最大值Max；
@@ -287,6 +311,19 @@ function trap(height: number[]): number {
    2. Max被划分到右边，与划分到左边一致，左边部分只包含0位置时返回值会最大；
 3. 判断上述两种情况返回最大值；
 4. 时间复杂度O(n)，空间复杂度O(1)
+
+```ts
+function MaxABSBetweenLeftAndRight2(arr: number[]): number {
+    let max = -Infinity;
+    for (let i = 0; i < arr.length; i++) {
+        max = max > arr[i] ? max : arr[i];
+    }
+    let leftMaxABS = Math.abs(max - arr[arr.length -1]);
+    let rightMaxABS = Math.abs(max - arr[0]);
+
+    return leftMaxABS > rightMaxABS ? leftMaxABS : rightMaxABS;
+}
+```
 
 
 ### 题目七（leetcode）
