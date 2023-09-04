@@ -369,19 +369,117 @@ function debounce2(fn, wait) {
 ### 4.8 [闭包内存泄露解决方法](https://segmentfault.com/a/1190000039132414)
 ### 4.9 [原型原型链](https://github.com/mqyqingfeng/blog/issues/2)
 ### 4.10[深浅拷贝](https://juejin.cn/post/6844903692756336653?searchId=202307241225510B846F6DBBC10697F0EB)
-### 4.11[常用设计模式](https://juejin.cn/post/6844904032826294286?searchId=202307241227092390BF5F7E87949E3F62#comment)
-      工厂模式：
-      使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
-      JQuery的$()：它根据传入参数的不同创建元素或者去寻找上下文中的元素，          创建成相应的jQuery对象
-      vue 的异步组件：
-      Vue.component('async-example', function (resolve, reject) {
-        setTimeout(function () {
-          // 向 `resolve` 回调传递组件定义
-          resolve({
-            template: '<div>I am async!</div>'
-          })
-        }, 1000)
-      })
+### 4.11 [常用设计模式](https://juejin.cn/post/6844904032826294286?searchId=202307241227092390BF5F7E87949E3F62#comment)
+#### 工厂模式：https://www.jianshu.com/p/38493eb4ffbd
+
+1. 简单工厂类：一个工厂方法，依据传入的参数，生成对应的产品对象（只有一个工厂，根据不同的订单生产对应的产品）；
+   - 具体类（具体产品，如苹果手机和华为手机）：Iphone、Huawei
+   - 抽象类（抽象产品，Iphone和Huawei都属于手机，都具有相同的属性）：phone
+   - 工厂类（具体工厂，用来生产Iphone和Huawei）：Factory
+    ```ts
+    // 抽象类
+    interface Phone {
+        type(): string;
+    }
+
+    // 具体类
+    class Iphone implements Phone {
+        type(): string {
+            return "Iphone";
+        }
+    }
+
+    class Huawei implements Phone {
+        type(): string {
+            return "Huawei";
+        }
+    }
+
+    // 工厂类
+    class Factory {
+        createPhone(type: string): Phone | null {
+            if (type === "Iphone") {
+                return new Iphone();
+            } else if (type === "Huawei") {
+                return new Huawei();
+            }
+
+            return null;
+        }
+    }
+
+    const factory = new Factory();
+    const iphone = factory.createPhone("Iphone");
+    const huawei = factory.createPhone("Huawei");
+    console.log(iphone?.type()); // Iphone
+    console.log(huawei?.type()); // Huawei
+    ```
+
+2. 工厂方法设计模型：将工厂提取成一个接口或抽象类，具体生产什么产品由子类决定（具有多个工厂，每个工厂生产对应的产品）；
+   - 抽象产品类（具体产品，如苹果手机和华为手机）：Iphone、Huawei
+   - 具体产品类（抽象产品，Iphone和Huawei都属于手机，都具有相同的属性）：phone
+   - 抽象工厂类（由具体工厂类抽象出来，生产什么样的产品由子类<具体工厂类>来决定）
+   - 具体工厂类（具体工厂，用来生产Iphone和Huawei）：IphoneFactory、HuaweiFactory
+  ```ts
+    // 抽象类
+    interface Phone {
+        type(): string;
+    }
+
+    // 具体类
+    class Iphone implements Phone {
+        type(): string {
+            return "Iphone";
+        }
+    }
+
+    class Huawei implements Phone {
+        type(): string {
+            return "Huawei";
+        }
+    }
+
+    // 抽象工厂类
+    interface Factory {
+        createPhone(): Phone;
+    }
+
+    // 具体工厂类
+    class IphoneFactory implements Factory {
+        createPhone(): Phone {
+            return new Iphone();
+        }
+    }
+
+    class HuaweiFactory implements Factory {
+        createPhone(): Phone {
+            return new Huawei();
+        }
+    }
+
+    const iphoneFactory = new IphoneFactory();
+    const huaweiFactory = new HuaweiFactory();
+
+    const iphone = iphoneFactory.createPhone();
+    const huawei = huaweiFactory.createPhone();
+
+    console.log(iphone.type()); // Iphone
+    console.log(huawei.type()); // Huawei
+  ```
+    
+    使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
+    JQuery的$()：它根据传入参数的不同创建元素或者去寻找上下文中的元素，          创建成相应的jQuery对象
+    vue 的异步组件：
+    Vue.component('async-example', function (resolve, reject) {
+      setTimeout(function () {
+        // 向 `resolve` 回调传递组件定义
+        resolve({
+          template: '<div>I am async!</div>'
+        })
+      }, 1000)
+    })
+
+
       单例模式：
       使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
       vuex 和 redux中的store
