@@ -420,97 +420,101 @@ function debounce2(fn, wait) {
    - 具体产品类（抽象产品，Iphone和Huawei都属于手机，都具有相同的属性）：phone
    - 抽象工厂类（由具体工厂类抽象出来，生产什么样的产品由子类<具体工厂类>来决定）
    - 具体工厂类（具体工厂，用来生产Iphone和Huawei）：IphoneFactory、HuaweiFactory
-  ```ts
-    // 抽象类
-    interface Phone {
-        type(): string;
-    }
+    ```ts
+      // 抽象类
+      interface Phone {
+          type(): string;
+      }
 
-    // 具体类
-    class Iphone implements Phone {
-        type(): string {
-            return "Iphone";
-        }
-    }
+      // 具体类
+      class Iphone implements Phone {
+          type(): string {
+              return "Iphone";
+          }
+      }
 
-    class Huawei implements Phone {
-        type(): string {
-            return "Huawei";
-        }
-    }
+      class Huawei implements Phone {
+          type(): string {
+              return "Huawei";
+          }
+      }
 
-    // 抽象工厂类
-    interface Factory {
-        createPhone(): Phone;
-    }
+      // 抽象工厂类
+      interface Factory {
+          createPhone(): Phone;
+      }
 
-    // 具体工厂类
-    class IphoneFactory implements Factory {
-        createPhone(): Phone {
-            return new Iphone();
-        }
-    }
+      // 具体工厂类
+      class IphoneFactory implements Factory {
+          createPhone(): Phone {
+              return new Iphone();
+          }
+      }
 
-    class HuaweiFactory implements Factory {
-        createPhone(): Phone {
-            return new Huawei();
-        }
-    }
+      class HuaweiFactory implements Factory {
+          createPhone(): Phone {
+              return new Huawei();
+          }
+      }
 
-    const iphoneFactory = new IphoneFactory();
-    const huaweiFactory = new HuaweiFactory();
+      const iphoneFactory = new IphoneFactory();
+      const huaweiFactory = new HuaweiFactory();
 
-    const iphone = iphoneFactory.createPhone();
-    const huawei = huaweiFactory.createPhone();
+      const iphone = iphoneFactory.createPhone();
+      const huawei = huaweiFactory.createPhone();
 
-    console.log(iphone.type()); // Iphone
-    console.log(huawei.type()); // Huawei
-  ```
-    
-    使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
-    JQuery的$()：它根据传入参数的不同创建元素或者去寻找上下文中的元素，          创建成相应的jQuery对象
-    vue 的异步组件：
-    Vue.component('async-example', function (resolve, reject) {
-      setTimeout(function () {
-        // 向 `resolve` 回调传递组件定义
-        resolve({
-          template: '<div>I am async!</div>'
-        })
-      }, 1000)
+      console.log(iphone.type()); // Iphone
+      console.log(huawei.type()); // Huawei
+    ```
+
+3. 抽象工厂设计模式：
+
+
+使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
+JQuery的$()：它根据传入参数的不同创建元素或者去寻找上下文中的元素，          创建成相应的jQuery对象
+vue 的异步组件：
+Vue.component('async-example', function (resolve, reject) {
+  setTimeout(function () {
+    // 向 `resolve` 回调传递组件定义
+    resolve({
+      template: '<div>I am async!</div>'
     })
+  }, 1000)
+})
 
 
-      单例模式：
-      使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
-      vuex 和 redux中的store
-      适配器模式：
-      将一个类的接口转化为另外一个接口，以满足用户需求，使类之间接口不兼容问题通过适配器得以解决。
-      封装ajax接口，
-      vue的computed：原有data 中的数据不满足当前的要求，通过计算属性的规则来适配成我们需要的格式，对原有数据并没有改变，只改变了原有数据的表现形式。
-      代理模式：
-      为一个对象提供一个代用品或占位符，以便控制对它的访问。
-      HTML元 素事件代理
-      外观模式：
-      为子系统的一组接口提供一个一致的界面，定义了一个高层接口，这个接口使子系统更加容易使用。
-      兼容浏览器事件绑定、 封装接口
-      观察者模式：
-      定义了一种一对多的关系，让多个观察者对象同时监听某一个主题对象，这个主题对象的状态发生变化时就会通知所有的观察者对象，使它们能够自动更新自己，当一个对象的改变需要同时改变其它对象，并且它不知道具体有多少对象需要改变的时候，就应该考虑使用观察者模式。
-      发布 & 订阅、dom事件、vue响应式
-      迭代器模式：
-      提供一种方法顺序一个聚合对象中各个元素，而又不暴露该对象的内部表示。
-      Array.prototype.forEach、jQuery中的$.each()、ES6 Iterator
-      策略模式：
-      定义一系列的算法，把它们一个个封装起来，并且使它们可以互相替换。
-      表单验证
-      模版方法模式：
-      模板方法模式由两部分结构组成，第一部分是抽象父类，第二部分是具体的实现子类。通常在抽象父类中封装了子类的算法框架，包括实现一些公共方法和封装子类中所有方法的执行顺序。子类通过继承这个抽象类，也继承了整个算法结构，并且可以选择重写父类的方法。
-      子类中公共的行为应被提取出来并集中到一个公共父类中的避免代码重复
-      职责链模式：
-      使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系，将这些对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理它为止。
-      JS 中的事件冒泡、作用域链、原型链
-      备忘录模式：
-      在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态。这样以后就可将该对象恢复到保存的状态。
-      分页控件、撤销组件、全局对象存储
+  单例模式：
+  使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
+  vuex 和 redux中的store
+  适配器模式：
+  将一个类的接口转化为另外一个接口，以满足用户需求，使类之间接口不兼容问题通过适配器得以解决。
+  封装ajax接口，
+  vue的computed：原有data 中的数据不满足当前的要求，通过计算属性的规则来适配成我们需要的格式，对原有数据并没有改变，只改变了原有数据的表现形式。
+  代理模式：
+  为一个对象提供一个代用品或占位符，以便控制对它的访问。
+  HTML元 素事件代理
+  外观模式：
+  为子系统的一组接口提供一个一致的界面，定义了一个高层接口，这个接口使子系统更加容易使用。
+  兼容浏览器事件绑定、 封装接口
+  观察者模式：
+  定义了一种一对多的关系，让多个观察者对象同时监听某一个主题对象，这个主题对象的状态发生变化时就会通知所有的观察者对象，使它们能够自动更新自己，当一个对象的改变需要同时改变其它对象，并且它不知道具体有多少对象需要改变的时候，就应该考虑使用观察者模式。
+  发布 & 订阅、dom事件、vue响应式
+  迭代器模式：
+  提供一种方法顺序一个聚合对象中各个元素，而又不暴露该对象的内部表示。
+  Array.prototype.forEach、jQuery中的$.each()、ES6 Iterator
+  策略模式：
+  定义一系列的算法，把它们一个个封装起来，并且使它们可以互相替换。
+  表单验证
+  模版方法模式：
+  模板方法模式由两部分结构组成，第一部分是抽象父类，第二部分是具体的实现子类。通常在抽象父类中封装了子类的算法框架，包括实现一些公共方法和封装子类中所有方法的执行顺序。子类通过继承这个抽象类，也继承了整个算法结构，并且可以选择重写父类的方法。
+  子类中公共的行为应被提取出来并集中到一个公共父类中的避免代码重复
+  职责链模式：
+  使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系，将这些对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理它为止。
+  JS 中的事件冒泡、作用域链、原型链
+  备忘录模式：
+  在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态。这样以后就可将该对象恢复到保存的状态。
+  分页控件、撤销组件、全局对象存储
+
 ## 5. ES6 https://es6.ruanyifeng.com/
 ## 6. ES7、ES8、ES9、ES10、ES11、ES12新特性 https://juejin.cn/post/724367723282789177
 ## 7. VUE3(生命周期、插槽、父子组件传值、v-modle、watch、路由)  https://cn.vuejs.org/   
