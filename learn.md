@@ -467,32 +467,189 @@ function debounce2(fn, wait) {
       console.log(huawei.type()); // Huawei
     ```
 
-3. 抽象工厂设计模式：
+3. 抽象工厂设计模式：抽象工厂和工厂方法的模式基本一样，区别在于，工厂方法是生产一个具体的产品，而抽象工厂可以用来生产一组相同，有相对关系的产品；
+   - 抽象产品类（具体产品，如苹果手机和华为手机）：Iphone、Huawei
+   - 具体产品类（抽象产品，Iphone和Huawei都属于手机，都具有相同的属性）：phone
+   - 抽象工厂类（由具体工厂类抽象出来，生产什么样的产品由子类<具体工厂类>来决定）
+   - 具体工厂类（具体工厂，用来生产Iphone和Huawei）：IphoneFactory、HuaweiFactory
 
+  ```ts
+  // 抽象产品类
+  interface Phone {
+    type(): string;
+  }
 
-使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
-JQuery的$()：它根据传入参数的不同创建元素或者去寻找上下文中的元素，          创建成相应的jQuery对象
-vue 的异步组件：
-Vue.component('async-example', function (resolve, reject) {
-  setTimeout(function () {
-    // 向 `resolve` 回调传递组件定义
-    resolve({
-      template: '<div>I am async!</div>'
-    })
-  }, 1000)
-})
+  // 具体产品类
+  class Iphone implements Phone {
+      type(): string {
+          return "Iphone";
+      }
+  }
 
+  class Huawei implements Phone {
+      type(): string {
+          return "Huawei";
+      }
+  }
 
-  单例模式：
-  使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
-  vuex 和 redux中的store
-  适配器模式：
-  将一个类的接口转化为另外一个接口，以满足用户需求，使类之间接口不兼容问题通过适配器得以解决。
-  封装ajax接口，
-  vue的computed：原有data 中的数据不满足当前的要求，通过计算属性的规则来适配成我们需要的格式，对原有数据并没有改变，只改变了原有数据的表现形式。
-  代理模式：
-  为一个对象提供一个代用品或占位符，以便控制对它的访问。
-  HTML元 素事件代理
+  // 抽象工厂类
+  interface PhoneFactory {
+    getCPU(): CPU;
+    getScreen(): PhoneScreen;
+    assemble(): Phone;
+  }
+
+  // 具体工厂类
+  interface CPU {
+    run(): void;
+  }
+
+  class CPU650 implements CPU {
+      run(): void {
+          console.log("CPU650")
+      }
+  }
+
+  class CPU850 implements CPU {
+      run(): void {
+          console.log("CPU850")
+      }
+  }
+
+  interface PhoneScreen {
+      size(): void;
+  }
+
+  class Screen5 implements PhoneScreen {
+      size(): void {
+          console.log("Screen5")
+      }
+  }
+  class Screen6 implements PhoneScreen {
+      size(): void {
+          console.log("Screen6")
+      }
+  }
+
+  class Iphone14 implements PhoneFactory {
+      getCPU() {
+          return new CPU650();
+      }
+      getScreen(): PhoneScreen {
+          return new Screen5();
+      }
+      assemble(): Phone {
+          return new Iphone();
+      }
+  }
+  class Iphone14Pro implements PhoneFactory {
+      getCPU() {
+          return new CPU850();
+      }
+      getScreen(): PhoneScreen {
+          return new Screen6();
+      }
+      assemble(): Phone {
+          return new Iphone();
+      }
+  }
+  class HuaweiMeta60 implements PhoneFactory {
+      getCPU() {
+          return new CPU850();
+      }
+      getScreen(): PhoneScreen {
+          return new Screen6();
+      }
+      assemble(): Phone {
+          return new Huawei();
+      }
+  }
+  ```
+
+4. 例子：
+  - JQuery的$()：它根据传入参数的不同创建元素或者去寻找上下文中的元素，创建成相应的jQuery对象。
+  ```js
+  class jQuery {
+      constructor(selector) {
+          super(selector)
+      }
+      add() {
+          
+      }
+    // 此处省略若干API
+  }
+
+  window.$ = function(selector) {
+      return new jQuery(selector)
+  }
+  ```
+
+#### 单例模式
+
+一个类只有一个实例，并提供一个访问它的全局访问点。
+
+```ts
+class Singleton {
+    name: string;
+    static instance: Singleton;
+    constructor(name: string) {
+        this.name = name
+    }
+    getName(): string {
+        return this.name;
+    }
+    static getInstance(name: string)  {
+        if (!Singleton.instance) {
+            Singleton.instance = new Singleton(name);
+        }
+
+        return Singleton.instance;
+    }
+}
+
+let instance_1 = Singleton.getInstance("instance_1");
+let instance_2 = Singleton.getInstance("instance_2");
+
+console.log(instance_1.getName()) // instance_1
+console.log(instance_2.getName()) // instance_1
+console.log(instance_1 === instance_1) // true
+```
+
+**例子：** 
+- vuex 和 redux中的store
+- 登录框、弹窗
+
+**单体模式的优点是：**
+
+- 可以用来划分命名空间，减少全局变量的数量。
+- 使用单体模式可以使代码组织的更为一致，使代码容易阅读和维护。
+- 可以被实例化，且实例化一次。
+
+#### 适配器模式
+将一个类的接口转化为另外一个接口，以满足用户需求，使类之间接口不兼容问题通过适配器得以解决。
+
+**场景**
+- 封装ajax接口
+- vue的computed：原有data中的数据不满足当前的要求，通过计算属性的规则来适配成我们需要的格式，对原有数据并没有改变，只改变了原有数据的表现形式。
+  
+#### 代理模式：
+为一个对象提供一个代用品或占位符，以便控制对它的访问。
+
+**场景**
+- HTML元 素事件代理
+```html
+<ul id="ul">
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+</ul>
+<script>
+  let ul = document.querySelector('#ul');
+  ul.addEventListener('click', event => {
+    console.log(event.target);
+  });
+</script>
+```
   外观模式：
   为子系统的一组接口提供一个一致的界面，定义了一个高层接口，这个接口使子系统更加容易使用。
   兼容浏览器事件绑定、 封装接口
