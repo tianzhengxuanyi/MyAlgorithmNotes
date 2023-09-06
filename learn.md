@@ -615,6 +615,28 @@ console.log(instance_2.getName()) // instance_1
 console.log(instance_1 === instance_1) // true
 ```
 
+**封装单例函数**
+
+```ts
+// 创建div
+const createWindow = function() {
+    let div = document.createElement("div");
+    div.innerHTML = "我是弹窗内容";
+    div.style.display = 'none';
+    document.body.appendChild(div);
+    return div;
+};
+
+const getInstance = function(fn) {
+    let instance;
+    return function() {
+        return instance || (instance = fn.call(this, arguments));
+    }
+}
+
+const createSingleDiv = getInstance(createWindow);
+```
+
 **例子：** 
 - vuex 和 redux中的store
 - 登录框、弹窗
