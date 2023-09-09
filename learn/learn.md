@@ -694,6 +694,79 @@ const createSingleDiv = getInstance(createWindow);
   在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态。这样以后就可将该对象恢复到保存的状态。
   分页控件、撤销组件、全局对象存储
 
+## 原型和闭包
+
+### 一、一切皆对象
+
+js中数据类型分为简单类型（number、string、boolean、undefined、BigInt、symbol）和引用类型（array、function、object、set、map...），而一切（引用类型）都是对象，对象是**属性的集合**。
+
+用typeof可以判断出简单类型值的类型，需要注意`typeof null`为`Object`，null表示为空的对象；
+
+而在引用类型使用typeof函数类型返回function，其余typeof会返回Object。
+
+引用类型一般使用instanceof来进行判断，`fn instanceof Object`返回的是true，表明函数也是一个对象。
+```js
+const arr =[1,2,3,4];
+const obj = {a:1,b:2};
+const fun = function() {};
+const set = new Set();
+const map = new Map();
+console.log(typeof arr); // object
+console.log(typeof obj); // object
+console.log(typeof fun); // function
+console.log(typeof set); // object
+console.log(typeof map); // object
+console.log(fun instanceof Object); // true
+```
+
+### 二、函数和对象的关系
+
+**对象都是通过函数创建**，对象可以通过以下三种最基础的方式进行创建：
+1. 构造函数
+2. new Object()
+3. 字面量
+
+但实质上都是都过构造函数构建的对象，`new Object()`中Object是一个内置的构造函数，而字面量构建则是一个语法糖
+
+```js
+var obj = {a: 1, b: 2}
+
+// 本质为
+var obj = new Object();
+obj.a = 1;
+obj.b = 2;
+```
+
+### 原型prototype
+
+函数是一个对象，所以函数也会包含属性。每个函数function都会包含一个类型为object的属性prototype（原型），而prototype有一个constructor属性指向其对应的函数。
+
+![](./image/prototype-1.png)
+
+### 隐式原型__proto__
+
+每个对象都有一个__proto__属性（隐式原型），指向创造该对象的函数的prototype。
+
+![](./image/prototype-2.png)
+
+Person.prototype也是一个对象，所以也有一个__proto__，指向创造这个对象的函数的prototype，既Object.prototype。
+
+而Object.prototype的__proto__的指向为null。
+
+![](./image/prototype-3.png)
+
+函数也是一种对象，所以函数也有__proto__，函数的创建函数为构造函数Function，所以构造函数Object的__proto__和Person的__proto__都指向Function.prototype。Function.prototype的__proto__则指向Object.prototype。
+
+![](./image/prototype-4.png)
+
+最后构造函数Function也是一个函数，那么一定是被Function创建，故Function的__proto__指向为自身的prototype（Function.prototype）。
+
+![](./image/prototype-5.png)
+
+### instanceof
+
+### 原型链和继承
+
 ## 5. ES6 https://es6.ruanyifeng.com/
 ## 6. ES7、ES8、ES9、ES10、ES11、ES12新特性 https://juejin.cn/post/724367723282789177
 ## 7. VUE3(生命周期、插槽、父子组件传值、v-modle、watch、路由)  https://cn.vuejs.org/   
