@@ -22,17 +22,9 @@ class Person {
 const man = new Person("Bob")
 console.log(man)
 
-/**
- * 
- * @param {number} n 正n边形
- * @param {number} a 中心点坐标x
- * @param {number} b 中心点坐标y
- * @param {number} r 外接圆的半径
- */
-function getPosition(n, a = 0, b = 0, r = 50) {
-    for (i = 0; i < n; i++) {
-        console.log(a + r * Math.cos(2 * Math.PI * i / n), b+ r * Math.sin(2 * Math.PI * i / n));
-      }
-}
 
-getPosition(4, 0, 0, 2 * Math.sqrt(2))
+console.log(obj.valueOf()); // {a: "a"}
+console.log(obj.hasOwnProperty("a")) // true
+console.log(obj.hasOwnProperty("hasOwnProperty")) // false
+console.log(obj.hasOwnProperty === Object.prototype.hasOwnProperty) // true
+console.log(obj.hasOwnProperty("valueOf")) // false

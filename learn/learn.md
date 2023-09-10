@@ -737,13 +737,13 @@ obj.a = 1;
 obj.b = 2;
 ```
 
-### 原型prototype
+### 三、原型prototype
 
 函数是一个对象，所以函数也会包含属性。每个函数function都会包含一个类型为object的属性prototype（原型），而prototype有一个constructor属性指向其对应的函数。
 
 ![](./image/prototype-1.png)
 
-### 隐式原型__proto__
+### 四、隐式原型__proto__
 
 每个对象都有一个__proto__属性（隐式原型），指向创造该对象的函数的prototype。
 
@@ -763,9 +763,46 @@ Person.prototype也是一个对象，所以也有一个__proto__，指向创造�
 
 ![](./image/prototype-5.png)
 
-### instanceof
+### 五、instanceof
 
-### 原型链和继承
+用typeof判断引用类型只会返回object/function，无法知道到底是对象、数组还是new Number()。所以需要用instanceof来进行判断。
+
+```js
+console.log(P1 instanceof Person) // true
+console.log(P1 instanceof Object) // true
+```
+
+Instanceof运算符的第一个变量是一个对象，暂时称为A；第二个变量一般是一个函数，暂时称为B。
+
+Instanceof的判断规则是：沿着A的__proto__这条链路来找，如果在链路中找到B.prototype，那么就返回true。如果找到终点还未找到，则返回false。
+
+```js
+console.log(Function instanceof Object) // true
+console.log(Object instanceof Function) // true
+console.log(Function instanceof Function) // true
+```
+
+### 六、原型链
+
+访问一个对象的属性时，先在自身属性中查找，如果没有，再沿着__proto__这条链向上找，这就是原型链。
+
+```js
+let obj = {a: "a"};
+console.log(obj.valueOf()); // {a: "a"}
+```
+
+如上例，访问obj.valueof时，obj的自身属性中没有valueof，于是沿着__proto__找到了Object.prototype.valueof。
+
+Object.prototype上有hasOwnProperty可以判断一个属性到底时自身的还是从原型链中到的。
+
+```js
+console.log(obj.hasOwnProperty("a")) // true
+console.log(obj.hasOwnProperty("hasOwnProperty")) // false  obj上的hasOwnProperty是来自原型链上Object.prototype.hasOwnProperty
+console.log(obj.hasOwnProperty === Object.prototype.hasOwnProperty) // true
+console.log(obj.hasOwnProperty("valueOf")) // false
+```
+
+### 继承
 
 ## 5. ES6 https://es6.ruanyifeng.com/
 ## 6. ES7、ES8、ES9、ES10、ES11、ES12新特性 https://juejin.cn/post/724367723282789177
