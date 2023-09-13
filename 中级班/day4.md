@@ -347,19 +347,76 @@ a="2ab1"，b="ab12"，返回true。
 1. 如果a和b长度不一致返回false；
 2. 将a变成两倍的长度（a+a），判断b是否是2a的子串（KMP算法）。如果是a和b互为旋转词。例如a="cdab"，2a="cdabcdab"，b="abcd"，其实2a中任意长度为a.length的子串都互为旋转词；
 
+```js
+function isRotation(a, b) {
+    if (a.length !== b.length) {
+        return false;
+    }
+    a = a + a;
+    return isSubstring(a, b);
+}
+
+// 判断是否为字串
+function isSubstring(a, b) {
+    if (a.length < b.length) {
+        return false;
+    }
+    const str1Arr  = a.split("");
+    const str2Arr  = b.split("");
+
+    const next = getNextArr(b);
+
+    let i1 = 0, i2 = 0;
+    while (i1 < str1Arr.length && i2 < str2Arr.length) {
+        if (str1Arr[i1] === str2Arr[i2]) {
+            i1++;
+            i2++
+        } else if (i2 === 0) {
+            i1++;
+        } else {
+            i2 = next[i2];
+        }
+    }
+    return i2 === str2Arr.length;
+}
+
+// 前缀和后缀最长的相等长度
+function getNextArr(str) {
+    const arr = str.split("");
+    const next = new Array(arr.length);
+    next[0] = -1;
+    next[1] = 0;
+
+    let currIndex = 2;
+    let prev = 0;
+
+    while (currIndex < arr.length) {
+        if (arr[currIndex] === arr[prev]) {
+            next[currIndex++] = ++prev;
+        } else if (prev !== 0) {
+            prev = next[prev];
+        } else {
+            next[currIndex++] = 0;
+        }
+    }
+
+    return next;
+}
+```
+
 ### 题目八
 
 给定数组arr、N、a、b
 
-arr: arr中每一项代表一台咖啡机冲出一杯咖啡的时间，店里面一共有arr.length台咖啡机，咖啡机只能串行不能并行。
+数组arr：表示几个咖啡机，这几个咖啡机生产一杯咖啡所需要的时间就是数组中的值，例如arr=[2,3,7]就表示第一台咖啡机生产一杯咖啡需要2单位时间，第二台需要3单位时间，第三台需要7单位时间。
 
-N：N代表有N个顾客，每人需要一杯咖啡，假设顾客喝咖啡的时间为0。
+int N：表示有N个人需要用咖啡机制作咖啡，每人一杯，同时，假设制作完咖啡后，喝咖啡时间为0，一口闷。
 
-a：店里只有一台洗杯机，洗一个杯子需要的时间为a；
+int a：表示用洗碗机洗一个咖啡杯需要的时间，串行运行。
 
-b：如果不洗杯子过了时间b后杯子也自动挥发变成干净的；
+int b：表示咖啡杯也可以不洗，自然晾干的时间，咖啡杯要么洗，要么晾干。
 
-求从所有人开始排咖啡到最后一个杯子干净需要多长时间
+现在，请你求出这N个人从开始用咖啡杯制作咖啡到杯子洗好或者晾干的最少时间？
 
 **思路：**
 
@@ -395,3 +452,7 @@ b：如果不洗杯子过了时间b后杯子也自动挥发变成干净的；
    1. 如果a == 0，所有的2因子可以自己满足条件，c >= 0;
    2. 如果a == 1，满足条件需要最少4因子数的排列方式为：2因子 。。。2因子 4因子 奇数 4因子。。。，c >= 1;
    3. 如果a > 1，满足条件需要最少4因子数的排列方式为：2因子 4因子 奇数 4因子 奇数。。。 c >= a 
+
+```js
+
+```

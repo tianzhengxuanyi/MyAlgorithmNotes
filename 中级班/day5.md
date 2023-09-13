@@ -8,6 +8,23 @@
 
 时间复杂度O(n)
 
+```js
+function fib(n) {
+    if (n < 2) {
+        return n;
+    }
+
+    let a= 0, b = 0, dp = 1;
+    for (let i = 2; i <= n; i++) {
+        a = b;
+        b = dp;
+        dp = a + b;
+    }
+
+    return dp;
+}
+```
+
 **思路2（简化）：**
 
 时间复杂度O(logn)
@@ -61,6 +78,58 @@ $|F(n), F(n-1)| = |F(2), F(1)| * \left[\begin{matrix}
 循环n的二级制位次，每次循环t = t * t，如果n的当前位上为1则res *= t；
 
 如上述列子n = 69，二进制位1000101，每次循环时t分别为$m$、$m^2$、$m^4$、$m^8$、$m^{16}$、$m^{32}$、$m^{64}$，n在第1、3、7位时位1，则$res=m*m^4*m^{64}=m^{69}$;
+
+```ts
+type matrix = number[][];
+function muliMatrix(m1: matrix, m2: matrix): matrix {
+    if (m1[0].length !== m2.length) {
+        throw new Error("长度不匹配");
+    }
+
+    const m = m1.length;
+    const p = m2.length;
+    const n = m2[0].length;
+
+    const mat = new Array(m).fill(0).map(arr => new Array(n).fill(0));
+    for (let i = 0; i < m; i++) {
+        for (let j = 0; j < n; j++) {
+            for (let k = 0; k < p; k++) {
+                mat[i][j] += m1[i][k] * m2[k][j];
+            }
+        }
+    }
+
+    return mat;
+}
+function matrixPower(mat: matrix, n: number): matrix {
+    const m = mat.length;
+    let res = new Array(m).fill(0).map((arr, index) =>{
+        let temp =  new Array(m).fill(0)
+        temp[index] = 1;
+        return temp;
+    });
+
+    while (n > 0) {
+        if (n & 1) {
+            res = muliMatrix(res, mat);
+        }
+        mat = muliMatrix(mat, mat);
+        n = n  >> 1;
+    }
+
+    return res;
+}
+function fib(n: number): number {
+    if (n < 2) {
+        return n
+    }
+
+    const mat = [[1,1],[1,0]];
+    const matPower = matrixPower(mat, n -2);
+    const resultMat = muliMatrix([[1,1]],matPower);
+    return resultMat[0][0];
+}
+```
 
 #### 推广到一般情况
 
