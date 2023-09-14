@@ -71,3 +71,58 @@ console.log("matrixPower", matrixPower(m1,3))
 
 console.log("fib", fib(30))
 console.log("fib", fib2(30))
+
+function genStr(n: number): string[] {
+    if (n === 1) {
+        return ["1", "0"]
+    }
+    const set: Set<string> = new Set();
+    const nextRes = genStr(n-1);
+    for (let str of nextRes) {
+        set.add('1' + str);
+        set.add('0' + str);
+        set.add(str + '1');
+        set.add(str + '0');
+    }
+    const res = Array.from(set)
+    return res;
+}
+
+function standardStrNum(n: number): number {
+    if (n < 2) {
+        return n;
+    }
+    let res = 0;
+    const allStr = genStr(n);
+
+    for (let str of allStr) {
+        let prev = str[0];
+        let falg = true;
+        for (let s of str) {
+            if (s === "0" && prev !== "1") {
+                falg = false;
+                break
+            }
+            prev = s;
+        }
+        res = falg ? res + 1 : res;
+    }
+
+    return res;
+}
+
+console.log("genStr", genStr(3))
+for (let i = 0; i < 20; i++) {
+    console.log("standardStrNum", standardStrNum(i))
+}
+
+
+function compriseWays(arr: number[], w: number): number {
+    // dp[i][j]表示用0~i的食物刚好装满j的背包的方法数
+    const dp = new Array(arr.length).fill(0).map(arr => new Array(w+1).fill(0));
+    for (let i = 0; i < arr.length; i++) {
+        
+    }
+    
+    return dp[arr.length-1][w];
+}

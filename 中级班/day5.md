@@ -176,6 +176,47 @@ $|F(n), F(n-1), F(n-2), F(n-3), F(n-4), ... ,F(n-m)| = |F(m), F(m-1),...F(1)|*ma
 3. 时间复杂度O($2^n*n$);
 4. 打表可发现符合斐波那契数列的规律；
 
+```ts
+function genStr(n: number): string[] {
+    if (n === 1) {
+        return ["1", "0"]
+    }
+    const set: Set<string> = new Set();
+    const nextRes = genStr(n-1);
+    for (let str of nextRes) {
+        set.add('1' + str);
+        set.add('0' + str);
+        set.add(str + '1');
+        set.add(str + '0');
+    }
+    const res = Array.from(set)
+    return res;
+}
+
+function standardStrNum(n: number): number {
+    if (n < 2) {
+        return n;
+    }
+    let res = 0;
+    const allStr = genStr(n);
+
+    for (let str of allStr) {
+        let prev = str[0];
+        let falg = true;
+        for (let s of str) {
+            if (s === "0" && prev !== "1") {
+                falg = false;
+                break
+            }
+            prev = s;
+        }
+        res = falg ? res + 1 : res;
+    }
+
+    return res;
+}
+```
+
 **思路2（递归）：**
 
 1. 如果是达标字符串，一定是以1为开头。所以长度为n的字符串如果为达标字符串一定为`1xxx...`，可能的达标字符串为F(n)（规定F(n)为以1开头、长度为n的达标字符串的个数）；
