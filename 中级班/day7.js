@@ -20,3 +20,34 @@ function lightNums(light) {
     return process(arr, 0);
 }
 console.log("lightNums", lightNums("...x....x.."))
+
+function getPosArr(pre, inArr) {
+    const inMap = new Map();
+    inArr.forEach((node, index) => {
+        inMap.set(node, index)
+    })
+    const pos = new Array(pre.length);
+    const process = (preStart, preEnd, inStart, inEnd, posStart, posEnd) => {
+        if (posStart <= posEnd && posStart >= 0) {
+            pos[posEnd] = pre[preStart];
+        }
+        let inMidIndex = inMap.get(pre[preStart]);
+        let inLeftStart = inStart, inLeftEnd = inMidIndex - 1, inRightStart = inMidIndex + 1, inRightEnd = inEnd;
+        let preLeftStart = preStart + 1, preLeftEnd = preLeftStart + inLeftEnd - inLeftStart, preRightStart = preLeftEnd + 1, preRightEnd = preEnd;
+        let posLeftStart = posStart, posLeftEnd = posStart + preLeftEnd - preLeftStart, posRightStart = posLeftEnd + 1, posRightEnd = posEnd - 1;
+  
+        if (preLeftStart <= preLeftEnd) {
+            process(preLeftStart, preLeftEnd, inLeftStart, inLeftEnd, posLeftStart, posLeftEnd)
+        }
+        if (preRightStart <= preRightEnd) {
+            process(preRightStart, preRightEnd, inRightStart, inRightEnd, posRightStart, posRightEnd)
+        }
+    }
+
+    process(0, pre.length-1, 0, inArr.length-1, 0, pos.length-1)
+    return pos;
+}
+
+const pre = [1,2,4,5,3,6,7];
+const inArr = [4,2,5,1,6,3,7]
+console.log("getPosArr", getPosArr(pre, inArr))

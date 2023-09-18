@@ -64,6 +64,35 @@ int[] in = { 4, 2, 5, 1, 6, 3, 7 };
 1. 定义递归process(pre, in, after, peri, perj, ini, inj, afteri, afterj)，其中pre、in、after为先序、中序、后序数组，peri, perj, ini, inj, afteri, afterj为数组中的范围。含义为用pre数组prei~prej范围和in数组ini~inj范围生成后序遍历after数组afteri~afterj范围，其中所有数组的范围等长；
 2. pre的一个元素为after的最后一个元素，同时也是二叉树的头；根据头节点在in中的位置推出左树和右树的长度，调用process用pre和in的左树（右树）得出after的左树（右树）；
 
+```js
+function getPosArr(pre, inArr) {
+    const inMap = new Map();
+    inArr.forEach((node, index) => {
+        inMap.set(node, index)
+    })
+    const pos = new Array(pre.length);
+    const process = (preStart, preEnd, inStart, inEnd, posStart, posEnd) => {
+        if (posStart <= posEnd && posStart >= 0) {
+            pos[posEnd] = pre[preStart];
+        }
+        let inMidIndex = inMap.get(pre[preStart]);
+        let inLeftStart = inStart, inLeftEnd = inMidIndex - 1, inRightStart = inMidIndex + 1, inRightEnd = inEnd;
+        let preLeftStart = preStart + 1, preLeftEnd = preLeftStart + inLeftEnd - inLeftStart, preRightStart = preLeftEnd + 1, preRightEnd = preEnd;
+        let posLeftStart = posStart, posLeftEnd = posStart + preLeftEnd - preLeftStart, posRightStart = posLeftEnd + 1, posRightEnd = posEnd - 1;
+  
+        if (preLeftStart <= preLeftEnd) {
+            process(preLeftStart, preLeftEnd, inLeftStart, inLeftEnd, posLeftStart, posLeftEnd)
+        }
+        if (preRightStart <= preRightEnd) {
+            process(preRightStart, preRightEnd, inRightStart, inRightEnd, posRightStart, posRightEnd)
+        }
+    }
+
+    process(0, pre.length-1, 0, inArr.length-1, 0, pos.length-1)
+    return pos;
+}
+```
+
 ### 题目三
 
 把一个数字用中文表示出来。数字范围为 [0, 99999]。
