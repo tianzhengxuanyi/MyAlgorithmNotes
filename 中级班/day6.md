@@ -36,7 +36,7 @@ d
 双向链表节点结构和二叉树节点结构是一样的，如果你把last认为是left，next认为是right的话。
 
 给定一个搜索二叉树的头节点head，请转化成一条有序的双向链表，并返回链
-表的头节点。
+表的头节点。要求不能创建任何新的节点，只能调整树中节点指针的指向。
 
 ```ts
 interface TreeNode {
@@ -54,6 +54,38 @@ interface LinkList {
 
 1. 以X为头节点的二叉树，对左子树和右子树分别调用process，返回的Info包括左子树和右子树组织好的双向链表的头节点和尾节点（leftLinkHead、leftLinkTail、rightLinkHead、rightLinkTail），将X与leftLinkTail和rightLinkHead链接，返回leftLinkHead和rightLinkTail（需要注意边界条件，判断leftLinkHead、leftLinkTail、rightLinkHead、rightLinkTail是否为空）；
 
+```js
+var treeToDoublyList = function(root) {
+    if (root === null) {
+        return null;
+    }
+    function Info(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+    function process(root) {
+        if (root === null) {
+            return new Info(null, null);
+        }
+        let leftInfo = process(root.left);
+        let rightInfo = process(root.right);
+        if (leftInfo.end) {
+            leftInfo.end.right = root;
+            root.left = leftInfo.end;
+        }
+        if (rightInfo.start) {
+            rightInfo.start.left = root;
+            root.right = rightInfo.start
+        }
+
+        return new Info(leftInfo.start ? leftInfo.start : root, rightInfo.end ? rightInfo.end : root)
+    }
+    let result = process(root)
+    result.start.left = result.end;
+    result.end.right = result.start;
+    return result.start;
+};
+```
 ### 题目3
 
 找到一棵二叉树中，最大的搜索二叉子树，返回最大搜索二叉子树的节点个数（扩展：返回最大搜索二叉子树的头节点）。
@@ -75,6 +107,55 @@ interface LinkList {
     }
     ```
 
+```ts
+ class Node {
+        val: number;
+        left: Node | null;
+        right: Node | null;
+        constructor(val: number, left?: Node, right?: Node) {
+            this.val = val;
+            this.left = left ? left : null;
+            this.right = right ? right : null;
+        }
+    }
+
+    class MaxBSTNumInfo {
+        max: number;
+        min: number;
+        maxBSTNum: number;
+        maxBSTHead: Node | null;
+        constructor(max: number, min: number, maxBSTNum: number, maxBSTHead: Node | null) {
+            this.max = max;
+            this.min = min;
+            this.maxBSTNum = maxBSTNum;
+            this.maxBSTHead = maxBSTHead;
+        }
+    }
+    function getMaxBSTNum(head: Node): number {
+        if (head === null) {
+            return 0;
+        }
+        function process(head: Node | null): MaxBSTNumInfo {
+            if (head === null) {
+                return new MaxBSTNumInfo(-Infinity, Infinity, 0, null)
+            }
+            const leftInfo = process(head.left);
+            const rightInfo = process(head.right);
+            let min = Math.min(head.val, Math.min(leftInfo.min, rightInfo.min));
+            let max = Math.max(head.val, Math.max(leftInfo.max, rightInfo.max));
+            let maxBSTNum = Math.max(leftInfo.maxBSTNum, rightInfo.maxBSTNum);
+            let maxBSTHead = leftInfo.maxBSTNum > rightInfo.maxBSTNum ? leftInfo.maxBSTHead : rightInfo.maxBSTHead;
+
+            if (leftInfo.maxBSTHead === head.left && rightInfo.maxBSTHead === head.right && head.val > leftInfo.max && head.val < rightInfo.min) {
+                maxBSTNum = leftInfo.maxBSTNum + 1 + rightInfo.maxBSTNum;
+                maxBSTHead = head;
+            }
+            return new MaxBSTNumInfo(max, min, maxBSTNum,maxBSTHead)
+        }
+
+        return process(head).maxBSTNum;
+    }
+```
 
 ### 题目4 子数组的最大连续之和（假设答案法）
 
@@ -102,11 +183,24 @@ interface LinkList {
    1. 任意范围`i~m(m<j)`的累加和大于等于0；如果累加和小于0则分数累加和最大的区域中肯定不包括`i~m`，如果包含这会使整体累加和下降；
    2. 任意范围`n~i-1(n<i-1)`的累加和小于0；如果`n~i-1`的累加和大于0，则最长的区域范围就不是`i~j`而是`n~j`;
    
-   所以当遍历数组时累加到i-1时cur小于0，被重置为0，所以当`i~j`中累加时可以返回正确的累加和，且`i~j`的累加和最大，所以流程时正确的；
+   所以当遍历数组时累加到i-1时cur小于0，被重置为0，所以当`i~j`中累加时可以返回正确的累加和，且`i~j`的累加和最大，所以流程正确；
 
 
 ![](../image/中级班day6-1.png)
 
+```ts
+    function maxSum(arr: number[]): number {
+        let max = -Infinity;
+        let cur = 0;
+        for (let score of arr) {
+            cur += score;
+            max = Math.max(max, cur);
+            cur = Math.max(cur, 0);
+        }
+
+        return max;
+    }
+```
 
 ### 题目5 （子数组最大累加和+压缩数组）
 
@@ -129,3 +223,26 @@ interface LinkList {
    2. 如果i不等于j；将i~j行对应列累加，压缩成一行，求子数组最大累加和；
 
 ![](../image/中级班day6-2.png)
+
+
+```ts
+    function getSubMatrixMaxSum(matrix: number[][]): number {
+        let max = -Infinity;
+        let cur = 0;
+
+        for (let i = 0; i < matrix.length; i++) {
+            let arr = new Array(matrix.length).fill(0);
+            for (let j = i; j < matrix.length; j++) {
+                cur = 0;
+                for (let index = 0; index < arr.length; index++) {
+                    arr[index] += matrix[j][index];
+                    cur += arr[index];
+                    max =  Math.max(max, cur);
+                    cur = Math.max(0, cur)
+                }
+            }
+        }
+
+        return max;
+    }
+```

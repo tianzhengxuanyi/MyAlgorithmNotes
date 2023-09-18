@@ -261,22 +261,43 @@ function standardStrNum(n: number): number {
 **思路（动态规划）：**
 
 1. 假设背包容量为N，将问题转换为背包容量为1、2、3、...、N的时候背包刚好装下背包容量的零食所有的方法数总和；
-2. 当背包容量为m是，零食刚好装满的方法数（动态规划-找零钱问题）：
+2. 当背包容量为m时，装零食的方法数（动态规划-找零钱问题）：
    1. 零食数组arr，dp[i][j]表示在arr中用0~i的零食组成重量j的方法数，每个零食可以选择要和不要；
    2. dp[i][j] = dp[i-1][j]（第i个零食不要） + dp[i-1][j-arr[i]]（第i个零食要）
-
+```js
+function compriseWays(arr: number[], w: number): number {
+    if (arr == null || arr.length == 0 || w < 0) {
+        return 0;
+    }
+    // dp[i][j]表示用0~i的食物刚好装满j的背包的方法数
+    const dp:number[][] = new Array(arr.length).fill(0).map(arr => new Array(w+1).fill(0));;
+    for (let i = 0; i < arr.length; i++) {
+        dp[i][0]  = 1;
+    }
+    for (let j = 0; j <= w; j++) {
+        dp[0][j] = arr[0] <= j ? 2 : 1;
+    }
+    
+    for (let i = 1; i < arr.length; i++) {
+        for (let j = 1; j <= w; j++) {
+            dp[i][j] = dp[i-1][j] + (j-arr[i] >= 0 ? dp[i-1][j-arr[i]] : 0);
+        }
+    }
+    return dp[arr.length-1][w];
+}
+```
 
 ### 题目5
 
 为了找到自己满意的工作，牛牛收集了每种工作的难度和报酬。牛牛选工作的标准是在难度不超过自身能力值的情况下，牛牛选择报酬最高的工作。在牛牛选定了自己的工作后，牛牛的小伙伴们来找牛牛帮忙选工作，牛牛依然使用自己的标准来帮助小伙伴们。牛牛的小伙伴太多了，于是他只好把这个任务交给了你。
-```java
+```ts
 class Job {
-public int money;// 该工作的报酬
-public int hard; // 该工作的难度
-public Job(int money, int hard) {
-this.money = money;
-this.hard = hard;
-}
+    money: number; // 该工作的报酬
+    hard: number; // 该工作的难度
+    constructor(money: number, hard: number) {
+        this.money = money;
+        this.hard = hard;
+    }
 }
 ```
 给定一个Job类型的数组jobarr，表示所有的工作。给定一个int类型的数组arr，表示所有小伙伴的能力。
@@ -288,3 +309,13 @@ this.hard = hard;
 1. 将jobarr以难度从小到大排序，如果相同难度以报酬从大到小排序；
 2. 相同难度只保留报酬最多的job，如果难度递增，报酬减少的job也要删除。
 3. 这样只要选择小于能力的最大难度的工作为最合适的；
+
+```js
+function ChooseWork(job: Job[], ability: number): Job {
+    const ableJob = job.filter(item => item.hard <= ability);
+    ableJob.sort((a, b) => a.money - b.money);
+    return ableJob[ableJob.length - 1];
+}
+```
+
+javascript实现有序表？

@@ -112,17 +112,50 @@ function standardStrNum(n: number): number {
 }
 
 console.log("genStr", genStr(3))
-for (let i = 0; i < 20; i++) {
-    console.log("standardStrNum", standardStrNum(i))
-}
+// for (let i = 0; i < 20; i++) {
+//     console.log("standardStrNum", standardStrNum(i))
+// }
 
 
-function compriseWays(arr: number[], w: number): number {
+function compriseWays1(arr: number[], w: number): number {
+    if (arr == null || arr.length == 0 || w < 0) {
+        return 0;
+    }
     // dp[i][j]表示用0~i的食物刚好装满j的背包的方法数
-    const dp = new Array(arr.length).fill(0).map(arr => new Array(w+1).fill(0));
+    // const dp:number[][] = new Array(arr.length).fill(0).map(arr => (new Array(w+1) as number[]).fill(0));
+    const dp:number[][] = new Array(arr.length).fill(0).map(arr => new Array(w+1).fill(0));;
     for (let i = 0; i < arr.length; i++) {
-        
+        dp[i][0]  = 1;
+    }
+    for (let j = 0; j <= w; j++) {
+        dp[0][j] = arr[0] <= j ? 2 : 1;
     }
     
+    for (let i = 1; i < arr.length; i++) {
+        for (let j = 1; j <= w; j++) {
+            dp[i][j] = dp[i-1][j] + (j-arr[i] >= 0 ? dp[i-1][j-arr[i]] : 0);
+        }
+    }
+    console.log(dp)
     return dp[arr.length-1][w];
 }
+
+console.log("compriseWays", compriseWays1([4,3,2,9], 8))
+
+class Job {
+    money: number; // 该工作的报酬
+    hard: number; // 该工作的难度
+    constructor(hard: number, money: number) {
+        this.money = money;
+        this.hard = hard;
+    }
+}
+
+function ChooseWork(job: Job[], ability: number): Job {
+    const ableJob = job.filter(item => item.hard <= ability);
+    ableJob.sort((a, b) => a.money - b.money);
+    return ableJob[ableJob.length - 1];
+}
+const jobArr = [new Job(1, 100), new Job(10, 1000), new Job(2, 1001), new Job(3, 500), new Job(20, 20000)]
+console.log("ChooseWork", ChooseWork(jobArr, 5))
+console.log("ChooseWork", ChooseWork(jobArr, 50))

@@ -22,6 +22,29 @@
    1. 如果i位置为“X”，则i++；
    2. 如果i位置不是“X”，则路灯加一。如果i+1为“X”，则下次从i+2开始；如果i+1不是“X”，则下次从i+3开始；如果越界就break；
 
+```js
+function lightNums(light) {
+    const arr = light.split("");
+    // 从i开始后续最少需要多少盏灯，0~i-1不会对i位置的安排产生印象；
+    function process(arr, i) {
+        if (i >= arr.length) {
+            return 0;
+        }
+        let res = 0;
+        if (arr[i] === "x") {
+            res = process(arr, i+1);
+        } else {
+            if (arr[i+1] === ".") {
+                res = process(arr, i+3) + 1;
+            } else {
+                res = process(arr, i+2) + 1;
+            }
+        }
+        return res;
+    }
+    return process(arr, 0);
+}
+```
 
 ### 题目2
 
@@ -33,7 +56,7 @@ int[] pre = { 1, 2, 4, 5, 3, 6, 7 };
 
 int[] in = { 4, 2, 5, 1, 6, 3, 7 };
 
-返回：{4,5,2,6,7,3,1}
+返回：{ 4, 5, 2, 6, 7, 3, 1}
 
 
 **思路：**
