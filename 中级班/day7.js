@@ -58,9 +58,14 @@ function getCTNodeNum(head) {
         return 0;
     }
     let h = getCTHeight(head);
-    let num = 0;
+    if (getCTHeight(head.right) + 1 === h) {
+        // 左子树为满二叉树，高度为h-1
+        return num = getCTNodeNum(head.right) + Math.pow(2, h - 1)
 
-    return num;
+    } else {
+        // 右子树为满二叉树，高度为h-2
+        return num = getCTNodeNum(head.left) + Math.pow(2, h-2);
+    }
 }
 
 function getCTHeight(head) {
@@ -89,3 +94,4 @@ head.left.right = new Node(5);
 head.right.left = new Node(6);
 
 console.log("getCTHeight", getCTHeight(head));
+console.log("getCTNodeNum", getCTNodeNum(head));

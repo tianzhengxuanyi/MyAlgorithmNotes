@@ -127,6 +127,34 @@ function getPosArr(pre, inArr) {
 3. 如果2中左子树（右子树）为满二叉树，则递归计算以右子树（左子树）为头的完全二叉树的节点个数；
 4. 时间复杂度O((logn)^2)
 
+```js
+function getCTNodeNum(head) {
+    if (head === null) {
+        return 0;
+    }
+    let h = getCTHeight(head);
+    if (getCTHeight(head.right) + 1 === h) {
+        // 左子树为满二叉树，高度为h-1
+        return num = getCTNodeNum(head.right) + Math.pow(2, h - 1)
+
+    } else {
+        // 右子树为满二叉树，高度为h-2
+        return num = getCTNodeNum(head.left) + Math.pow(2, h-2);
+    }
+}
+
+function getCTHeight(head) {
+    if (head === null) {
+        return 0;
+    }
+    let height = 1;
+    while (head.left) {
+        height++;
+        head = head.left;
+    }
+    return height;
+}
+```
 
 ### 题目五
 
