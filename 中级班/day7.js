@@ -51,3 +51,41 @@ function getPosArr(pre, inArr) {
 const pre = [1,2,4,5,3,6,7];
 const inArr = [4,2,5,1,6,3,7]
 console.log("getPosArr", getPosArr(pre, inArr))
+
+
+function getCTNodeNum(head) {
+    if (head === null) {
+        return 0;
+    }
+    let h = getCTHeight(head);
+    let num = 0;
+
+    return num;
+}
+
+function getCTHeight(head) {
+    if (head === null) {
+        return 0;
+    }
+    let height = 1;
+    while (head.left) {
+        height++;
+        head = head.left;
+    }
+    return height;
+}
+
+function Node(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+}
+
+const head = new Node(1);
+head.left = new Node(2);
+head.right = new Node(3);
+head.left.left = new Node(4);
+head.left.right = new Node(5);
+head.right.left = new Node(6);
+
+console.log("getCTHeight", getCTHeight(head));
