@@ -50,7 +50,4 @@ function getPosArr(pre, inArr) {
 
 const pre = [1,2,4,5,3,6,7];
 const inArr = [4,2,5,1,6,3,7]
-"master"
 console.log("getPosArr", getPosArr(pre, inArr))
-
-"master"
