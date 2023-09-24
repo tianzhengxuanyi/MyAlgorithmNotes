@@ -768,8 +768,10 @@ Person.prototype也是一个对象，所以也有一个__proto__，指向创造�
 用typeof判断引用类型只会返回object/function，无法知道到底是对象、数组还是new Number()。所以需要用instanceof来进行判断。
 
 ```js
+
 console.log(P1 instanceof Person) // true
 console.log(P1 instanceof Object) // true
+
 ```
 
 Instanceof运算符的第一个变量是一个对象，暂时称为A；第二个变量一般是一个函数，暂时称为B。
@@ -777,9 +779,11 @@ Instanceof运算符的第一个变量是一个对象，暂时称为A；第二个
 Instanceof的判断规则是：沿着A的__proto__这条链路来找，如果在链路中找到B.prototype，那么就返回true。如果找到终点还未找到，则返回false。
 
 ```js
+
 console.log(Function instanceof Object) // true
 console.log(Object instanceof Function) // true
 console.log(Function instanceof Function) // true
+
 ```
 
 ### 六、原型链
