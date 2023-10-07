@@ -176,14 +176,14 @@ public static void insertionSort(int[] arr){
 
 经典二分：
 
-![](D:\Fuser\Course\算法\笔记\image\day1-2.jpg)
+![](.\image\day1-2.jpg)
 
 ```js
 function BSexist(arr, num) {
     let L = 0;
     let R = arr.length - 1;
     let mid = 0;
-    while(L < R) {
+    while(L <= R) {
         mid = L + (L - R) / 2;
         if (arr[mid] == num) {
             return true;
@@ -201,7 +201,7 @@ function BSexist(arr, num) {
 
 问题二：在有序数组中找大于等于某个数最左侧的位置
 
-![](D:\Fuser\Course\算法\笔记\image\day1-3.jpeg)
+![](.\image\day1-3.jpeg)
 
 ```js
 function BSfindLeftMax(arr, num) {
@@ -226,7 +226,7 @@ function BSfindLeftMax(arr, num) {
 
 问题三：局部最小值，在一个无序数组中，任意两个相邻的元素不相等，定义一个局部最小
 
-![](D:\Fuser\Course\算法\笔记\image\day1-4.jpg)
+![](.\image\day1-4.jpg)
 
 ```js
 function BSFindMin(arr) {

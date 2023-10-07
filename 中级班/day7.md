@@ -156,7 +156,7 @@ function getCTHeight(head) {
 }
 ```
 
-### 题目五
+### 题目五（动态规划-从左到右尝试）
 
 最长递增子序列问题
 
@@ -168,12 +168,55 @@ function getCTHeight(head) {
 2. 假设1~i已经得出，dp[i+1]时需要找到1~i中比arr[i+1]小的数，判断得出dp[i+1];
 3. 时间复杂度O(n^2)；
 
+```js
+var lengthOfLIS = function(nums) {
+    const dp = new Array(nums.length).fill(1);
+    let ans = 0;
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = 0; j < i; j++) {
+            if (nums[i] > nums[j]) {
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+            }
+        }
+        ans = Math.max(ans, dp[i])
+    }
+
+    return ans;
+};
+```
+
 **思路2（优化）：**
 
 1. 建立长度为arr.length的dp数组，dp[i]表示必须以 arr[i]结尾的情况下最长递增子序列的长度。
-2. 建立长度为arr.length的ends数组，ends[i]表示所有长度为i+1的递增子序列中最小的结尾（ends数组时严格有序的）。
+2. 建立长度为arr.length的ends数组，ends[i]表示所有长度为i+1的递增子序列中最小的结尾（ends数组严格有序的）。
 3. 计算dp[i+1]时，在ends二分查找大于arr[i+1]最左的位置，如果存在替换ends中的值，如果不存在则在ends添加arr[i+1]。dp[i+1]为ends下标+1。
 
+```js
+var lengthOfLIS = function(nums) {
+    // ends[i]表示所有长度为i+1的递增子序列中最小的结尾（ends数组严格有序的）。
+    const ends = [Infinity];
+    let ans = 0;
+    for (let i = 0; i < nums.length; i++) {
+        let left = 0;
+        let right = ends.length - 1;
+        while (left <= right) {
+            let mid = ((right - left) >> 2) + left;
+            if (nums[i] <= ends[mid]) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        if (right === ends.length - 1) {
+            ends.push(nums[i]);
+        } else {
+            ends[left] = nums[i];
+        }
+        ans = Math.max(ans, ends.length)
+    }
+    return ans;
+};
+```
 
 
 ### 题目六

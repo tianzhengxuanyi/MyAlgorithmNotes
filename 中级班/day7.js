@@ -95,3 +95,45 @@ head.right.left = new Node(6);
 
 console.log("getCTHeight", getCTHeight(head));
 console.log("getCTNodeNum", getCTNodeNum(head));
+
+var lengthOfLIS = function(nums) {
+    const dp = new Array(nums.length).fill(1);
+    let ans = 0;
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = 0; j < i; j++) {
+            if (nums[i] > nums[j]) {
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+            }
+        }
+        ans = Math.max(ans, dp[i])
+    }
+
+    return ans;
+};
+
+var lengthOfLIS2 = function(nums) {
+    // ends[i]表示所有长度为i+1的递增子序列中最小的结尾（ends数组严格有序的）。
+    const ends = [Infinity];
+    let ans = 0;
+    for (let i = 0; i < nums.length; i++) {
+        let left = 0;
+        let right = ends.length - 1;
+        while (left <= right) {
+            let mid = ((right - left) >> 2) + left;
+            if (nums[i] <= ends[mid]) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        if (right === ends.length - 1) {
+            ends.push(nums[i]);
+        } else {
+            ends[left] = nums[i];
+        }
+        ans = Math.max(ans, ends.length)
+    }
+    return ans;
+};
+
+lengthOfLIS2([10,9,2,5,3,7,101,18])
