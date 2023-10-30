@@ -264,3 +264,78 @@ function heapfiy(arr, i, heapSize) {
 }
 ```
 
+## 7、计数排序
+
+**时间复杂度：** `O(N+K)`
+
+**空间复杂度：** `O(K)`
+
+**稳定性：** 稳定
+
+**算法步骤：**
+
+- （1）找出待排序的数组中最大和最小的元素，根据最大元素k生成长度为k的辅助数组C
+- （2）统计数组中每个值为i的元素出现的次数，存入数组C的第i项
+- （3）对所有的计数累加（从C中的第一个元素开始，每一项和前一项相加）
+- （4）反向填充目标数组：将每个元素i放在新数组的第C(i)项，每放一个元素就将C(i)减去1
+
+![](../../image/day3-5.jpg)
+
+```js
+function countingSort(arr, maxValue) {
+  const buket = new Array(maxValue+1).fill(0);
+  let sortLen = 0;
+  for (let i = 0; i < arr.length; i++)  {
+    buket[arr[i]]++;
+  }
+
+  for (let j = 0; j < buket.length; j++) {
+    while (buket[j] > 0) {
+      arr[sortLen++] = j;
+      buket[j]--;
+    }
+  }
+  return arr;
+}
+```
+
+## 9、基数排序
+
+**时间复杂度：** `O(N*K)`
+
+**空间复杂度：** `O(N+K)`
+
+**稳定性：** 稳定
+
+**算法步骤：**
+
+将整数按位数切割成不同的数字，然后按每个位数分别比较。
+
+![](../../image/day3-6.jpg)
+
+```js
+var counter = [];
+function radixSort(arr, maxDigit) {
+    var mod = 10;
+    var dev = 1;
+    for (var i = 0; i < maxDigit; i++, dev *= 10, mod *= 10) {
+        for(var j = 0; j < arr.length; j++) {
+            var bucket = parseInt((arr[j] % mod) / dev);
+            if(counter[bucket]==null) {
+                counter[bucket] = [];
+            }
+            counter[bucket].push(arr[j]);
+        }
+        var pos = 0;
+        for(var j = 0; j < counter.length; j++) {
+            var value = null;
+            if(counter[j]!=null) {
+                while ((value = counter[j].shift()) != null) {
+                      arr[pos++] = value;
+                }
+          }
+        }
+    }
+    return arr;
+}
+```

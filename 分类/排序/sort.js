@@ -205,3 +205,21 @@ let heapSortArr = [2, 1, 5, 3, 6, 1, 4];
 heapSort(heapSortArr);
 
 console.log("heapSort", heapSortArr);
+
+function countingSort(arr, maxValue) {
+  const buket = new Array(maxValue+1).fill(0);
+  let sortLen = 0;
+  for (let i = 0; i < arr.length; i++)  {
+    buket[arr[i]]++;
+  }
+
+  for (let j = 0; j < buket.length; j++) {
+    while (buket[j] > 0) {
+      arr[sortLen++] = j;
+      buket[j]--;
+    }
+  }
+  return arr;
+}
+
+console.log("countingSort", countingSort([100,5,2,7,90,55,12], 100))
