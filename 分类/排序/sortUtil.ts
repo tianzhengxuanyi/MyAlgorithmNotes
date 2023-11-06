@@ -40,7 +40,42 @@ class Sort {
     return arr;
   }
   // 4.归并排序
-  static mergeSort(arr: number[]) {}
+  static mergeSort(arr: number[]) {
+    const len = arr.length;
+    const process = (arr: number[], left: number, right: number) => {
+      if (left >= right) {
+        return arr;
+      }
+      // 获取中间下标
+      const mid =  ((right - left) >> 1) + left;
+      // 左部分排序
+      process(arr, left, mid);
+      // 右部分排序
+      process(arr, mid + 1, right);
+      // 左右排序合并
+      merge(arr, left, mid, right);
+      return arr;
+    };
+    const merge = (arr: number[], left: number, mid: number, right: number) => {
+      const help = new Array(arr.length);
+      let index = left;
+      let l = left;
+      let l2 = mid + 1;
+      while (l <= mid && l2 <= right) {
+        help[index++] = arr[l] < arr[l2] ? arr[l++] : arr[l2++];
+      }
+      while (l <= mid) {
+        help[index++] = arr[l++];
+      }
+      while (l2 <= right) {
+        help[index++] = arr[l2++];
+      }
+      for (let i = left; i <= right; i++) {
+        arr[i] = help[i];
+      }
+    };
+    return process(arr, 0, len - 1);
+  }
   // 5.快速排序
   static quickSort(arr: number[]) {}
   // 6.堆排序
@@ -62,4 +97,5 @@ class Sort {
 const arr = [2, 1, 8, 3, 7, 4, 9, 3];
 // console.log(Sort.selectSort(arr));
 // console.log(Sort.bubbleSort(arr))
-console.log(Sort.insertSort(arr));
+// console.log(Sort.insertSort(arr));
+console.log(Sort.mergeSort(arr));
