@@ -117,7 +117,9 @@ class Sort {
   }
   // 6.堆排序
   static heapSort(arr: number[]) {
-    
+    // 利用heapInsert将arr变成大根堆
+    // 将第一项与最后一项交换，堆size减一，再利用heapfiy将数组0~i-1变成大根堆
+    // 循环直到size变为0
   }
   // 7.计数排序
   static countingSort(arr: number[]) {}
