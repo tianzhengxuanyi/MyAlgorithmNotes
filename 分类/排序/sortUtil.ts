@@ -77,9 +77,48 @@ class Sort {
     return process(arr, 0, len - 1);
   }
   // 5.快速排序
-  static quickSort(arr: number[]) {}
+  static quickSort(arr: number[]) {
+    // 从数组中选取任意下标位置为中间值mid，交换到数组最后
+    // 设定左右指针，划定小于mid、等于mid、大于mid三个区域，遍历将数组按照规定区域划分
+    // 小于mid、大于mid区域递归排序
+    const process = (arr: number[], left:number, right:number) => {
+      if (left >= right) {
+        return;
+      }
+      // 从数组中选取任意下标位置为中间值mid，交换到数组最后
+      Sort.swap(arr, right, Math.floor(Math.random() * (right -  left + 1) + left));
+      // 数组最后一位为基准
+      const pivot = arr[right];
+      // 小于区右边界指针
+      let l = left - 1;
+      // 大于区左边界指针
+      let r = right;
+      // 遍历下标
+      let i = left;
+      while (i < r) {
+        if (arr[i] > pivot) {
+          // 如果大于基准，与大于区前一个交换，当前下标不变
+          this.swap(arr, i, --r)
+        } else if (arr[i] < pivot) {
+          // 如果小于基准，与小于区后一个交换，当前下标+1
+          this.swap(arr, i++, ++l)
+        } else {
+          // 等于基准，当前下标+1
+          i++
+        }
+      }
+      // 交换基准和大于区指针
+      this.swap(arr, right, r);
+      process(arr, left, l);
+      process(arr, r+1, right);
+    }
+    process(arr, 0, arr.length - 1)
+    return arr;
+  }
   // 6.堆排序
-  static heapSort(arr: number[]) {}
+  static heapSort(arr: number[]) {
+    
+  }
   // 7.计数排序
   static countingSort(arr: number[]) {}
   // 8.桶排序
@@ -94,8 +133,9 @@ class Sort {
   }
 }
 
-const arr = [2, 1, 8, 3, 7, 4, 9, 3];
+const arr = [8,2, 1, 8, 3, 7, 4, 9, 3,1];
 // console.log(Sort.selectSort(arr));
 // console.log(Sort.bubbleSort(arr))
 // console.log(Sort.insertSort(arr));
-console.log(Sort.mergeSort(arr));
+// console.log(Sort.mergeSort(arr));
+console.log(Sort.quickSort(arr));
