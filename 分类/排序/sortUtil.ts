@@ -162,7 +162,10 @@ class Sort {
     return arr;
   }
   // 7.计数排序
-  static countingSort(arr: number[]) {}
+  static countingSort(arr: number[]) {
+    // 统计数组的词频表
+    // 根据词频表
+  }
   // 8.桶排序
   static bucketSort(arr: number[]) {}
   // 9.基数排序
