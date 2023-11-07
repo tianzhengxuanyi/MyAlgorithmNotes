@@ -165,11 +165,31 @@ class Sort {
   static countingSort(arr: number[]) {
     // 统计数组的词频表
     // 根据词频表
+    const len = arr.length;
+    let max = -Infinity;
+    for (let i = 0; i < len; i++) {
+      max = Math.max(max, arr[i]);
+    }
+    const count = new Array(max + 1).fill(0);
+    for (let i = 0; i < len; i++) {
+      count[arr[i]] += 1;
+    }
+    let index = 0;
+    for (let i = 0; i < count.length; i++) {
+      while (count[i]--) {
+        arr[index++] = i;
+      }
+    }
+    return arr;
   }
   // 8.桶排序
   static bucketSort(arr: number[]) {}
   // 9.基数排序
-  static radixSort(arr: number[]) {}
+  static radixSort(arr: number[]) {
+    const counter = [];
+    const mod = 10;
+    const dev = 1;
+  }
 
   static swap(arr: number[], i: number, j: number) {
     const temp = arr[i];
@@ -184,4 +204,5 @@ const arr = [8,2, 1, 8, 3, 7, 4, 9, 3,1,6];
 // console.log(Sort.insertSort(arr));
 // console.log(Sort.mergeSort(arr));
 // console.log(Sort.quickSort(arr));
-console.log(Sort.heapSort(arr));
+// console.log(Sort.heapSort(arr));
+console.log(Sort.countingSort(arr));
