@@ -120,6 +120,46 @@ class Sort {
     // 利用heapInsert将arr变成大根堆
     // 将第一项与最后一项交换，堆size减一，再利用heapfiy将数组0~i-1变成大根堆
     // 循环直到size变为0
+    const heapInsert = (heap: number[], size: number) => {
+      let i = size - 1;
+      let parent = Math.floor((i - 1) / 2);
+      while ( i >= 0 && parent >= 0) {
+        if (heap[i] > heap[parent]) {
+          this.swap(heap, i, parent);
+          i = parent;
+          parent = Math.floor((i - 1) / 2);
+        } else {
+          break;
+        }
+      }
+    };
+    const heapfiy = (heap: number[], size: number) => {
+      let i = 0;
+      let left = 2 * i + 1;
+      while (left <= size - 1) {
+        const max = left + 1 <= size - 1 && heap[left + 1] > heap[left] ? left + 1: left;
+        if (heap[max] > heap[i]) {
+          this.swap(heap, max, i)
+          i = max;
+          left = 2 * i + 1
+        } else {
+          break;
+        }
+      }
+    }
+    // 利用heapInsert将arr变成大根堆
+    for (let i = 0; i < arr.length; i++) {
+      heapInsert(arr, i);
+    }
+    let size = arr.length;
+    // 将第一项与最后一项交换，堆size减一
+    this.swap(arr, 0, --size)
+    while (size > 0) {
+      // 再利用heapfiy将数组0~i-1变成大根堆
+      heapfiy(arr, size)
+      this.swap(arr, 0, --size)
+    }
+    return arr;
   }
   // 7.计数排序
   static countingSort(arr: number[]) {}
@@ -135,9 +175,10 @@ class Sort {
   }
 }
 
-const arr = [8,2, 1, 8, 3, 7, 4, 9, 3,1];
+const arr = [8,2, 1, 8, 3, 7, 4, 9, 3,1,6];
 // console.log(Sort.selectSort(arr));
 // console.log(Sort.bubbleSort(arr))
 // console.log(Sort.insertSort(arr));
 // console.log(Sort.mergeSort(arr));
-console.log(Sort.quickSort(arr));
+// console.log(Sort.quickSort(arr));
+console.log(Sort.heapSort(arr));
