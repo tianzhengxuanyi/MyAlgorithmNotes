@@ -29,13 +29,13 @@ class Sort {
     for (let i = 1; i < len; i++) {
       let swapIndex = i;
       for (let j = i - 1; j >= 0; j--) {
-        if (arr[i] >= arr[j]) {
+        if (arr[swapIndex] >= arr[j]) {
           break;
         } else {
+          this.swap(arr, swapIndex, j)
           swapIndex = j;
         }
       }
-      Sort.swap(arr, swapIndex, i);
     }
     return arr;
   }
@@ -186,9 +186,52 @@ class Sort {
   static bucketSort(arr: number[]) {}
   // 9.基数排序
   static radixSort(arr: number[]) {
-    const counter = [];
-    const mod = 10;
-    const dev = 1;
+    // 获取数组中最大位数
+    const maxBits = (arr: number[]) => {
+      let maxbit = - Infinity;
+      for (let i = 0; i < arr.length; i++) {
+        let num = arr[i]
+        let bit = 0
+        while (num > 0) {
+          num = Math.floor(num / 10);
+          bit++;
+        }
+        maxbit = Math.max(maxbit, bit)
+      }
+      return maxbit;
+    };
+    // 获取指定位数的数字
+    const getDigit = (num: number, d: number) => {
+      const radix = 10;
+      return (Math.floor(num / Math.pow(radix, d - 1))) % 10;
+    }
+    const radixSort = (arr: number[], maxBits: number) => {
+      const radix = 10;
+      // 桶
+      const bucket = new Array(arr.length);
+      // 几位就进几次桶
+      for (let d = 1; d <= maxBits; d++) {
+        const count = new Array(radix).fill(0);
+        for (let j = 0; j < arr.length; j++ ) {
+          count[getDigit(arr[j], d)] += 1;
+        }
+        // 计算每一位的顺序
+        for (let j = 1; j < count.length; j++) {
+          count[j] += count[j-1];
+        }
+        // 按照count顺序将arr再桶中排序
+        for (let j = arr.length - 1; j >= 0; j--) {
+          bucket[count[getDigit(arr[j], d)] - 1] = arr[j]
+          count[getDigit(arr[j], d)]--;
+        }
+        // 将桶中数据按照顺序倒出来
+        for (let i = 0; i < arr.length; i++) {
+          arr[i] = bucket[i]
+        }
+      }
+    }
+    radixSort(arr, maxBits(arr));
+    return arr;
   }
 
   static swap(arr: number[], i: number, j: number) {
@@ -198,11 +241,12 @@ class Sort {
   }
 }
 
-const arr = [8,2, 1, 8, 3, 7, 4, 9, 3,1,6];
+const arr = [8,289, 1, 82, 3, 17, 4, 69, 3,1,6,100];
 // console.log(Sort.selectSort(arr));
-// console.log(Sort.bubbleSort(arr))
-// console.log(Sort.insertSort(arr));
+// console.log(Sort.bubbleSort(arr));
+console.log(Sort.insertSort(arr));
 // console.log(Sort.mergeSort(arr));
 // console.log(Sort.quickSort(arr));
 // console.log(Sort.heapSort(arr));
-console.log(Sort.countingSort(arr));
+// console.log(Sort.countingSort(arr));
+// console.log(Sort.radixSort(arr));
