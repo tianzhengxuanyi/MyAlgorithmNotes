@@ -57,7 +57,7 @@ HashMap由增/更新（add）、删（remove）、查（containkey）、拿（ge
 
 3.remove（k key）：删去key的记录
 
-4.boolean containskey（k key)：查
+4.boolean containskey（k key）：查
 
 5.k firstkey：所有键值的排序结果中，最小（左）的那个
 
