@@ -14,6 +14,7 @@ export abstract class LinkList {
     abstract addAll(data: any[]): void;
     abstract insert(data: any, target: Node): void;
     abstract getLast(): Node | null;
+    abstract get size(): number;
     abstract find(data: any): Node | null;
     abstract remove(data: any): boolean;
 }
@@ -59,10 +60,24 @@ export class SingleLinkList extends LinkList {
         }
         return current;
     }
+    get size() {
+        let _size = 0;
+        let current = this.head;
+        while (current) {
+            _size++;
+            current = current.next;
+        }
+        return _size;
+    }
     insert(data: any, target: Node): void {}
     find(data: any): Node | null {
         let current = this.head;
-
+        while (current) {
+            if (current.data === data) {
+                break;
+            }
+            current = current.next;
+        }
         return current;
     }
     remove(data: any): boolean {
