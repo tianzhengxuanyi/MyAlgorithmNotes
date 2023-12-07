@@ -139,47 +139,42 @@ var isPalindrome = function (head) {
 -   然后让那个节点后面的节点都逆序
 
 ```js
-var isPalindrome = function (head) {
-    if (head === null || head.next === null) return true;
-    // 快慢指针， 将链表右边的内容逆序，头尾同时移动比对
+const isPalindrome = (head) => {
+    if (head === null) return true;
     let quick = head;
     let slow = head;
-    while (slow.next && quick?.next?.next) {
-        quick = quick?.next?.next; // 2
-        slow = slow?.next; // mid 1
+    // 1、快慢指针，slow停在mid
+    while (quick?.next?.next) {
+        quick = quick?.next?.next;
+        slow = slow.next;
     }
-    let n2 = slow.next; // right first 2
-    slow.next = null;
-    let n1 = slow; // mid 1
-    let n3 = null;
-    while (n2 != null) {
-        n3 = n2.next;
-        n2.next = n1;
-        n1 = n2;
-        n2 = n3;
+    // 2、从mid开始反转链表
+    let tail = reverseList(slow.next);
+    // 3、分别从head和tail开始比较
+    let _tail = tail;
+    let _head = head;
+    while (_tail && _head) {
+        if (_tail.val !== _head.val) return false;
+        _tail = _tail.next;
+        _head = _head.next;
     }
-    end = n1;
-    n2 = head;
-    let res = true;
-
-    while (end && n2) {
-        if (end.val !== n2.val) {
-            res = false;
-            break;
-        }
-        end = end.next;
-        n2 = n2.next;
-    }
-    n2 = n1.next;
-    n1.next = null;
-    while (n1 != null && n2) {
-        n3 = n2?.next;
-        n2.next = n1;
-        n1 = n2;
-        n2 = n3;
-    }
-    return res;
+    // 4、复原链表
+    slow.next = reverseList(tail);
+    return true;
 };
+
+const reverseList = (head) => {
+    let prev = null;
+    let current = head;
+    let next = null;
+    while (current) {
+        next = current.next;
+        current.next = prev;
+        prev = current;
+        current = next;
+    }
+    return prev;
+}
 ```
 
 ### 将单向链表按某值划分成左边小、中间相等、右边大的形式
