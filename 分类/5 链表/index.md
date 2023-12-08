@@ -245,14 +245,12 @@ function swap(arr, i, j) {
 | BH (一开始是 null) | 大于部分的头 |
 | BT (一开始是 null) | 大于部分的尾 |
 
--   首先第一个节点 ④, 发现比我们的 ⑤ 小，所以让 SH 和 ST④
+-   首先第一个节点 ④, 发现比我们的 ⑤ 小，所以让 SH 和 ST为④
 -   下一个节点 ⑥, 发现比我们的 ⑤ 大，所以让 BH 和 BT⑥
 -   下一个节点 ③, 发现比我们的 ⑤ 小，所以让 ST 当前指向的节点 ④ 指向 ③, 然后让 ST 指向 ③(SH 不要动之后只有是一开始 null 的时候才会被第一个更新)
 -   下一个节点 ⑤, 发现跟我们的 ⑤ 相等，所以让 EH 和 ET 都指向这个当前找到的 ⑤!!! **需要这个，因为可能有多个，我们要串起来所有相等的，然后让头代表第一个，尾代表最后一个 (可以看出是稳定的，保持了顺序，小于区域和大于区域都是同理)**
 -   等等等
 -   最后就是:
-
-![image-20220307214130524](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
 
 -   ST 的当前指向的节点的 next 指向 EH
 -   ET 的当前指向的节点的 next 指向 BH
@@ -316,17 +314,15 @@ function listPartition2(head, pivot) {
 
 【题目】一种特殊的单链表节点类描述如下
 
-```java
-class Node { int value;
-            Node next;
-            Node rand;
-            Node(int val) {
-                value = val;
-            }
-           }
+```ts
+interface Node {
+    value: number;
+    next: Node;
+    rand: Node;
+}
 ```
 
-rand 指针是单链表节点结构中新增的指针，rand 可能指向链表中的任意一个节 点，也可能指向 null。给定一个由 Node 节点类型组成的无环单链表的头节点 head，请实现一个函数完成这个链表的复制，并返回复制的新链表的头节点。
+rand 指针是单链表节点结构中新增的指针，rand 可能指向链表中的任意一个节点，也可能指向 null。给定一个由 Node 节点类型组成的无环单链表的头节点 head，请实现一个函数完成这个链表的复制，并返回复制的新链表的头节点。
 
 【要求】时间复杂度 O(N)，额外空间复杂度 O(1)
 
@@ -363,17 +359,17 @@ var copyRandomList = function (head) {
 
 -   生成一个个新节点，但是我们让他们跟老链表的节点这么串起来
 
-![](../image/day4-4.png)
+![](../../image/day4-4.png)
 
 -   **我们让每一个新生成的节点的 rand 指针指向当前这个新节点对应的老节点的 rand 指向的节点的 next**
 
-![](../image/day4-5.png)
+![](../../image/day4-5.png)
 
 > 反正这种想法就是让老的节点和旧的产生连接，这样我们就可以按照老节点的方式连的连我们自己的这个新节点，毕竟我们想要的是复制嘛，肯定是照着来啊
 
 -   这么做后，就会成这样:
 
-![](../image/day4-6.png)
+![](../../image/day4-6.png)
 
 -   接着就把 next 改变，让新链表从这里分离出来
 
@@ -407,4 +403,239 @@ var copyRandomList = function (head) {
     }
     return res;
 };
+```
+
+### 链表中环的入口节点
+
+给定一个链表，返回链表开始入环的第一个节点。 从链表的头节点开始沿着 `next` 指针进入环的第一个节点为环的入口节点。如果链表无环，则返回 `null`。
+
+为了表示给定链表中的环，我们使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 `pos` 是 `-1`，则在该链表中没有环。**注意，`pos` 仅仅是用于标识环的情况，并不会作为参数传递到函数中。**
+
+**说明：** 不允许修改给定的链表。
+
+![](../../image/day5-1.png)
+
+**解1：哈希表**
+
+利用Hash表存储节点，每次遍历前在Hash表中查找是否存在当前节点，如果存在即代表存在环，且当前节点为环的入口节点，直到遍历到null代表无环。
+
+时间复杂度：O（N）
+
+空间复杂度：O（N）
+
+```tsx
+function detectCycle(head: ListNode | null): ListNode | null {
+    if (head === null || head.next === null) {
+        return null;
+    }
+    let map = new Set();
+    while (head !== null) {
+        if (map.has(head)) {
+            return head;
+        }
+        map.add(head);
+        head = head.next;
+    }
+    return null;
+};
+```
+
+**解2：快慢指针**
+
+![](../../image/day5-2.png)
+
+![](../../image/day5-3.png)
+
+时间复杂度：O（N）
+
+空间复杂度：O（1）
+
+```tsx
+function detectCycle(head: ListNode | null): ListNode | null {
+    if (head === null || head.next === null || head.next.next === null) {
+        return null;
+    }
+    let slow: ListNode | null = head.next;
+    let quick: ListNode | null = head.next.next;
+    while (quick !== null) {
+        // 如果快慢指针相遇则代表有环
+        if (quick === slow) {
+            break;
+        }
+        slow = slow.next;
+        quick = quick.next === null ? null : quick.next.next;
+    }
+    // 如果快指针走到null代表没有环
+    if (quick === null) {
+        return null;
+    }
+    // 让快指针重新执行头节点，快慢指针同时移动一步，当快慢指针再次相遇时即为环的入口节点
+    quick = head;
+    while (quick !== slow) {
+        quick = quick.next;
+        slow = slow.next;
+    }
+    return slow;
+};
+```
+
+
+
+
+
+### 两个单链表相交的一系列问题 
+
+【题目】给定两个可能有环也可能无环的单链表，头节点`head1`和`head2`。请实 现一个函数，如果两个链表相交，请返回相交的 第一个节点。如果不相交，返 回null 
+
+【要求】如果两个链表长度之和为N，时间复杂度请达到O(N)，额外空间复杂度 请达到O(1)。
+
+**解1：哈希表**
+
+第一条链表节点都入 set，第二条链表查，查到重复即为相交节点
+
+```js
+// 哈希表
+function getIntersectNode(head1, head2) {
+    let hashMap = new Set();
+    while (head1 !== null) {
+        if (hashMap.has(head1)) {
+            break;
+        }
+        hashMap.add(head1);
+        head1 = head1.next;
+    }
+    while (head2 !== null) {
+        if (hashMap.has(head2)) {
+            return head2;
+        }
+        head2 = head2.next;
+    }
+    return null;
+}
+```
+
+**解2：**
+
+第一步：判断有无环，有环返回第一个入环节点。
+
+第二步：讨论，获知了两个链表是否有环，分情况讨论。
+
+- 都无环，可能相交也可能不相交，讨论两个链表的尾节点的地址是否一致，不是，则不相交，一致，则让长链表先走两个链表长度的插值步之后，再一起走，会在第一个相交节点相遇；
+
+- 一个有环，一个无环，不相交，返回null；
+
+- 都有环，分为三种情况，**不相交**，**相交且入环节点一样**，**相交但入环节点不一样**。
+
+  1. 首先判断入环节点一样时，则链表1和链表2 的入环节点的内存结点相等，此时，我们可以把入环节点看作是终止节点，则将问题转换成了都无环时候的情况；
+
+  2. 入环节点不一样时，给一个指针指向链表1的入环节点，继续往下走，在遇到自己之前，遇到了2的入环节点，则返回1或2的入环节点，如果没遇到，则说明不相交，返回null。
+
+```js
+// 判断链表是否有环，并返回入环节点
+function detectCycle(head) {
+    if (
+        head === null ||
+        head.next === null ||
+        head.next.next === null
+    ) {
+        return null;
+    }
+    let slow = head.next;
+    let quick = head.next.next;
+    while (quick !== null) {
+        // 如果快慢指针相遇则代表有环
+        if (quick === slow) {
+            break;
+        }
+        slow = slow.next;
+        quick = quick.next === null ? null : quick.next.next;
+    }
+    // 如果快指针走到null代表没有环
+    if (quick === null) {
+        return null;
+    }
+    // 让快指针重新执行头节点，快慢指针同时移动一步，当快慢指针再次相遇时即为环的入口节点
+    quick = head;
+    while (quick !== slow) {
+        quick = quick.next;
+        slow = slow.next;
+    }
+    return slow;
+}
+// 省空间的解法
+function getIntersectNode2(head1, head2) {
+    let loop1 = detectCycle(head1);
+    let loop2 = detectCycle(head2);
+    let node1 = head1;
+    let node2 = head2;
+    if (loop1 === null && loop2 === null) {
+        // 链表1和2都无环,如果最后一个节点是同一个则有交点
+        let n = 0;
+        while (node1.next !== null) {
+            n++;
+            node1 = node1.next;
+        }
+        while (node2.next !== null) {
+            n--;
+            node2 = node2.next;
+        }
+        if (node1 !== node2) {
+            return null;
+        }
+        // 将链表长的赋值为node1，短的为node2
+        node1 = n > 0 ? head1 : head2;
+        node2 = n > 0 ? head2 : head1;
+        n = Math.abs(n);
+        while (n > 0) {
+            // 将node1和node2对齐
+            node1 = node1.next;
+            n--;
+        }
+        while (node1 !== node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+        return node1;
+    } else if (loop1 !== null && loop2 !== null) {
+        if (loop1 === loop2) {
+            // 两个链表的入环节点是同一个
+            // 从入环节点以上截取，看成两个无环链表求交点
+            let n = 0;
+            while (node1 !== loop1) {
+                n++;
+                node1 = node1.next;
+            }
+            while (node2 !== loop2) {
+                n--;
+                node2 = node2.next;
+            }
+            // 将链表长的赋值为node1，短的为node2
+            node1 = n > 0 ? head1 : head2;
+            node2 = n > 0 ? head2 : head1;
+            n = Math.abs(n);
+            while (n > 0) {
+                // 将node1和node2对齐
+                node1 = node1.next;
+                n--;
+            }
+            while (node1 !== node2) {
+                node1 = node1.next;
+                node2 = node2.next;
+            }
+            return node1;
+        } else {
+            node1 = loop1;
+            while (node1 === loop2) {
+                node1 = node1.next;
+                if (node1 === loop1) {
+                    return null;
+                }
+            }
+            return loop2;
+        }
+    } else {
+        return null;
+    }
+}
+
 ```
