@@ -1,4 +1,4 @@
-## 1. 二叉树节点结构
+### 1. 二叉树节点结构
 
 ```js
 function TreeNode(val, left, right) {
@@ -8,7 +8,7 @@ function TreeNode(val, left, right) {
 }
 ```
 
-## 2. 二叉树遍历
+### 2. 二叉树遍历
 
 ### 2.1 递归遍历
 
@@ -560,7 +560,7 @@ var widthOfBinaryTree = function (root) {
 };
 ```
 
-## 3. 树型 DP（动态规划）解法套路
+### 3. 树型 DP（动态规划）解法套路
 
 使用前提：如果题目求解目标是S规则，则求解流程可以定成以每一个节点为头结点的子树在S规则下的每一个答案，并且最终答案一定在其中。
 
@@ -767,7 +767,7 @@ function getMaxHappiness(head) {
 }
 ```
 
-## 4. 二叉树题目
+### 4. 二叉树题目
 
 ### 如何判断一颗二叉树是完全二叉树？
 
