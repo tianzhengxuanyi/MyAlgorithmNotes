@@ -2,9 +2,9 @@
 
 ```js
 function TreeNode(val, left, right) {
-    this.val = val === undefined ? 0 : val;
-    this.left = left === undefined ? null : left;
-    this.right = right === undefined ? null : right;
+  this.val = val === undefined ? 0 : val;
+  this.left = left === undefined ? null : left;
+  this.right = right === undefined ? null : right;
 }
 ```
 
@@ -17,15 +17,15 @@ function TreeNode(val, left, right) {
 ```js
 // 递归遍历二叉树
 function f(head) {
-    //1
-    if (head == null) {
-        return;
-    }
-    //1 第一次到达节点
-    f(head.left);
-    //2 第二次返回节点
-    f(head.right);
-    //3 第三次返回节点
+  //1
+  if (head == null) {
+    return;
+  }
+  //1 第一次到达节点
+  f(head.left);
+  //2 第二次返回节点
+  f(head.right);
+  //3 第三次返回节点
 }
 ```
 
@@ -35,17 +35,17 @@ function f(head) {
 
 ```js
 function process(root, arr) {
-    if (root === null) {
-        return null;
-    }
-    arr.push(root.val); // 第一次到达节点时加入
-    process(root.left, arr);
-    process(root.right, arr);
+  if (root === null) {
+    return null;
+  }
+  arr.push(root.val); // 第一次到达节点时加入
+  process(root.left, arr);
+  process(root.right, arr);
 }
 var preorderTraversal = function (root) {
-    let arr = [];
-    process(root, arr);
-    return arr;
+  let arr = [];
+  process(root, arr);
+  return arr;
 };
 ```
 
@@ -55,17 +55,17 @@ var preorderTraversal = function (root) {
 
 ```js
 function process(root, arr) {
-    if (root === null) {
-        return null;
-    }
-    process(root.left, arr);
-    arr.push(root.val); // 第二次返回节点时加入
-    process(root.right, arr);
+  if (root === null) {
+    return null;
+  }
+  process(root.left, arr);
+  arr.push(root.val); // 第二次返回节点时加入
+  process(root.right, arr);
 }
 var inorderTraversal = function (root) {
-    let arr = [];
-    process(root, arr);
-    return arr;
+  let arr = [];
+  process(root, arr);
+  return arr;
 };
 ```
 
@@ -75,17 +75,17 @@ var inorderTraversal = function (root) {
 
 ```js
 function process(root, arr) {
-    if (root === null) {
-        return null;
-    }
-    process(root.left, arr);
-    process(root.right, arr);
-    arr.push(root.val); // 第三次返回节点时加入
+  if (root === null) {
+    return null;
+  }
+  process(root.left, arr);
+  process(root.right, arr);
+  arr.push(root.val); // 第三次返回节点时加入
 }
 var postorderTraversal = function (root) {
-    let arr = [];
-    process(root, arr);
-    return arr;
+  let arr = [];
+  process(root, arr);
+  return arr;
 };
 ```
 
@@ -97,24 +97,24 @@ var postorderTraversal = function (root) {
 
 ```js
 var preorderTraversal = function (root) {
-    if (root === null) return [];
-    // 不使用递归遍历
-    // 使用栈
-    let stack = [];
-    let arr = [];
-    let curr = null;
-    stack.push(root);
-    while (stack.length !== 0) {
-        curr = stack.pop();
-        arr.push(curr.val);
-        if (curr.right) {
-            stack.push(curr.right);
-        }
-        if (curr.left) {
-            stack.push(curr.left);
-        }
+  if (root === null) return [];
+  // 不使用递归遍历
+  // 使用栈
+  let stack = [];
+  let arr = [];
+  let curr = null;
+  stack.push(root);
+  while (stack.length !== 0) {
+    curr = stack.pop();
+    arr.push(curr.val);
+    if (curr.right) {
+      stack.push(curr.right);
     }
-    return arr;
+    if (curr.left) {
+      stack.push(curr.left);
+    }
+  }
+  return arr;
 };
 ```
 
@@ -130,23 +130,23 @@ var preorderTraversal = function (root) {
 
 ```js
 var inorderTraversal = function (root) {
-    if (root === null) return [];
-    // 非递归，用栈
-    let stack = [];
-    let arr = [];
-    let curr = root;
-    while (stack.length !== 0 || curr !== null) {
-        if (curr !== null) {
-            stack.push(curr);
-            curr = curr.left;
-        } else {
-            curr = stack.pop();
-            arr.push(curr.val);
-            curr = curr.right;
-        }
+  if (root === null) return [];
+  // 非递归，用栈
+  let stack = [];
+  let arr = [];
+  let curr = root;
+  while (stack.length !== 0 || curr !== null) {
+    if (curr !== null) {
+      stack.push(curr);
+      curr = curr.left;
+    } else {
+      curr = stack.pop();
+      arr.push(curr.val);
+      curr = curr.right;
     }
+  }
 
-    return arr;
+  return arr;
 };
 ```
 
@@ -156,30 +156,30 @@ var inorderTraversal = function (root) {
 
 ```js
 var postorderTraversal = function (root) {
-    // 非递归
-    if (root === null) {
-        return [];
+  // 非递归
+  if (root === null) {
+    return [];
+  }
+  let arr = [];
+  let stack = [];
+  let collect = []; // 收集栈
+  let curr = null;
+  stack.push(root);
+  while (stack.length !== 0) {
+    curr = stack.pop();
+    collect.push(curr); // 将弹出节点压入收集栈
+    if (curr.left) {
+      // 先添加左节点
+      stack.push(curr.left);
     }
-    let arr = [];
-    let stack = [];
-    let collect = []; // 收集栈
-    let curr = null;
-    stack.push(root);
-    while (stack.length !== 0) {
-        curr = stack.pop();
-        collect.push(curr); // 将弹出节点压入收集栈
-        if (curr.left) {
-            // 先添加左节点
-            stack.push(curr.left);
-        }
-        if (curr.right) {
-            stack.push(curr.right);
-        }
+    if (curr.right) {
+      stack.push(curr.right);
     }
-    while (collect.length !== 0) {
-        arr.push(collect.pop().val);
-    }
-    return arr;
+  }
+  while (collect.length !== 0) {
+    arr.push(collect.pop().val);
+  }
+  return arr;
 };
 ```
 
@@ -189,7 +189,7 @@ var postorderTraversal = function (root) {
 
 Morris 遍历的实质: 通过来回标记遍历整棵树
 
-二叉树题目的最优解：如果要用第三次信息的强整合要用递归套路，如果不需要第三次信息的强整合morris遍历是最优解。
+二叉树题目的最优解：如果要用第三次信息的强整合要用递归套路，如果不需要第三次信息的强整合 morris 遍历是最优解。
 
 #### Morris 遍历细节
 
@@ -197,8 +197,8 @@ Morris 遍历的实质: 通过来回标记遍历整棵树
 
 1. 如果 cur 没有左孩子，cur 向右移动(cur = cur.right)
 2. 如果 cur 有左孩子，找到左子树上最右的节点 mostRight：
-    - 如果 mostRight 的右指针指向空，让其指向 cur，然后 cur 向左移动(cur = cur.left)
-    - 如果 mostRight 的右指针指向 cur，让其指向 null，然后 cur 向右移动(cur = cur.right)
+   - 如果 mostRight 的右指针指向空，让其指向 cur，然后 cur 向左移动(cur = cur.left)
+   - 如果 mostRight 的右指针指向 cur，让其指向 null，然后 cur 向右移动(cur = cur.right)
 3. cur 为空时遍历停止
 
 无左树，只有一次到达自己
@@ -207,188 +207,188 @@ Morris 遍历的实质: 通过来回标记遍历整棵树
 
 ```js
 function morris(head) {
-    if (head === null) {
-        return;
+  if (head === null) {
+    return;
+  }
+  let cur = head;
+  let mostRight = null;
+
+  while (cur !== null) {
+    mostRight = cur.left;
+    if (mostRight !== null) {
+      // cur有左孩子
+
+      // 找到左孩子的最右节点
+      while (mostRight.right !== null && mostRight.right !== cur) {
+        mostRight = mostRight.right;
+      }
+
+      if (mostRight.right === null) {
+        // 第一次经过cur
+        mostRight.right = cur;
+        cur = cur.left;
+      } else {
+        // 第二次经过cur
+        mostRight.right = null;
+        cur = cur.right;
+      }
+    } else {
+      // cur没有左孩子
+      cur = cur.right;
     }
-    let cur = head;
-    let mostRight = null;
-
-    while (cur !== null) {
-        mostRight = cur.left;
-        if (mostRight !== null) {
-            // cur有左孩子
-
-            // 找到左孩子的最右节点
-            while (mostRight.right !== null && mostRight.right !== cur) {
-                mostRight = mostRight.right;
-            }
-
-            if (mostRight.right === null) {
-                // 第一次经过cur
-                mostRight.right = cur;
-                cur = cur.left;
-            } else {
-                // 第二次经过cur
-                mostRight.right = null;
-                cur = cur.right;
-            }
-        } else {
-            // cur没有左孩子
-            cur = cur.right;
-        }
-    }
+  }
 }
 ```
 
 #### 前序遍历
 
--   只到达自己一次直接打印；
--   能够到达自己两次，在第一次打印；
+- 只到达自己一次直接打印；
+- 能够到达自己两次，在第一次打印；
 
 ```js
 // 前序
 function morrisPre(head) {
-    if (head === null) {
-        return;
+  if (head === null) {
+    return;
+  }
+  let cur = head;
+  let mostRight = null;
+
+  while (cur !== null) {
+    mostRight = cur.left;
+    if (mostRight !== null) {
+      // cur有左孩子
+
+      // 找到左孩子的最右节点
+      while (mostRight.right !== null && mostRight.right !== cur) {
+        mostRight = mostRight.right;
+      }
+
+      if (mostRight.right === null) {
+        // 第一次经过cur
+        console.log(cur.value);
+        mostRight.right = cur;
+        cur = cur.left;
+      } else {
+        // 第二次经过cur
+        mostRight.right = null;
+        cur = cur.right;
+      }
+    } else {
+      // cur没有左孩子
+      console.log(cur.value);
+      cur = cur.right;
     }
-    let cur = head;
-    let mostRight = null;
-
-    while (cur !== null) {
-        mostRight = cur.left;
-        if (mostRight !== null) {
-            // cur有左孩子
-
-            // 找到左孩子的最右节点
-            while (mostRight.right !== null && mostRight.right !== cur) {
-                mostRight = mostRight.right;
-            }
-
-            if (mostRight.right === null) {
-                // 第一次经过cur
-                console.log(cur.value);
-                mostRight.right = cur;
-                cur = cur.left;
-            } else {
-                // 第二次经过cur
-                mostRight.right = null;
-                cur = cur.right;
-            }
-        } else {
-            // cur没有左孩子
-            console.log(cur.value);
-            cur = cur.right;
-        }
-    }
+  }
 }
 ```
 
 #### 中序遍历
 
--   只到达自己一次直接打印；
--   能够到达自己两次，在第二次打印；
+- 只到达自己一次直接打印；
+- 能够到达自己两次，在第二次打印；
 
 ```js
 // 中序
 function morrisIn(head) {
-    if (head === null) {
-        return;
+  if (head === null) {
+    return;
+  }
+  let cur = head;
+  let mostRight = null;
+
+  while (cur !== null) {
+    mostRight = cur.left;
+    if (mostRight !== null) {
+      // cur有左孩子
+
+      // 找到左孩子的最右节点
+      while (mostRight.right !== null && mostRight.right !== cur) {
+        mostRight = mostRight.right;
+      }
+
+      if (mostRight.right === null) {
+        // 第一次经过cur
+        mostRight.right = cur;
+        cur = cur.left;
+      } else {
+        // 第二次经过cur
+        console.log(cur.value);
+        mostRight.right = null;
+        cur = cur.right;
+      }
+    } else {
+      // cur没有左孩子
+      console.log(cur.value);
+      cur = cur.right;
     }
-    let cur = head;
-    let mostRight = null;
-
-    while (cur !== null) {
-        mostRight = cur.left;
-        if (mostRight !== null) {
-            // cur有左孩子
-
-            // 找到左孩子的最右节点
-            while (mostRight.right !== null && mostRight.right !== cur) {
-                mostRight = mostRight.right;
-            }
-
-            if (mostRight.right === null) {
-                // 第一次经过cur
-                mostRight.right = cur;
-                cur = cur.left;
-            } else {
-                // 第二次经过cur
-                console.log(cur.value);
-                mostRight.right = null;
-                cur = cur.right;
-            }
-        } else {
-            // cur没有左孩子
-            console.log(cur.value);
-            cur = cur.right;
-        }
-    }
+  }
 }
 ```
 
 #### 后序遍历
 
--   能够到达两次的节点，在第二次到达时逆序打印其左子树的右边界（将以 cur.left 为头的右边界看作成链表反转打印，打印完成在逆序回去）；
--   遍历完成后，打印整个树的右边界；
+- 能够到达两次的节点，在第二次到达时逆序打印其左子树的右边界（将以 cur.left 为头的右边界看作成链表反转打印，打印完成在逆序回去）；
+- 遍历完成后，打印整个树的右边界；
 
 ```js
 // 后序
 function reverseNode(head) {
-    if (head === null) {
-        return null;
-    }
-    let prev = null;
-    let cur = head;
-    let right = null;
-    while (cur !== null) {
-        right = cur.right;
-        cur.right = prev;
-        prev = cur;
-        cur = right;
-    }
-    return prev;
+  if (head === null) {
+    return null;
+  }
+  let prev = null;
+  let cur = head;
+  let right = null;
+  while (cur !== null) {
+    right = cur.right;
+    cur.right = prev;
+    prev = cur;
+    cur = right;
+  }
+  return prev;
 }
 function printEdge(head) {
-    let cur = reverseNode(head);
-    while (cur !== null) {
-        console.log(cur.value);
-        cur = cur.right;
-    }
-    reverseNode(head);
+  let cur = reverseNode(head);
+  while (cur !== null) {
+    console.log(cur.value);
+    cur = cur.right;
+  }
+  reverseNode(head);
 }
 function morrisPos(head) {
-    if (head === null) {
-        return;
+  if (head === null) {
+    return;
+  }
+  let cur = head;
+  let mostRight = null;
+
+  while (cur !== null) {
+    mostRight = cur.left;
+    if (mostRight !== null) {
+      // cur有左孩子
+
+      // 找到左孩子的最右节点
+      while (mostRight.right !== null && mostRight.right !== cur) {
+        mostRight = mostRight.right;
+      }
+
+      if (mostRight.right === null) {
+        // 第一次经过cur
+        mostRight.right = cur;
+        cur = cur.left;
+      } else {
+        // 第二次经过cur
+        mostRight.right = null;
+        printEdge(cur.left);
+        cur = cur.right;
+      }
+    } else {
+      // cur没有左孩子
+      cur = cur.right;
     }
-    let cur = head;
-    let mostRight = null;
-
-    while (cur !== null) {
-        mostRight = cur.left;
-        if (mostRight !== null) {
-            // cur有左孩子
-
-            // 找到左孩子的最右节点
-            while (mostRight.right !== null && mostRight.right !== cur) {
-                mostRight = mostRight.right;
-            }
-
-            if (mostRight.right === null) {
-                // 第一次经过cur
-                mostRight.right = cur;
-                cur = cur.left;
-            } else {
-                // 第二次经过cur
-                mostRight.right = null;
-                printEdge(cur.left);
-                cur = cur.right;
-            }
-        } else {
-            // cur没有左孩子
-            cur = cur.right;
-        }
-    }
-    printEdge(head);
+  }
+  printEdge(head);
 }
 ```
 
@@ -400,23 +400,23 @@ function morrisPos(head) {
 
 ```js
 var levelOrder = function (root) {
-    if (root === null) return [];
-    let queue = [];
-    let curr = null;
-    let arr = [];
-    queue.push(root);
+  if (root === null) return [];
+  let queue = [];
+  let curr = null;
+  let arr = [];
+  queue.push(root);
 
-    while (queue.length !== 0) {
-        curr = queue.shift();
-        if (curr.left) {
-            queue.push(curr.left);
-        }
-        if (curr.right) {
-            queue.push(curr.right);
-        }
-        arr.push(curr.val);
+  while (queue.length !== 0) {
+    curr = queue.shift();
+    if (curr.left) {
+      queue.push(curr.left);
     }
-    return arr;
+    if (curr.right) {
+      queue.push(curr.right);
+    }
+    arr.push(curr.val);
+  }
+  return arr;
 };
 ```
 
@@ -428,40 +428,39 @@ var levelOrder = function (root) {
 
 ```js
 function w(node) {
-    if (head == null) {
-        return;
+  if (head == null) {
+    return;
+  }
+  const queue = [];
+  queue.push(head);
+  const levelMap = new Map(); //记录每个节点对应的层数
+  levelMap.set(head, 1); //放入第一个节点
+  let curLevel = 1; //当前节点所在的层数
+  let curLevelNodes = 0; //当前层发现几个节点数
+  let max = -Infinity; //哪一层发现的最多的节点数
+  while (queue.length !== 0) {
+    let cur = queue.shift();
+    let curNodeLevel = levelMap.get(cur); //节点的层数
+    if (curNodeLevel == curLevel) {
+      //节点是否是当前统计的层
+      curLevelNodes++;
+    } else {
+      max = Math.max(max, curLevelNodes);
+      curLevel++;
+      curLevelNodes = 1;
     }
-    const queue = [];
-    queue.push(head);
-    const levelMap = new Map(); //记录每个节点对应的层数
-    levelMap.set(head, 1); //放入第一个节点
-    let curLevel = 1; //当前节点所在的层数
-    let curLevelNodes = 0; //当前层发现几个节点数
-    let max = -Infinity; //哪一层发现的最多的节点数
-    while (queue.length !== 0) {
-        let cur = queue.shift();
-        let curNodeLevel = levelMap.get(cur); //节点的层数
-        if (curNodeLevel == curLevel) {
-            //节点是否是当前统计的层
-            curLevelNodes++;
-        } else {
-            max = Math.max(max, curLevelNodes);
-            curLevel++;
-            curLevelNodes = 1;
-        }
-        //先放左再放右边，记录每个点所在的层数
-        if (cur.left != null) {
-            levelMap.set(cur.left, curNodeLevel + 1);
-            queue.push(cur.left);
-        }
-        if (cur.right != null) {
-            levelMap.set(cur.right, curNodeLevel + 1);
-            queue.push(cur.right);
-        }
+    //先放左再放右边，记录每个点所在的层数
+    if (cur.left != null) {
+      levelMap.set(cur.left, curNodeLevel + 1);
+      queue.push(cur.left);
     }
+    if (cur.right != null) {
+      levelMap.set(cur.right, curNodeLevel + 1);
+      queue.push(cur.right);
+    }
+  }
 }
 ```
-
 
 **空节点计入宽度：**
 
@@ -469,108 +468,108 @@ function w(node) {
 
 **思路：**
 
--   宽度优先遍历二叉树
--   记录当前层、当前层节点下标
--   每层节点宽度为每层最后一个节点下标减去第一个节点下标加一
--   返回各层宽度最大的值
+- 宽度优先遍历二叉树
+- 记录当前层、当前层节点下标
+- 每层节点宽度为每层最后一个节点下标减去第一个节点下标加一
+- 返回各层宽度最大的值
 
 ```js
 var widthOfBinaryTree = function (root) {
-    // 宽度优先遍历
-    // 记录当前层和当前层的节点数
-    // 记录当前层最后一个节点（上一层最后一个节点的右节点）
-    if (root === null) return 0;
-    let curr = null;
-    let queue = [];
-    let arr = [[]];
-    root.val = 1;
-    queue.push(root);
+  // 宽度优先遍历
+  // 记录当前层和当前层的节点数
+  // 记录当前层最后一个节点（上一层最后一个节点的右节点）
+  if (root === null) return 0;
+  let curr = null;
+  let queue = [];
+  let arr = [[]];
+  root.val = 1;
+  queue.push(root);
 
-    // 判断是否是当前层
-    // 根据hashmap中的currNodeLevel和currLevel对比
-    let hashMap = new Map();
-    hashMap.set(root, 1);
-    let currLevel = 1;
-    let currNodeLevel = 1;
-    // 取模防止下标溢出
-    let mod = 10000000007;
-    // 返回的最大值
-    let max = -Infinity;
-    while (queue.length !== 0) {
-        curr = queue.shift();
-        currNodeLevel = hashMap.get(curr);
-        console.log(curr.val);
-        if (currNodeLevel !== currLevel) {
-            currLevel += 1;
-            arr[currLevel - 1] = [];
-        }
-        arr[currLevel - 1].push(curr.val);
-        if (curr.left) {
-            // 下标
-            curr.left.val = (2 * curr.val - 1) % mod;
-            hashMap.set(curr.left, currLevel + 1);
-            queue.push(curr.left);
-        }
-        if (curr.right) {
-            curr.right.val = (2 * curr.val) % mod;
-            hashMap.set(curr.right, currLevel + 1);
-            queue.push(curr.right);
-        }
+  // 判断是否是当前层
+  // 根据hashmap中的currNodeLevel和currLevel对比
+  let hashMap = new Map();
+  hashMap.set(root, 1);
+  let currLevel = 1;
+  let currNodeLevel = 1;
+  // 取模防止下标溢出
+  let mod = 10000000007;
+  // 返回的最大值
+  let max = -Infinity;
+  while (queue.length !== 0) {
+    curr = queue.shift();
+    currNodeLevel = hashMap.get(curr);
+    console.log(curr.val);
+    if (currNodeLevel !== currLevel) {
+      currLevel += 1;
+      arr[currLevel - 1] = [];
     }
-    for (let i = 0; i < arr.length; i++) {
-        max =
-            max > arr[i][arr[i].length - 1] - arr[i][0] + 1
-                ? max
-                : arr[i][arr[i].length - 1] - arr[i][0] + 1;
+    arr[currLevel - 1].push(curr.val);
+    if (curr.left) {
+      // 下标
+      curr.left.val = (2 * curr.val - 1) % mod;
+      hashMap.set(curr.left, currLevel + 1);
+      queue.push(curr.left);
     }
-    return max;
+    if (curr.right) {
+      curr.right.val = (2 * curr.val) % mod;
+      hashMap.set(curr.right, currLevel + 1);
+      queue.push(curr.right);
+    }
+  }
+  for (let i = 0; i < arr.length; i++) {
+    max =
+      max > arr[i][arr[i].length - 1] - arr[i][0] + 1
+        ? max
+        : arr[i][arr[i].length - 1] - arr[i][0] + 1;
+  }
+  return max;
 };
 ```
 
 **递归——深度优先遍历**
 
--   使用递归深度优先遍历
--   每次递归时记录当前层数、每层的节点及其下标
--   每层节点宽度为每层最后一个节点下标减去第一个节点下标加一
--   返回各层宽度最大的值
+- 使用递归深度优先遍历
+- 每次递归时记录当前层数、每层的节点及其下标
+- 每层节点宽度为每层最后一个节点下标减去第一个节点下标加一
+- 返回各层宽度最大的值
 
 ```js
 var widthOfBinaryTree = function (root) {
-    // 深度优先遍历
-    let arr = [];
-    let mod = 10000000007;
-    function getDeepNode(root, deep, val) {
-        if (root === null) return null;
-        if (!arr[deep]) {
-            arr[deep] = [];
-        }
-        arr[deep].push(val);
-        getDeepNode(root.left, deep + 1, (2 * val - 1) % mod);
-        getDeepNode(root.right, deep + 1, (2 * val) % mod);
+  // 深度优先遍历
+  let arr = [];
+  let mod = 10000000007;
+  function getDeepNode(root, deep, val) {
+    if (root === null) return null;
+    if (!arr[deep]) {
+      arr[deep] = [];
     }
-    getDeepNode(root, 0, 1);
-    let max = 1;
-    for (let i = 0; i < arr.length; i++) {
-        max =
-            max > arr[i][arr[i].length - 1] - arr[i][0] + 1
-                ? max
-                : arr[i][arr[i].length - 1] - arr[i][0] + 1;
-    }
-    return max;
+    arr[deep].push(val);
+    getDeepNode(root.left, deep + 1, (2 * val - 1) % mod);
+    getDeepNode(root.right, deep + 1, (2 * val) % mod);
+  }
+  getDeepNode(root, 0, 1);
+  let max = 1;
+  for (let i = 0; i < arr.length; i++) {
+    max =
+      max > arr[i][arr[i].length - 1] - arr[i][0] + 1
+        ? max
+        : arr[i][arr[i].length - 1] - arr[i][0] + 1;
+  }
+  return max;
 };
 ```
 
 ### 3. 树型 DP（动态规划）解法套路
 
-使用前提：如果题目求解目标是S规则，则求解流程可以定成以每一个节点为头结点的子树在S规则下的每一个答案，并且最终答案一定在其中。
+使用前提：如果题目求解目标是 S 规则，则求解流程可以定成以每一个节点为头结点的子树在 S 规则下的每一个答案，并且最终答案一定在其中。
 
-1. 树形dp套路第一步：以某个节点X为头节点的子树中，分析答案有哪些可能性，并且这种分析是以X的左子树、X的右子树和X整棵树的角度来考虑可能性的；
+1. 树形 dp 套路第一步：以某个节点 X 为头节点的子树中，分析答案有哪些可能性，并且这种分析是以 X 的左子树、X 的右子树和 X 整棵树的角度来考虑可能性的；
 
-2. 树形dp套路第二步：根据第一步的可能性分析，列出所有需要的信息；
+2. 树形 dp 套路第二步：根据第一步的可能性分析，列出所有需要的信息；
 
-3. 树形dp套路第三步：合并第二步的信息，对左树和右树提出同样的要求，并写出信息结构；
+3. 树形 dp 套路第三步：合并第二步的信息，对左树和右树提出同样的要求，并写出信息结构；
 
-4. 树形dp套路第四步：设计递归函数，递归函数是处理以X为头节点的情况下的答案。包括设计递归的basecase，默认直接得到左树和右树的所有信息，以及把可能性做整合，并且要返回第三步的信息结构这四个小步骤；
+4. 树形 dp 套路第四步：设计递归函数，递归函数是处理以 X 为头节点的情况下的答案。包括设计递归的 base case，默认直接得到左树和右树的所有信息，以及把可能性做整合，并且要返回第三步的信息结构这四个小步骤；
 
 **以搜索二叉树为例**
 
@@ -597,26 +596,26 @@ var widthOfBinaryTree = function (root) {
 
 ```js
 var isValidBST = function (root) {
-    if (root === null) {
-        return true;
-    }
-    let preValue = -Infinity;
-    let stack = [];
-    while (stack.length !== 0 || root !== null) {
-        if (root !== null) {
-            stack.push(root);
-            root = root.left;
-        } else {
-            root = stack.pop();
-            if (preValue >= root.val) {
-                return false;
-            } else {
-                preValue = root.val;
-            }
-            root = root.right;
-        }
-    }
+  if (root === null) {
     return true;
+  }
+  let preValue = -Infinity;
+  let stack = [];
+  while (stack.length !== 0 || root !== null) {
+    if (root !== null) {
+      stack.push(root);
+      root = root.left;
+    } else {
+      root = stack.pop();
+      if (preValue >= root.val) {
+        return false;
+      } else {
+        preValue = root.val;
+      }
+      root = root.right;
+    }
+  }
+  return true;
 };
 ```
 
@@ -635,135 +634,139 @@ var isValidBST = function (root) {
 
 ```js
 function process(root) {
-    if (root === null) {
-        return null;
-    }
+  if (root === null) {
+    return null;
+  }
 
-    let leftData = process(root.left);
-    let rightData = process(root.right);
-    let isBST = true;
-    let max = root.val;
-    let min = root.val;
-    if (
-        (leftData !== null && (!leftData.isBST || leftData.max >= max)) ||
-        (rightData !== null && (!rightData.isBST || rightData.min <= min))
-    ) {
-        isBST = false;
-    }
+  let leftData = process(root.left);
+  let rightData = process(root.right);
+  let isBST = true;
+  let max = root.val;
+  let min = root.val;
+  if (
+    (leftData !== null && (!leftData.isBST || leftData.max >= max)) ||
+    (rightData !== null && (!rightData.isBST || rightData.min <= min))
+  ) {
+    isBST = false;
+  }
 
-    if (leftData !== null) {
-        max = max > leftData.max ? max : leftData.max;
-        min = min < leftData.min ? min : leftData.min;
-    }
-    if (rightData !== null) {
-        max = max > rightData.max ? max : rightData.max;
-        min = min < rightData.min ? min : rightData.min;
-    }
+  if (leftData !== null) {
+    max = max > leftData.max ? max : leftData.max;
+    min = min < leftData.min ? min : leftData.min;
+  }
+  if (rightData !== null) {
+    max = max > rightData.max ? max : rightData.max;
+    min = min < rightData.min ? min : rightData.min;
+  }
 
-    return {
-        isBST,
-        max,
-        min,
-    };
+  return {
+    isBST,
+    max,
+    min,
+  };
 }
 var isValidBST = function (root) {
-    return process(root).isBST;
+  return process(root).isBST;
 };
 ```
 
 ### 二叉树节点间的最大距离问题
-从二叉树的节点a出发，可以向上或者向下走，但沿途的节点只能经过一次，到达节点b时路径上的节点个数叫作a到b的距离，那么二叉树任何两个节点之间都有距离，求整棵树上的最大距离。
+
+从二叉树的节点 a 出发，可以向上或者向下走，但沿途的节点只能经过一次，到达节点 b 时路径上的节点个数叫作 a 到 b 的距离，那么二叉树任何两个节点之间都有距离，求整棵树上的最大距离。
 
 **思路：**
 
-1. 设以X为头结点的整棵树的最大距离分两种情况讨论：
-   - X不参与，要求返回的信息是左子树的最大距离maxdistance和右子树的最大距离maxdistance。maxdistance在左子树的最大距离maxdistance和右子树的最大距离中较大者；
-   - X参与，maxdistance为左高度height+1+右高度height；
-   - maxdistance为`max(X不参与,X参与)`
+1. 设以 X 为头结点的整棵树的最大距离分两种情况讨论：
+
+   - X 不参与，要求返回的信息是左子树的最大距离 maxdistance 和右子树的最大距离 maxdistance。maxdistance 在左子树的最大距离 maxdistance 和右子树的最大距离中较大者；
+   - X 参与，maxdistance 为左高度 height+1+右高度 height；
+   - maxdistance 为`max(X不参与,X参与)`
 
 2. 返回值结构：maxdistance、height;
 
 ```js
 function getMaxDistance(head) {
-    // 返回值结构
-    function Info(maxDistance, height) {
-        this.maxDistance = maxDistance;
-        this.height = height;
-    }
-    // base case
-    if (head === null) {
-        return new Info(0, 0);
-    }
-    const { maxDistance: leftDistance, height: leftHeight } = getMaxDistance(
-        head.left
-    );
-    const { maxDistance: rightDistance, height: rightHeight } = getMaxDistance(
-        head.right
-    );
+  // 返回值结构
+  function Info(maxDistance, height) {
+    this.maxDistance = maxDistance;
+    this.height = height;
+  }
+  // base case
+  if (head === null) {
+    return new Info(0, 0);
+  }
+  const { maxDistance: leftDistance, height: leftHeight } = getMaxDistance(
+    head.left
+  );
+  const { maxDistance: rightDistance, height: rightHeight } = getMaxDistance(
+    head.right
+  );
 
-    let height = Math.max(leftHeight, rightHeight) + 1;
-    let maxDistance = Math.max(
-        leftHeight + rightHeight + 1,
-        Math.max(leftDistance, rightDistance)
-    );
+  let height = Math.max(leftHeight, rightHeight) + 1;
+  let maxDistance = Math.max(
+    leftHeight + rightHeight + 1,
+    Math.max(leftDistance, rightDistance)
+  );
 
-    return new Info(maxDistance, height);
+  return new Info(maxDistance, height);
 }
 ```
 
 ### 派对的最大快乐值
+
 员工信息的定义如下:
+
 ```tsx
 interface Employee {
-    happy: number; // 这名员工可以带来的快乐值
-    subordinates: Employee[];  // 这名员工有哪些直接下级
+  happy: number; // 这名员工可以带来的快乐值
+  subordinates: Employee[]; // 这名员工有哪些直接下级
 }
 ```
-公司的每个员工都符合 Employee 类的描述。整个公司的人员结构可以看作是一棵标准的、 没有环的多叉树。树的头节点是公司唯一的老板。除老板之外的每个员工都有唯一的直接上级。 叶节点是没有任何下属的基层员工(subordinates列表为空)，除基层员工外，每个员工都有一个或多个直接下级。
 
-这个公司现在要办party，你可以决定哪些员工来，哪些员工不来。但是要遵循如下规则。
+公司的每个员工都符合 Employee 类的描述。整个公司的人员结构可以看作是一棵标准的、 没有环的多叉树。树的头节点是公司唯一的老板。除老板之外的每个员工都有唯一的直接上级。 叶节点是没有任何下属的基层员工(subordinates 列表为空)，除基层员工外，每个员工都有一个或多个直接下级。
+
+这个公司现在要办 party，你可以决定哪些员工来，哪些员工不来。但是要遵循如下规则。
 
 1. 如果某个员工来了，那么这个员工的所有直接下级都不能来
 2. 派对的整体快乐值是所有到场员工快乐值的累加
 3. 你的目标是让派对的整体快乐值尽量大
 
-
-给定一棵多叉树的头节点boss，请返回派对的最大快乐值。
+给定一棵多叉树的头节点 boss，请返回派对的最大快乐值。
 
 **思路：**
 
-1. 以X为头获得的最大快乐值分为两种情况讨论(X的subordinates为[A,B,C,...])：
-   - X参与：X快乐值+A不来的整棵树的最大快乐值+B不来的整棵树的最大快乐值+C不来的整棵树的最大快乐值+...
-   - X不参与：0+max{A不来的整棵树的最大快乐值，A来的整棵树的最大快乐值}+max{B来的整棵树的最大快乐值，B来的整棵树的最大快乐值}+...
+1. 以 X 为头获得的最大快乐值分为两种情况讨论(X 的 subordinates 为[A,B,C,...])：
+   - X 参与：X 快乐值+A 不来的整棵树的最大快乐值+B 不来的整棵树的最大快乐值+C 不来的整棵树的最大快乐值+...
+   - X 不参与：0+max{A 不来的整棵树的最大快乐值，A 来的整棵树的最大快乐值}+max{B 来的整棵树的最大快乐值，B 来的整棵树的最大快乐值}+...
 
 ```js
 function getMaxHappiness(head) {
-    function Info(headNotIn, headIn) {
-        // headNotIn: 头节点不参与整个树的最大快乐值
-        // headIn: 头节点参与整个树的最大快乐值
-        this.headNotIn = headNotIn;
-        this.headIn = headIn;
-    }
-    function process(head) {
-        if (head === null) {
-            return new Info(0, 0);
-        }
-
-        let headNotInMaxHappiness = 0,
-            headInMaxHappiness = head.happy;
-
-        for (let i = 0; i < head.subordinates.length; i++) {
-            const { headNotIn, headIn } = process(head.subordinates[i]);
-            headNotInMaxHappiness += Math.max(headNotIn, headIn);
-            headInMaxHappiness += headNotIn;
-        }
-
-        return new Info(headNotInMaxHappiness, headInMaxHappiness);
+  function Info(headNotIn, headIn) {
+    // headNotIn: 头节点不参与整个树的最大快乐值
+    // headIn: 头节点参与整个树的最大快乐值
+    this.headNotIn = headNotIn;
+    this.headIn = headIn;
+  }
+  function process(head) {
+    if (head === null) {
+      return new Info(0, 0);
     }
 
-    const { headNotIn, headIn } = process(head);
+    let headNotInMaxHappiness = 0,
+      headInMaxHappiness = head.happy;
 
-    return Math.max(headNotIn, headIn);
+    for (let i = 0; i < head.subordinates.length; i++) {
+      const { headNotIn, headIn } = process(head.subordinates[i]);
+      headNotInMaxHappiness += Math.max(headNotIn, headIn);
+      headInMaxHappiness += headNotIn;
+    }
+
+    return new Info(headNotInMaxHappiness, headInMaxHappiness);
+  }
+
+  const { headNotIn, headIn } = process(head);
+
+  return Math.max(headNotIn, headIn);
 }
 ```
 
@@ -783,34 +786,34 @@ function getMaxHappiness(head) {
 
 ```js
 var isCompleteTree = function (root) {
-    // 宽度优先遍历
-    let queue = [];
-    let curr = null;
-    // 记录后续节点是否需要为叶子节点
-    let isLeaf = false;
-    queue.push(root);
-    while (queue.length !== 0) {
-        curr = queue.shift();
-        if (curr.left === null && curr.right !== null) {
-            // 有右子树 无左子树 返回false
-            return false;
-        }
-        if (isLeaf && (curr.left !== null || curr.right !== null)) {
-            // 必须为叶子节点
-            return false;
-        }
-        if (curr.left === null || curr.right === null) {
-            // 遇到第一个节点左右子节点不全时，isLeaf转为true
-            isLeaf = true;
-        }
-        if (curr.left !== null) {
-            queue.push(curr.left);
-        }
-        if (curr.right !== null) {
-            queue.push(curr.right);
-        }
+  // 宽度优先遍历
+  let queue = [];
+  let curr = null;
+  // 记录后续节点是否需要为叶子节点
+  let isLeaf = false;
+  queue.push(root);
+  while (queue.length !== 0) {
+    curr = queue.shift();
+    if (curr.left === null && curr.right !== null) {
+      // 有右子树 无左子树 返回false
+      return false;
     }
-    return true;
+    if (isLeaf && (curr.left !== null || curr.right !== null)) {
+      // 必须为叶子节点
+      return false;
+    }
+    if (curr.left === null || curr.right === null) {
+      // 遇到第一个节点左右子节点不全时，isLeaf转为true
+      isLeaf = true;
+    }
+    if (curr.left !== null) {
+      queue.push(curr.left);
+    }
+    if (curr.right !== null) {
+      queue.push(curr.right);
+    }
+  }
+  return true;
 };
 ```
 
@@ -820,28 +823,28 @@ var isCompleteTree = function (root) {
 
 ```js
 function isFBTProcess(root) {
-    if (root === null) {
-        return {
-            N: 0,
-            L: 0,
-        };
-    }
-    let leftData = isFBTProcess(root.left);
-    let rightData = isFBTProcess(root.right);
-
+  if (root === null) {
     return {
-        N: leftData.N + rightData.N + 1,
-        L: Math.max(leftData.L, rightData.L) + 1,
+      N: 0,
+      L: 0,
     };
+  }
+  let leftData = isFBTProcess(root.left);
+  let rightData = isFBTProcess(root.right);
+
+  return {
+    N: leftData.N + rightData.N + 1,
+    L: Math.max(leftData.L, rightData.L) + 1,
+  };
 }
 function isFBT(root) {
-    // 满二叉树需的节点数和深度需满足 N = 2 ^ L - 1
-    // 递归 左子树的深度和节点数 右子树的深度和节点数
-    if (root === null) {
-        return true;
-    }
-    let { N, L } = isFBTProcess(root);
-    return N === 2 ** L - 1;
+  // 满二叉树需的节点数和深度需满足 N = 2 ^ L - 1
+  // 递归 左子树的深度和节点数 右子树的深度和节点数
+  if (root === null) {
+    return true;
+  }
+  let { N, L } = isFBTProcess(root);
+  return N === 2 ** L - 1;
 }
 ```
 
@@ -861,29 +864,29 @@ function isFBT(root) {
 
 ```js
 var isBalanced = function (root) {
-    // 左子树为平衡二叉树 右子树为平衡二叉树 左右子树深度差不超过1
-    // 递归信息 是否为平衡二叉树 深度
-    return isBalancedProcess(root).isBalancedTree;
+  // 左子树为平衡二叉树 右子树为平衡二叉树 左右子树深度差不超过1
+  // 递归信息 是否为平衡二叉树 深度
+  return isBalancedProcess(root).isBalancedTree;
 };
 function isBalancedProcess(root) {
-    if (root === null) {
-        return {
-            isBalancedTree: true,
-            L: 0,
-        };
-    }
-
-    let leftData = isBalancedProcess(root.left);
-    let rightData = isBalancedProcess(root.right);
-    let isBalancedTree =
-        leftData.isBalancedTree &&
-        rightData.isBalancedTree &&
-        Math.abs(leftData.L - rightData.L) < 2;
-    let L = Math.max(leftData.L, rightData.L) + 1;
+  if (root === null) {
     return {
-        isBalancedTree,
-        L,
+      isBalancedTree: true,
+      L: 0,
     };
+  }
+
+  let leftData = isBalancedProcess(root.left);
+  let rightData = isBalancedProcess(root.right);
+  let isBalancedTree =
+    leftData.isBalancedTree &&
+    rightData.isBalancedTree &&
+    Math.abs(leftData.L - rightData.L) < 2;
+  let L = Math.max(leftData.L, rightData.L) + 1;
+  return {
+    isBalancedTree,
+    L,
+  };
 }
 ```
 
@@ -893,46 +896,46 @@ function isBalancedProcess(root) {
 
 **思路 1：**
 
--   使用`hashMap`存储所有节点的父节点（root 的父节点为 root）
--   通过`hasMap`遍历 p 的所有祖先，并加入`hashset`
--   遍历 q 的祖先，并判断是否再`hashset`中，如果`hashset`中存在返回当前节点
+- 使用`hashMap`存储所有节点的父节点（root 的父节点为 root）
+- 通过`hasMap`遍历 p 的所有祖先，并加入`hashset`
+- 遍历 q 的祖先，并判断是否再`hashset`中，如果`hashset`中存在返回当前节点
 
 ```js
 var lowestCommonAncestor = function (root, p, q) {
-    let hashMap = new Map();
-    let queue = [];
-    let curr = null;
-    queue.push(root);
-    hashMap.set(root, root);
+  let hashMap = new Map();
+  let queue = [];
+  let curr = null;
+  queue.push(root);
+  hashMap.set(root, root);
 
-    while (queue.length !== 0) {
-        curr = queue.shift();
+  while (queue.length !== 0) {
+    curr = queue.shift();
 
-        if (curr.left) {
-            queue.push(curr.left);
-            hashMap.set(curr.left, curr);
-        }
-        if (curr.right) {
-            queue.push(curr.right);
-            hashMap.set(curr.right, curr);
-        }
+    if (curr.left) {
+      queue.push(curr.left);
+      hashMap.set(curr.left, curr);
     }
-
-    let hashSet = new Set();
-    curr = p;
-    while (curr !== hashMap.get(curr)) {
-        hashSet.add(curr);
-        curr = hashMap.get(curr);
+    if (curr.right) {
+      queue.push(curr.right);
+      hashMap.set(curr.right, curr);
     }
+  }
 
-    curr = q;
-    while (curr !== hashMap.get(curr)) {
-        if (hashSet.has(curr)) {
-            return curr;
-        }
-        curr = hashMap.get(curr);
+  let hashSet = new Set();
+  curr = p;
+  while (curr !== hashMap.get(curr)) {
+    hashSet.add(curr);
+    curr = hashMap.get(curr);
+  }
+
+  curr = q;
+  while (curr !== hashMap.get(curr)) {
+    if (hashSet.has(curr)) {
+      return curr;
     }
-    return root;
+    curr = hashMap.get(curr);
+  }
+  return root;
 };
 ```
 
@@ -940,29 +943,29 @@ var lowestCommonAncestor = function (root, p, q) {
 
 1. p 是 q 的 `LCA` (最低公共祖先), 或者 q 是 p 的 `LCA`
 
-    > 那么我们直接把那个更上面的那个返回出来，另外一个没有遇到 (根本不去), 代表最后只有一个然后另外一个是 null
-    >
-    > 那么整体返回的就是那一个，也就是对的
+   > 那么我们直接把那个更上面的那个返回出来，另外一个没有遇到 (根本不去), 代表最后只有一个然后另外一个是 null
+   >
+   > 那么整体返回的就是那一个，也就是对的
 
 2. p 和 q 不互为 `LCA`, 要往上才能找到
 
-    > 那么这两个都会被找到然后往上传，一直传到他们的 `LCA` 就会直接返回那个 `LCA`
+   > 那么这两个都会被找到然后往上传，一直传到他们的 `LCA` 就会直接返回那个 `LCA`
 
 ```js
 var lowestCommonAncestor = function (root, p, q) {
-    if (root === null || root === p || root === q) {
-        // p 是 q的 `LCA` (最低公共祖先), 或者 q是 p的 `LCA`
-        return root;
-    }
+  if (root === null || root === p || root === q) {
+    // p 是 q的 `LCA` (最低公共祖先), 或者 q是 p的 `LCA`
+    return root;
+  }
 
-    let left = lowestCommonAncestor(root.left, p, q);
-    let right = lowestCommonAncestor(root.right, p, q);
+  let left = lowestCommonAncestor(root.left, p, q);
+  let right = lowestCommonAncestor(root.right, p, q);
 
-    if (left !== null && right !== null) {
-        // p和q一路向上传递，直到在LCA处汇聚，返回LCA
-        return root;
-    }
-    return left !== null ? left : right;
+  if (left !== null && right !== null) {
+    // p和q一路向上传递，直到在LCA处汇聚，返回LCA
+    return root;
+  }
+  return left !== null ? left : right;
 };
 ```
 
@@ -994,41 +997,41 @@ public class Node {
 
 给定节点 X 找后继节点，有两种情况:
 
--   X 有右子树时，那么右子树的**最左**的 leaf 节点就是 X 的后继节点 (因为中序遍历时，遍历到 X 节点后下一步要遍历其右子树，而在遍历 X 节点的右子树时需先遍历右子树的左子树，这样 X 节点的**后继为右子树的最左 leaf 节点**)
--   X 没有右子树，那么判断 X 节点是否是父节点的左子树节点
-    -   如果是，那么这个父亲就是 X 的后继节点
-    -   如果不是，那就向上遍历父节点，判断所遍历的节点是否是其父节点的左子树节点
-        -   如果是此节点为 X 的后继节点
-        -   如果直到 root 还未找到，那就代表 X 节点 是整颗树最右的叶节点，中序排序最后一个节点，没有后继节点，返回 null
+- X 有右子树时，那么右子树的**最左**的 leaf 节点就是 X 的后继节点 (因为中序遍历时，遍历到 X 节点后下一步要遍历其右子树，而在遍历 X 节点的右子树时需先遍历右子树的左子树，这样 X 节点的**后继为右子树的最左 leaf 节点**)
+- X 没有右子树，那么判断 X 节点是否是父节点的左子树节点
+  - 如果是，那么这个父亲就是 X 的后继节点
+  - 如果不是，那就向上遍历父节点，判断所遍历的节点是否是其父节点的左子树节点
+    - 如果是此节点为 X 的后继节点
+    - 如果直到 root 还未找到，那就代表 X 节点 是整颗树最右的叶节点，中序排序最后一个节点，没有后继节点，返回 null
 
 ```js
 function getSuccessorNode(head) {
-    if (head === null) {
-        return null;
-    }
-    // 判断head是否有右节点
-    if (head.right !== null) {
-        // 返回右子树中最深的左节点
-        return getLeftNode(head.right);
-    }
-    let parent = head.parent;
-    // 无右节点，则需要向上找到第一个为父亲节点左节点的节点
-    while (parent !== null && head !== parent.left) {
-        head = parent;
-        parent = head.parent;
-    }
-    return parent;
+  if (head === null) {
+    return null;
+  }
+  // 判断head是否有右节点
+  if (head.right !== null) {
+    // 返回右子树中最深的左节点
+    return getLeftNode(head.right);
+  }
+  let parent = head.parent;
+  // 无右节点，则需要向上找到第一个为父亲节点左节点的节点
+  while (parent !== null && head !== parent.left) {
+    head = parent;
+    parent = head.parent;
+  }
+  return parent;
 }
 
 function getLeftNode(head) {
-    if (head === null) {
-        return null;
-    }
-    if (head.left !== null) {
-        return getLeftNode(head.left);
-    } else {
-        return head;
-    }
+  if (head === null) {
+    return null;
+  }
+  if (head.left !== null) {
+    return getLeftNode(head.left);
+  } else {
+    return head;
+  }
 }
 ```
 
@@ -1086,9 +1089,9 @@ public static Node reconPreOrder(Queue<String> queue){
 
 整个就是二叉树
 
--   左子树都是凹折痕
--   右子树都是凸折痕
--   然后整个的头节点就是凹折痕
+- 左子树都是凹折痕
+- 右子树都是凸折痕
+- 然后整个的头节点就是凹折痕
 
 ```java
 //递归过程

@@ -4,13 +4,13 @@
 
 1. [邻接表](https://so.csdn.net/so/search?q=邻接表&spm=1001.2101.3001.7020)法
 
-    由两部分组成：表头结点表和边表。
+   由两部分组成：表头结点表和边表。
 
-    邻接表中每个单链表的第一个结点存放有关顶点的信息，把这一结点看成链表的表头，其余结点存放有关边的信息
+   邻接表中每个单链表的第一个结点存放有关顶点的信息，把这一结点看成链表的表头，其余结点存放有关边的信息
 
-    （1）表头结点表：包括数据域和链域，数据域存储顶点的名称，链域用于指向链表中第一个结点（与顶点邻接的第一个顶点）
+   （1）表头结点表：包括数据域和链域，数据域存储顶点的名称，链域用于指向链表中第一个结点（与顶点邻接的第一个顶点）
 
-    （2）边表：包括邻接点域（指示与顶点邻接的点在图中的位置，即数组下标）、数据域（存储和边相关的信息，如权值）、链域（指示与顶点邻接的下一条边的结点）。
+   （2）边表：包括邻接点域（指示与顶点邻接的点在图中的位置，即数组下标）、数据域（存储和边相关的信息，如权值）、链域（指示与顶点邻接的下一条边的结点）。
 
 2. 邻接矩阵
 
@@ -18,22 +18,22 @@
 
 ```js
 function Graph() {
-    this.nodes = new Map();
-    this.edges = new Set();
+  this.nodes = new Map();
+  this.edges = new Set();
 }
 
 function Node(val) {
-    this.val = val;
-    this.in = 0;
-    this.out = 0;
-    this.nexts = [];
-    this.edges = [];
+  this.val = val;
+  this.in = 0;
+  this.out = 0;
+  this.nexts = [];
+  this.edges = [];
 }
 
 function Edge(wight, from, to) {
-    this.wight = wight;
-    this.from = from;
-    this.to = to;
+  this.wight = wight;
+  this.from = from;
+  this.to = to;
 }
 ```
 
@@ -46,25 +46,25 @@ function Edge(wight, from, to) {
 
 ```js
 function bfs(node) {
-    if (node === null) return null;
+  if (node === null) return null;
 
-    let queen = [];
-    let set = new Set();
-    queen.push(node);
-    set.add(node);
-    let curr = null;
+  let queen = [];
+  let set = new Set();
+  queen.push(node);
+  set.add(node);
+  let curr = null;
 
-    while (queen.length !== 0) {
-        curr = queen.shift();
-        console.log(curr.val, curr.nexts);
+  while (queen.length !== 0) {
+    curr = queen.shift();
+    console.log(curr.val, curr.nexts);
 
-        for (let next of curr.nexts) {
-            if (!set.has(next)) {
-                queen.push(next);
-                set.add(next);
-            }
-        }
+    for (let next of curr.nexts) {
+      if (!set.has(next)) {
+        queen.push(next);
+        set.add(next);
+      }
     }
+  }
 }
 ```
 
@@ -77,29 +77,29 @@ function bfs(node) {
 
 ```js
 function dfs(node) {
-    if (node === null) return null;
+  if (node === null) return null;
 
-    let stack = [];
-    let set = new Set();
-    stack.push(node);
-    set.add(node);
-    let curr = node;
+  let stack = [];
+  let set = new Set();
+  stack.push(node);
+  set.add(node);
+  let curr = node;
 
-    console.log("dfs", curr.val, curr.nexts);
-    while (stack.length !== 0) {
-        curr = stack.pop();
+  console.log("dfs", curr.val, curr.nexts);
+  while (stack.length !== 0) {
+    curr = stack.pop();
 
-        for (let next of curr.nexts) {
-            if (!set.has(next)) {
-                // 将当前节点和下个节点都压回栈中
-                stack.push(curr);
-                stack.push(next);
-                set.add(next);
-                console.log(next.val);
-                break;
-            }
-        }
+    for (let next of curr.nexts) {
+      if (!set.has(next)) {
+        // 将当前节点和下个节点都压回栈中
+        stack.push(curr);
+        stack.push(next);
+        set.add(next);
+        console.log(next.val);
+        break;
+      }
     }
+  }
 }
 ```
 
@@ -114,31 +114,31 @@ function dfs(node) {
 
 ```js
 function sortedTopology(G) {
-    let hashMap = new Map();
-    let queen = [];
-    // 将全部节点加入hashMap并记录节点入度，如果节点入度为0加入队列中
-    for (let node of G.nodes.values()) {
-        hashMap.set(node, node.in);
-        if (node.in === 0) {
-            queen.push(node);
-        }
+  let hashMap = new Map();
+  let queen = [];
+  // 将全部节点加入hashMap并记录节点入度，如果节点入度为0加入队列中
+  for (let node of G.nodes.values()) {
+    hashMap.set(node, node.in);
+    if (node.in === 0) {
+      queen.push(node);
     }
+  }
 
-    let result = [];
-    let curr;
-    while (queen.length !== 0) {
-        curr = queen.shift();
-        result.push(curr);
+  let result = [];
+  let curr;
+  while (queen.length !== 0) {
+    curr = queen.shift();
+    result.push(curr);
 
-        for (let next of curr.nexts) {
-            hashMap.set(next, hashMap.get(next) - 1);
-            console.log(next, hashMap.get(next));
-            if (hashMap.get(next) === 0) {
-                queen.push(next);
-            }
-        }
+    for (let next of curr.nexts) {
+      hashMap.set(next, hashMap.get(next) - 1);
+      console.log(next, hashMap.get(next));
+      if (hashMap.get(next) === 0) {
+        queen.push(next);
+      }
     }
-    return result;
+  }
+  return result;
 }
 ```
 
@@ -160,56 +160,56 @@ function sortedTopology(G) {
 
 ```js
 class MySets {
-    constructor(graph) {
-        this.graph = graph;
-        this.nodes = graph.nodes;
-        this.setMap = new Map();
-        this.mySets(this.nodes);
+  constructor(graph) {
+    this.graph = graph;
+    this.nodes = graph.nodes;
+    this.setMap = new Map();
+    this.mySets(this.nodes);
+  }
+  mySets(nodes) {
+    for (let node of nodes.values()) {
+      let set = new Set();
+      set.add(node);
+      this.setMap.set(node, set);
     }
-    mySets(nodes) {
-        for (let node of nodes.values()) {
-            let set = new Set();
-            set.add(node);
-            this.setMap.set(node, set);
-        }
-    }
-    isSameSet(from, to) {
-        let fromSet = this.setMap.get(from);
-        let toSet = this.setMap.get(to);
-        return fromSet === toSet;
-    }
-    union(from, to) {
-        let fromSet = this.setMap.get(from);
-        let toSet = this.setMap.get(to);
-        for (let node of toSet) {
-            fromSet.add(node);
+  }
+  isSameSet(from, to) {
+    let fromSet = this.setMap.get(from);
+    let toSet = this.setMap.get(to);
+    return fromSet === toSet;
+  }
+  union(from, to) {
+    let fromSet = this.setMap.get(from);
+    let toSet = this.setMap.get(to);
+    for (let node of toSet) {
+      fromSet.add(node);
 
-            this.setMap.set(node, fromSet);
-        }
+      this.setMap.set(node, fromSet);
     }
+  }
 }
 ```
 
 ```js
 function kruskalMST(graph) {
-    let unionFind = new MySets(graph);
+  let unionFind = new MySets(graph);
 
-    let queue = [];
-    for (let edge of graph.edges) {
-        queue.push(edge);
+  let queue = [];
+  for (let edge of graph.edges) {
+    queue.push(edge);
+  }
+  queue.sort((a, b) => a.weight - b.weight);
+  let result = new Set();
+  for (let edge of queue) {
+    let fromNode = edge.from;
+    let toNode = edge.to;
+    if (!unionFind.isSameSet(fromNode, toNode)) {
+      result.add(edge);
+      unionFind.union(fromNode, toNode);
     }
-    queue.sort((a, b) => a.weight - b.weight);
-    let result = new Set();
-    for (let edge of queue) {
-        let fromNode = edge.from;
-        let toNode = edge.to;
-        if (!unionFind.isSameSet(fromNode, toNode)) {
-            result.add(edge);
-            unionFind.union(fromNode, toNode);
-        }
-    }
+  }
 
-    return result;
+  return result;
 }
 ```
 
@@ -220,8 +220,8 @@ function kruskalMST(graph) {
 **思路：**
 
 1. 从任意节点开始，搜索其所有 edge，找到权重最小的 edge，看这个 edge 的节点是否已经访问过（加入 set）
-    - 已经访问过，则在剩下的 edge 中选择最小的重复判断
-    - 没有访问过，将对应的节点加入 set 中并在 result 中记录这条 edge。然后将新记录到 set 中的节点的所有边加入小根堆中，在寻找权重最小的 edge 重复上述操作。
+   - 已经访问过，则在剩下的 edge 中选择最小的重复判断
+   - 没有访问过，将对应的节点加入 set 中并在 result 中记录这条 edge。然后将新记录到 set 中的节点的所有边加入小根堆中，在寻找权重最小的 edge 重复上述操作。
 
 (这期间可能会把同一个 edge 多次存入到小根堆，这个没事，因为之后我们取出来都会看那个 toNode 是不是已经是在 set 了，如已经在了那个 edge 也不会被处理)
 结果就是找到最小生成树，result 存的都是一个一个最小生成树的 edges
@@ -236,17 +236,17 @@ function kruskalMST(graph) {
 
 2. 从当前已知的路径中选择长度最短的将其顶点加入 S 作为确定找到的最短路径的顶点。
 
--   一开始存答案的 hashmap, 每个 key 对应一个图中的节点然后 value 就是 source 到那个节点的最小 weight, 一开始 source 到自己是 0 其他都是无限
-    先从 source 出发，然后找到他所有的 edges
--   然后把当前自己的 hashmap 中的值加上每个 edge 的 weight 值然后跟那个 edge 连向的节点当前数组中 hashmap 中的值比较，然后把 hashmap 值改成最小的那个值
--   处理完这个所有 edges, 我们就相当于结束了由 source 开始的所有 edges (我们也可以锁定当前节点在 hashmap 中的值，因为是第一次所以我们这次锁定就是 source 自己再 hashmap 中的值也就是 0, 他的距离到他自己就是 0)
--   然后我们从 hashmap 中选出除了以及当过当前节点的比如说 source 的所拥有的最小值的那个节点，然后让那个节点进行一样的操作 (看 edges 然后对于所有的 edges 的 toNodes 让他们的更新), 然后之后我们就把当前的这个节点在 hashmap 中的值锁死，然后让下一个…so on…
--   直到所有的都锁死了就结束，此时 hashmap 中存的值就是从 source 开始到图中每一个节点所需要的最小 weight (如果没有路就是无限)
+- 一开始存答案的 hashmap, 每个 key 对应一个图中的节点然后 value 就是 source 到那个节点的最小 weight, 一开始 source 到自己是 0 其他都是无限
+  先从 source 出发，然后找到他所有的 edges
+- 然后把当前自己的 hashmap 中的值加上每个 edge 的 weight 值然后跟那个 edge 连向的节点当前数组中 hashmap 中的值比较，然后把 hashmap 值改成最小的那个值
+- 处理完这个所有 edges, 我们就相当于结束了由 source 开始的所有 edges (我们也可以锁定当前节点在 hashmap 中的值，因为是第一次所以我们这次锁定就是 source 自己再 hashmap 中的值也就是 0, 他的距离到他自己就是 0)
+- 然后我们从 hashmap 中选出除了以及当过当前节点的比如说 source 的所拥有的最小值的那个节点，然后让那个节点进行一样的操作 (看 edges 然后对于所有的 edges 的 toNodes 让他们的更新), 然后之后我们就把当前的这个节点在 hashmap 中的值锁死，然后让下一个…so on…
+- 直到所有的都锁死了就结束，此时 hashmap 中存的值就是从 source 开始到图中每一个节点所需要的最小 weight (如果没有路就是无限)
 
--   初始化 hashMap，key 为图中节点，value 为 source 到对应节点的最短路径。初始化时 source 到自己的最小路径为 0
--   初始化 hashSet 记录访问过的节点，锁死这个节点
--   在 hashMap 中找为被锁定最小距离的节点（此时只有 source）
--   获取当前节点的 distance，遍历其所有的边，判断 toNode 是否存在于 hashMap 中，如果不存在此时 source 到节点的路径为无穷大，此时更新距离时直接将权重和路径求和；否则更新为之前的 distance 和 distance+weight 中较小值。将当前节点加入 hashSet 中锁死。
+- 初始化 hashMap，key 为图中节点，value 为 source 到对应节点的最短路径。初始化时 source 到自己的最小路径为 0
+- 初始化 hashSet 记录访问过的节点，锁死这个节点
+- 在 hashMap 中找为被锁定最小距离的节点（此时只有 source）
+- 获取当前节点的 distance，遍历其所有的边，判断 toNode 是否存在于 hashMap 中，如果不存在此时 source 到节点的路径为无穷大，此时更新距离时直接将权重和路径求和；否则更新为之前的 distance 和 distance+weight 中较小值。将当前节点加入 hashSet 中锁死。
 
 ```js
 function dijkstra(head) {
@@ -255,30 +255,30 @@ function dijkstra(head) {
     // 记录已经求出最短路径的点
     let hashSet = new Set();
 
-    hashMap.set(head, 0);
-    let minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet);
-    while (minNode !== null) {
-        let currDistance = hashMap.get(minNode);
+  hashMap.set(head, 0);
+  let minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet);
+  while (minNode !== null) {
+    let currDistance = hashMap.get(minNode);
 
-        let edges = minNode.edges;
-        for (let edge of edges) {
-            if (!hashMap.has(edge.to)) {
-                hashMap.set(edge.to, currDistance + edge.weight);
-            }
+    let edges = minNode.edges;
+    for (let edge of edges) {
+      if (!hashMap.has(edge.to)) {
+        hashMap.set(edge.to, currDistance + edge.weight);
+      }
 
-            let distance = hashMap.get(edge.to);
-            hashMap.set(edge.to, Math.min(distance, currDistance + edge.weight));
-        }
-        hashSet.add(minNode)
-        minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet)
+      let distance = hashMap.get(edge.to);
+      hashMap.set(edge.to, Math.min(distance, currDistance + edge.weight));
     }
-    return hashMap;
+    hashSet.add(minNode);
+    minNode = getMinDistanceAndUmSelectNode(hashMap, hashSet);
+  }
+  return hashMap;
 }
 
 // 找到路径最短且没有求出最短路径的点
 function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
-    let minDistance = Infinity;
-    let minNode = null;
+  let minDistance = Infinity;
+  let minNode = null;
 
     for (let node of hashMap.keys()) {
         if (hashMap.get(node) < minDistance && !hashSet.has(node)) {
@@ -286,12 +286,11 @@ function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
             minDistance = hashMap.get(node);
         }
     }
+  }
 
-    return minNode;
+  return minNode;
 }
-
 ```
-
 
 **优化：**
 一个优化 -> 在选择我们没有处理过且值最小的节点的时候是遍历的方式，可以使用堆结构来存储，然后每次就是存还没处理的，最小值的在堆顶，然后处理过的让他别参加堆结构
@@ -300,87 +299,100 @@ function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
 
 ```js
 class NodeRecord {
-    constructor(node, distance) {
-        this.node = node;
-        this.distance = distance;
-    }
+  constructor(node, distance) {
+    this.node = node;
+    this.distance = distance;
+  }
 }
 // 小根堆
 class Heap {
-    constructor() {
-        this.heap = []
-        // 记录节点在heap中的index
-        this.heapIndexMap = new Map();
-        // 记录节点的distance
-        this.distanceMap =  new Map();
+  constructor() {
+    this.heap = [];
+    // 记录节点在heap中的index
+    this.heapIndexMap = new Map();
+    // 记录节点的distance
+    this.distanceMap = new Map();
+  }
+  addOrUpdateOrIgore(node, distance) {
+    if (this.inHeap(node)) {
+      this.distanceMap.set(
+        node,
+        Math.min(this.distanceMap.get(node), distance)
+      );
+      this.insertHeapify(node, this.heapIndexMap.get(node));
     }
-    addOrUpdateOrIgore(node, distance) {
-        if (this.inHeap(node)) {
-            this.distanceMap.set(node, Math.min(this.distanceMap.get(node), distance))
-            this.insertHeapify(node, this.heapIndexMap.get(node))
-        }
-        if (!this.isEntered(node)) {
-            this.heap.push(node)
-            this.heapIndexMap.set(node, this.size()-1)
-            this.distanceMap.set(node, distance)
-            this.insertHeapify(node, this.size()-1)
-        }
+    if (!this.isEntered(node)) {
+      this.heap.push(node);
+      this.heapIndexMap.set(node, this.size() - 1);
+      this.distanceMap.set(node, distance);
+      this.insertHeapify(node, this.size() - 1);
     }
-    pop() {
-        this.swap(0, this.size() - 1)
-        let node = this.heap.pop()
-        let nodeRecord = new NodeRecord(node, this.distanceMap.get(node))
-        this.heapIndexMap.set(node, -1)
-        this.heapify(0, this.size())
-        return nodeRecord
+  }
+  pop() {
+    this.swap(0, this.size() - 1);
+    let node = this.heap.pop();
+    let nodeRecord = new NodeRecord(node, this.distanceMap.get(node));
+    this.heapIndexMap.set(node, -1);
+    this.heapify(0, this.size());
+    return nodeRecord;
+  }
+  // 在指定位置插入时向上调整
+  insertHeapify(node, index) {
+    while (
+      this.distanceMap.get(node) <
+      this.distanceMap.get(this.heap[(index - 1) >> 1])
+    ) {
+      this.swap(index, (index - 1) >> 1);
+      index = (index - 1) >> 1;
     }
-    // 在指定位置插入时向上调整
-    insertHeapify(node, index) {
-        while (this.distanceMap.get(node) < this.distanceMap.get(this.heap[(index-1)>>1])) {
-            this.swap(index, (index - 1) >> 1)
-            index = (index - 1) >> 1
-        }
+  }
+  // 向下调整
+  heapify(index, size) {
+    let left = index * 2 + 1;
+    while (left < size) {
+      let minIndex =
+        left + 1 < size &&
+        this.distanceMap.get(this.heap[left + 1]) <
+          this.distanceMap.get(this.heap[left])
+          ? left + 1
+          : left;
+      if (
+        this.distanceMap.get(this.heap[index]) >
+        this.distanceMap.get(this.heap[minIndex])
+      ) {
+        break;
+      }
+      this.swap(index, minIndex);
+      index = minIndex;
+      left = index * 2 + 1;
     }
-    // 向下调整
-    heapify(index, size) {
-        let left = index * 2 + 1
-        while (left < size) {
-            let minIndex = left + 1 < size && this.distanceMap.get(this.heap[left+1]) < this.distanceMap.get(this.heap[left]) ? left + 1 : left
-            if (this.distanceMap.get(this.heap[index]) > this.distanceMap.get(this.heap[minIndex])) {
-                break
-            }
-            this.swap(index, minIndex)
-            index = minIndex
-            left = index * 2 + 1
-        }
-    }
-    // heap的长度
-    size() {
-        return this.heap.length
-    }
-    // heap是否为空
-    isEmpty() {
-        return this.heap.length === 0
-    }
-    // 节点是否进入过heap
-    isEntered(node) {
-        return this.heapIndexMap.has(node)
-    }
-    // 节点是否在heap上
-    inHeap(node) {
-        return this.heapIndexMap.has(node) && this.heapIndexMap.get(node) !== -1
-    }
-    swap(i, j) {
-        // 交换heapIndexMap中记录的节点位置
-        this.heapIndexMap.set(this.heap[i], j)
-        this.heapIndexMap.set(this.heap[j], i)
-        // 交换heap中的记录
-        let temp = this.heap[i]
-        this.heap[i] = this.heap[j]
-        this.heap[j] = temp
-        // [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]]
-
-    }
+  }
+  // heap的长度
+  size() {
+    return this.heap.length;
+  }
+  // heap是否为空
+  isEmpty() {
+    return this.heap.length === 0;
+  }
+  // 节点是否进入过heap
+  isEntered(node) {
+    return this.heapIndexMap.has(node);
+  }
+  // 节点是否在heap上
+  inHeap(node) {
+    return this.heapIndexMap.has(node) && this.heapIndexMap.get(node) !== -1;
+  }
+  swap(i, j) {
+    // 交换heapIndexMap中记录的节点位置
+    this.heapIndexMap.set(this.heap[i], j);
+    this.heapIndexMap.set(this.heap[j], i);
+    // 交换heap中的记录
+    let temp = this.heap[i];
+    this.heap[i] = this.heap[j];
+    this.heap[j] = temp;
+    // [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]]
+  }
 }
 
 function dijkstra2(node) {
@@ -398,6 +410,8 @@ function dijkstra2(node) {
         }
         result.set(node, distance)
     }
-    return result
+    result.set(node, distance);
+  }
+  return result;
 }
 ```
