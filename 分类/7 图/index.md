@@ -144,9 +144,9 @@ function sortedTopology(G) {
 
 ### 最小生成树
 
-** 最小生成树 (minimum weight spanning tree)：** 在连通网的所有生成树中，所有边的代价和最小的生成树，称为最小生成树。
+**最小生成树 (minimum weight spanning tree)：** 在连通网的所有生成树中，所有边的代价和最小的生成树，称为最小生成树。
 
-#### kruskal 算法(K 算法)
+#### kruskal 算法(K 算法、并查集)
 
 适用范围：要求无向图
 此算法可以称为 “加边法”，初始最小生成树边数为 0，每迭代一次就选择一条满足条件的最小代价边，加入到最小生成树的边集合里。
@@ -215,7 +215,7 @@ function kruskalMST(graph) {
 
 #### Prim 算法
 
-**适用范围：**要求无向图
+**适用范围：** 要求无向图
 此算法可以称为 “加点法”，每次迭代选择代价最小的边对应的点，加入到最小生成树中。算法从某一个顶点 s 开始，逐渐长大覆盖整个连通网的所有顶点。
 **思路：**
 
@@ -226,7 +226,7 @@ function kruskalMST(graph) {
 (这期间可能会把同一个 edge 多次存入到小根堆，这个没事，因为之后我们取出来都会看那个 toNode 是不是已经是在 set 了，如已经在了那个 edge 也不会被处理)
 结果就是找到最小生成树，result 存的都是一个一个最小生成树的 edges
 
-### Dijkstra(迪杰斯特拉算法)算法
+### [Dijkstra(迪杰斯特拉)算法](https://zhuanlan.zhihu.com/p/346558578)
 
 求解单元点的最短路径问题：给定带权 (weight) 有向图 G 和源点 v，求 v 到 G 中其他顶点的最短路径
 
@@ -250,7 +250,9 @@ function kruskalMST(graph) {
 
 ```js
 function dijkstra(head) {
+    // 记录各点到源点的路径
     let hashMap = new Map();
+    // 记录已经求出最短路径的点
     let hashSet = new Set();
 
     hashMap.set(head, 0);
@@ -273,6 +275,7 @@ function dijkstra(head) {
     return hashMap;
 }
 
+// 找到路径最短且没有求出最短路径的点
 function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
     let minDistance = Infinity;
     let minNode = null;
@@ -280,6 +283,7 @@ function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
     for (let node of hashMap.keys()) {
         if (hashMap.get(node) < minDistance && !hashSet.has(node)) {
             minNode = node;
+            minDistance = hashMap.get(node);
         }
     }
 
@@ -381,7 +385,7 @@ class Heap {
 
 function dijkstra2(node) {
     let heap = new Heap();
-    heap.addOrUpdateOrIgore(node, 0)
+    heap.addOrUpdateOrIgnore(node, 0)
 
     let result = new Map()
     while (!heap.isEmpty()) {
@@ -390,7 +394,7 @@ function dijkstra2(node) {
         let node = curr.node
         let distance = curr.distance
         for (let edge of node.edges) {
-            heap.addOrUpdateOrIgore(edge.to, edge.weight + distance)
+            heap.addOrUpdateOrIgnore(edge.to, edge.weight + distance)
         }
         result.set(node, distance)
     }
