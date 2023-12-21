@@ -162,3 +162,40 @@ function maxA(arr) {
     return maxA;
 }
 ```
+
+
+### [美丽塔Ⅱ](https://leetcode.cn/problems/beautiful-towers-ii)
+给你一个长度为 n 下标从 0 开始的整数数组 maxHeights 。
+
+你的任务是在坐标轴上建 n 座塔。第 i 座塔的下标为 i ，高度为 heights[i] 。
+
+如果以下条件满足，我们称这些塔是 美丽 的：
+
+- 1 <= heights[i] <= maxHeights[i]
+- heights 是一个 山脉 数组。
+  
+如果存在下标 i 满足以下条件，那么我们称数组 heights 是一个 山脉 数组：
+
+- 对于所有 0 < j <= i ，都有 heights[j - 1] <= heights[j]
+- 对于所有 i <= k < n - 1 ，都有 heights[k + 1] <= heights[k]
+
+请你返回满足 美丽塔 要求的方案中，高度和的最大值 。
+
+
+
+### 题单
+496. 下一个更大元素 I（单调栈模板题）
+503. 下一个更大元素 II
+2454. 下一个更大元素 IV
+456. 132 模式
+739. 每日温度
+901. 股票价格跨度
+1019. 链表中的下一个更大节点
+1124. 表现良好的最长时间段
+1475. 商品折扣后的最终价格
+2289. 使数组按非递减顺序排列
+
+作者：灵茶山艾府
+链接：https://leetcode.cn/problems/beautiful-towers-ii/submissions/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
