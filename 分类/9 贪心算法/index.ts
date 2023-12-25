@@ -42,3 +42,76 @@ namespace BestArrange {
     bestArrange(program)
   );
 }
+
+namespace LessMoney {
+  class Heap {
+    heap: any[];
+    cmp: (a: any, b: any) => any;
+    constructor(arr?: number[], cmp = (a: any, b: any) => a - b) {
+      this.heap = [];
+      this.cmp = cmp;
+      if (arr) {
+        arr.forEach((item) => {
+          this.insert(item);
+        });
+      }
+    }
+    insert(data: any) {
+      this.heap.push(data);
+      let current = this.getSize() - 1;
+      let parentIndex = (current - 1) >> 1;
+      while (
+        parentIndex >= 0 &&
+        this.cmp(this.heap[current], this.heap[parentIndex]) > 0
+      ) {
+        this.swap(current, parentIndex);
+        current = parentIndex;
+        parentIndex = (current - 1) >> 1;
+      }
+    }
+    heapify(index: number) {
+      let size = this.getSize() - 1;
+      let current = index;
+      let left = 2 * current + 1;
+      while (left <= size) {
+        let maxIndex =
+          left + 1 <= size && this.heap[left + 1] > this.heap[left]
+            ? left + 1
+            : left;
+        if (this.cmp(this.heap[maxIndex], this.heap[current]) > 0) {
+          this.swap(maxIndex, current);
+          current = maxIndex;
+          left = 2 * current + 1;
+        } else {
+          break;
+        }
+      }
+    }
+    pop() {
+      let size = this.getSize() - 1;
+      this.swap(0, size);
+      let ret = this.heap.pop();
+      this.heapify(0);
+      return ret;
+    }
+    getSize() {
+      return this.heap.length;
+    }
+    swap(i: number, j: number) {
+      const temp = this.heap[i];
+      this.heap[i] = this.heap[j];
+      this.heap[j] = temp;
+    }
+  }
+  function lessMoney(arr: number[]): number {
+    let ans = 0;
+    let heap = new Heap(arr, (a, b) => b - a); // 小根堆
+    while (heap.getSize() > 1) {
+      ans += heap.pop() + heap.pop();
+      heap.insert(ans);
+    }
+
+    return ans;
+  }
+  console.log("🚀 ~ file: index.ts:101 ~ lessMoney ~ lessMoney:", lessMoney([10, 20, 40, 30]));
+}

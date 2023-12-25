@@ -127,11 +127,11 @@ function dijkstra2(node) {
 
 ### n 层汉诺塔
 
-![n 层汉诺塔](image/day9-1.png)
+![n 层汉诺塔](../image/day9-1.png)
 
 **思路：**
 
--   将柱子抽象为 from、同、other 三个栈
+-   将柱子抽象为 from、to、other 三个栈
 -   将 i 个圆盘从 from 移动到 to 上可拆解为三步：
     1. 将 1 到 i-1 个圆盘移动到 other
     2. 将第 i 个圆盘移动到 to
@@ -188,7 +188,7 @@ function printAllSubsquences(str) {
 
 ### 字符串的全排列
 
-![字符串全排列](image/day9-2.png)
+![字符串全排列](../image/day9-2.png)
 
 **思路：**
 
@@ -306,7 +306,7 @@ function reverseStack(stack) {
 ```
 
 ### 把数字翻译成字符串
-![把数字翻译成字符串](image/day9-3.png)
+![把数字翻译成字符串](../image/day9-3.png)
 ```js
 var translateNum = function(num) {
     // 已经知道前i-1个怎么翻，i后面有多少种翻译
