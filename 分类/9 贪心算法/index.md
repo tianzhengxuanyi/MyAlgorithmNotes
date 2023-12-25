@@ -12,6 +12,8 @@
 3. 用解法X和对数器，验证每一个贪心策略，用实验得到正确解
 
 ### **会议安排**
+- [贪心算法3： 会议安排](https://blog.csdn.net/yanyanwenmeng/article/details/83009649)
+
 一些项目要占用一个会议室宣讲，会议室不能同时容纳俩个项目，给出项目的起始时间和截止时间，如何安排最多的项目。
 
 **策略：截止时间早**
@@ -23,17 +25,17 @@ function Program(start, end) {
     this.end = end;
 }
 
-function bestArrange(program: Program[], start = 0) {
-    program.sort((a,b) => a.end  - b.end)
-    let result = 0;
-    for (let i = 0; i < program.length; i++) {
-        if (program[i].start >= start) {
-            result++
-            start = program[i].start
-        }
+function bestArrange(program: Program[]) {
+    program.sort((a, b) => a.end - b.end);
+    let lastEnd = program[0].end;
+    let result = 1;
+    for (let i = 1; i < program.length; i++) {
+      if (program[i].start >= lastEnd) {
+        result++;
+        lastEnd = program[i].end;
+      }
     }
-    console.log(program)
-    return result
+    return result;
 }
 ```
 
