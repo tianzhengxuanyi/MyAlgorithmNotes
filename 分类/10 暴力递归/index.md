@@ -59,6 +59,45 @@ var solveNQueens = function (n) {
 
 **优化：位运算加速**
 
+```js
+/**
+ * @param {number} n
+ * @return {string[][]}
+ */
+var solveNQueens = function (n) {
+    const ans = [];
+    const result = new Array(n);
+
+    let limit = (1 << n) - 1; // 限制递归的位数
+    process(limit, 0, 0, 0, result, ans, 0, n);
+    return ans;
+};
+
+const process = (limit, columnLim, leftDiaLim, rightDiaLim, result, ans, row, n) => {
+    if (row === n) {
+        ans.push(toString(result, n));
+    } else {
+        let possible = limit & ~(columnLim | leftDiaLim | rightDiaLim); // 可选择的位置
+        while (possible != 0) {
+            let rightOne = possible & (~possible + 1); // 选取最右侧的1
+            possible -= rightOne; // 剩余可选择的位置
+            result[row] = Math.log2(rightOne);
+            process(limit, columnLim | rightOne, (leftDiaLim | rightOne) << 1, (rightDiaLim | rightOne) >> 1, result, ans, row + 1, n);
+        }
+    }
+}
+
+const toString = (result, n) => {
+    const res = [];
+    for (let i = 0; i < n; i++) {
+        const row = new Array(n).fill('.');
+        row[result[i]] = "Q"
+        res.push(row.join(''));
+    }
+    return res;
+}
+```
+
 ### n 层汉诺塔
 
 ![n 层汉诺塔](../../image/day9-1.png)
