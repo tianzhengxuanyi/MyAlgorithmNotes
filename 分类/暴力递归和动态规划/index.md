@@ -478,3 +478,97 @@ function BobDie(N, M, i, j, K) {
 ```js
 
 ```
+
+
+
+### [参加考试的最大学生数](https://leetcode.cn/problems/maximum-students-taking-exam/description/)
+
+给你一个 m * n 的矩阵 seats 表示教室中的座位分布。如果座位是坏的（不可用），就用 '#' 表示；否则，用 '.' 表示。
+
+学生可以看到左侧、右侧、左上、右上这四个方向上紧邻他的学生的答卷，但是看不到直接坐在他前面或者后面的学生的答卷。请你计算并返回该考场可以容纳的同时参加考试且无法作弊的 最大 学生人数。
+
+学生必须坐在状况良好的座位上。
+
+```js
+/**
+ * @param {character[][]} seats
+ * @return {number}
+ */
+var maxStudents = function (seats) {
+    const m = seats.length, n = seats[0].length;
+    const possible = new Array(m).fill(0).map(item => []); // 每一行座位分布的所有可能
+    const map = new Map(); // 记忆化搜索
+    // 用二进制位表示座位分布可能
+    for (let i = 0; i < m; i++) {
+        for (let j = 0; j < n; j++) {
+            if (seats[i][j] === ".") {
+                let len = possible[i].length;
+                if (len === 0) {
+                    possible[i].push(0);
+                    possible[i].push(1 << j);
+                } else {
+                    for (let k = 0; k < len; k++) {
+                        if ((possible[i][k] & (1 << (j - 1))) == 0) {
+                            possible[i].push(possible[i][k] | (1 << j));
+                        }
+                    }
+                }
+            }
+        }
+        // 如果当前行没有可安排的座位，默认设置为0
+        if (possible[i].length === 0) {
+            possible[i].push(0);
+        }
+    }
+
+    // 求出row在status座位分布状态下，row及row以前的所有行的最大数量
+    const process = (row, status) => {
+        // 生成记忆化搜索key
+        const key = (row << n) + status;
+        if (map.get(key)) {
+            return map.get(key);
+        }
+        // 将状态转为人数
+        let students = getCount(status);
+        // 第0行直接返回人数
+        if (row === 0) {
+            return students;
+        }
+        let maxAns = 0;
+        // 遍历上一行的所有可能座位分布，递归得出最大人数
+        for (let i = 0; i < possible[row - 1].length; i++) {
+            // 如果在当前行status下，上一行status合法则递归
+            if (isUpperRowValid(status, possible[row - 1][i])) {
+                maxAns = Math.max(maxAns, process(row - 1, possible[row - 1][i]))
+            }
+        }
+        map.set(key, maxAns + students);
+        return maxAns + students;
+    }
+
+    // 在当前行status下，上一行status是否合法
+    const isUpperRowValid = (status, upperStatus) => {
+        let limit = (status << 1) | (status >> 1);
+        return (limit & upperStatus) === 0;
+    }
+
+    // 将status转为count
+    const getCount = (status) => {
+        let count = 0;
+        while (status !== 0) {
+            let mostRightOne = status & (~status + 1);
+            if (mostRightOne !== 0) {
+                count += 1;
+            }
+            status -= mostRightOne;
+        }
+        return count;
+    }
+
+    let ans = 0;
+    for (let i = 0; i < possible[m - 1].length; i++) {
+        ans = Math.max(ans, process(m - 1, possible[m - 1][i]))
+    }
+    return ans;
+};
+```
