@@ -141,20 +141,20 @@ function process(from, to, other, i) {
 - 分第 i 个字符加入子序列和不加入子序列
 
 ```js
-function printAllSubsquences(str) {
-  function process(subsquences, i) {
+function printAllSubsequence(str) {
+  function process(subsequence, i) {
     if (i === str.length) {
-      return result.push(subsquences);
+      return result.push(subsequence);
     }
     // 前1-i子序列不加上第i个字符
-    process(subsquences, i + 1);
-    subsquences += str[i];
+    process(subsequence, i + 1);
+    subsequence += str[i];
     // 前1-i子序列加上第i个字符
-    process(subsquences, i + 1);
+    process(subsequence, i + 1);
   }
   let result = [];
-  subsquences = "";
-  process(subsquences, 0);
+  subsequence = "";
+  process(subsequence, 0);
   return result;
 }
 ```
