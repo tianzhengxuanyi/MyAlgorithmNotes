@@ -316,6 +316,7 @@ i 号物品的重量和价值。给定一个正数 bag，表示一个载重 bag 
 
 ```js
 function maxValue(weights, values, n) {
+  // 从第i个物品往后选择，包括i，所能装下的最多价值
   function process(weights, values, n, i, alreadyWight) {
     if (alreadyWight + weights[i] > n) {
       return 0;
