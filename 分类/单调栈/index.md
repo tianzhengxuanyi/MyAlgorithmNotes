@@ -181,6 +181,13 @@ function maxA(arr) {
 
 请你返回满足 美丽塔 要求的方案中，高度和的最大值 。
 
+### [2487. 从链表中移除节点](https://leetcode.cn/problems/remove-nodes-from-linked-list/description/)
+给你一个链表的头节点 head 。
+
+移除每个右侧有一个更大数值的节点。
+
+返回修改后链表的头节点 head 。
+
 
 
 ### 题单
