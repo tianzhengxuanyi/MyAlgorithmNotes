@@ -201,6 +201,8 @@ function maxA(arr) {
 1124. 表现良好的最长时间段
 1475. 商品折扣后的最终价格
 2289. 使数组按非递减顺序排列
+ 
+1944. 队列中可以看到的人数
 
 作者：灵茶山艾府
 链接：https://leetcode.cn/problems/beautiful-towers-ii/submissions/
