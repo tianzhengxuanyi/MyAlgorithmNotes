@@ -98,7 +98,7 @@ const toString = (result, n) => {
 }
 ```
 
-### n 层汉诺塔
+### [n 层汉诺塔](https://leetcode.cn/problems/hanota-lcci/description/)
 
 ![n 层汉诺塔](../../image/day9-1.png)
 
@@ -171,10 +171,12 @@ function printAllSubsequence(str) {
 
 ```js
 var permutation = function (s) {
+  // 固定0~i-1范围，从i开始至arr.length-1范围内字符排列的所有可能
   function dfs(arr, i) {
     if (i === arr.length) {
       return result.push(arr.join(""));
     }
+    // 从i开始至arr.length-1范围内字符排列的所有可能
     for (let j = i; j < arr.length; j++) {
       if (!arr.slice(i, j).includes(arr[j])) {
         swap(arr, i, j);
