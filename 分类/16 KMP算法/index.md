@@ -24,8 +24,11 @@ KMP 算法（Knuth-Morris-Pratt 算法）是一个著名的字符串匹配算法
    
     其中2.3中str2回跳到位置p相等于包含了一个假设和一步操作：
 
-        - 假设：str1数组以从i位置一直到i+p位置的字符开头都无法完整的拼出str2
+        - 假设：str1数组以从i位置一直到i+p位置的字符开头都无法完整的拼出str2，应为如果在i~i+p中存在可以拼出str2的位置，前缀和后缀最大相等长度将与现在的矛盾。
+    ![Alt text](image.png)
+
         - 操作：str2回跳到位置p，相当于将str2数组右移了位置p与str1数组的i+p位置对齐，因为str2数组的0~p位置与str1数组的i+x-p~i+x位置相同，所以直接从p位置和i+x位置开始比对；
+    ![Alt text](image-1.png)
 
     ```js
     function getIndexOf(str1, str2) {
