@@ -598,3 +598,11 @@ var maxStudents = function (seats) {
     return ans;
 };
 ```
+
+
+## 数位DP
+
+- [数位DP模版1](https://leetcode.cn/problems/count-of-integers/solutions/2296043/shu-wei-dp-tong-yong-mo-ban-pythonjavacg-9tuc/)
+- [数位DP模版2](https://leetcode.cn/problems/count-special-integers/solutions/1746956/shu-wei-dp-mo-ban-by-endlesscheng-xtgx/)
+
+### [统计特殊整数](https://leetcode.cn/problems/count-special-integers/description/)
