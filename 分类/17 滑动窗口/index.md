@@ -75,3 +75,70 @@ var maxSlidingWindow = function (nums, k) {
 窗口内最大值与最小值更新结构的原理与实现。
 
 **思路：** 与 1 一致，只是具体 code 不一样。
+
+
+### 窗口不回退
+
+给定一个有序数组 arr，代表数轴上从左到右有 n 个点 arr[0]、arr[1]...arr[n－1]，
+给定一个正数 L，代表一根长度为 L 的绳子，求绳子最多能覆盖其中的几个点。
+
+**思路 1：**
+
+1. 遍历 arr，假设当前`i`，寻找 arr 中大于`arr[i]-L`最左的位置`index`，此时绳子覆盖了`index-i`个点。遍历完成后返回最大的值；
+2. 采用二分法寻找 arr 中大于 value 的最左位置；
+3. 时间复杂度 O(n\*logn)
+
+```js
+function coverMaxPoint(arr, L) {
+    let res = 1;
+    for (let i = 0; i < arr.length; i++) {
+        //
+        let index = nearestIndex(arr, i, arr[i] - L);
+        res = res > i - index + 1 ? res : i - index + 1;
+    }
+    return res;
+}
+
+// 在arr[0..R]范围上，找满足>=value的最左位置
+function nearestIndex(arr, R, value) {
+    let left = 0;
+    let index = R;
+
+    while (left < R) {
+        let mid = left + ((R - left) >> 1);
+        if (arr[mid] >= value) {
+            index = mid;
+            R = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return index;
+}
+```
+
+**思路二：**
+
+1. 生成不后退的滑动窗口，每次返回覆盖的点数
+2. left 开始指向 arr[0]，right 向右移动，但需要保证窗口长度不能大于 L；如果当 right 指向 arr[i+1]时窗口长度超过 L，left 向右移动；
+3. 时间复杂度 O(n)
+
+```js
+function coverMaxPoint2(arr, L) {
+    let left = 0;
+    let right = 0;
+    let res = 0;
+    while (left < arr.length) {
+        // 窗口在L范围内，right++
+        if (right < arr.length && arr[right + 1] - arr[left] <= L) {
+            right++;
+        } else {
+            // 窗口要超过L，left++
+            res = Math.max(res, right - left + 1);
+            left++;
+        }
+    }
+    return res;
+}
+```
