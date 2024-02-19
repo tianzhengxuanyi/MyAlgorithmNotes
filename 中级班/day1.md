@@ -358,6 +358,8 @@ function maxOneBorderSize2(matrix) {
     return res;
 }
 ```
+
+
 ### 题目五
 
 给定一个函数 f，可以 1 ～ 5 的数字等概率返回一个。请加工出 1 ～ 7 的数字等概率返回一个的函数 g。
