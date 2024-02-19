@@ -1,0 +1,4 @@
+{
+                lowSum: sum,
+                lowNum: i
+            };
