@@ -612,6 +612,74 @@ var maxStudents = function (seats) {
 };
 ```
 
+### 数字转字符串
+
+将给定的数转换为字符串，原则如下：
+
+1对应 a，2对应b，…..26对应z，例如12258可以转换为"abbeh", "aveh", "abyh", "lbeh" and "lyh"，个数为5，
+
+编写一个函数，给出可以转换的不同字符串的个数
+
+**思路：**
+
+1. 将数字转化为字符串数组；
+2. 从左往右尝试（假设当前下标i，值cur）：
+   1. 如果i越界返回1；
+   2. 如果cur等于0返回0；
+   3. 如果i等于arr.length - 1返回1
+   4. 如果当前cur和下一个位置拼成的数小于27，返回process(i+1) + process(i+2)，否则返回process(i+1);
+
+
+```js
+function NumsToStringWays(num) {
+    const arr = num.toString().split("");
+    function process(index) {
+        let cur = parseInt(arr[index])
+        if (index === arr.length) {
+            return 1
+        }
+        if (cur === 0) {
+            return 0;
+        }
+        if (index === arr.length - 1) {
+            return 1;
+        }
+        let res = 0;
+        if (cur * 10 + parseInt(arr[index+1]) < 27) {
+            res = process(index + 1) + process(index + 2)
+        } else {
+            res = process(index + 1)
+        }
+
+        return res;
+    }
+    return process(0)
+}
+
+// 动态规划
+function NumsToStringWays2(num) {
+    const arr = num.toString().split("");
+    const dp = new Array(arr.length+1);
+    dp[arr.length] = 1
+    dp[arr.length - 1] = arr[arr.length - 1] === "0" ? 0 : 1;
+
+    for (let i = arr.length - 2; i >= 0; i--) {
+        let cur = parseInt(arr[i])
+        if (cur === 0) {
+            dp[i] = 0
+        } else {
+            if (cur * 10 +  parseInt(arr[i+1]) < 27) {
+                dp[i] = dp[i + 1] + dp[i+2]
+            } else {
+                dp[i] = dp[i+1]
+            }
+        }
+    }
+
+    return dp[0]
+}
+```
+
 ## 数位 DP
 
 - [数位 DP 模版 1](https://leetcode.cn/problems/count-of-integers/solutions/2296043/shu-wei-dp-tong-yong-mo-ban-pythonjavacg-9tuc/)

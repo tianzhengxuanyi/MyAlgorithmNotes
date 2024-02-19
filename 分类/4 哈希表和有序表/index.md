@@ -33,3 +33,31 @@ HashMap由增/更新（add）、删（remove）、查（containkey）、拿（ge
 7. `k floorkey（k key）` ：如果表中存过key，则返回key，否则返回所有键值的排序结果中，key的前一个（小于等于）
 
 8. `k ceilingkey（k key）` ：大于等于（后一个）
+
+## 题目
+
+### 1
+
+给定一个数组arr，求差值为k的去重数字对。
+
+例如： arr=[2,6,8,10] k=2 返回`[[6,8], [8,10]]`
+
+**思路：**
+
+1. 将数组加入哈希set中，遍历set判断cur+k在不在set中
+
+```js
+function subvalueEqualK(arr, k) {
+    const set = new Set();
+    const res = [];
+    for (let i = 0; i < arr.length; i++) {
+        set.add(arr[i]);
+    }
+    for (let cur of set) {
+        if (set.has(cur+k)) {
+            res.push([cur, cur+k]);
+        }
+    }
+    return res;
+}
+```
