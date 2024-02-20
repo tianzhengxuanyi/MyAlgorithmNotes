@@ -1106,3 +1106,129 @@ public static void printProcess(int i, int N, boolean down){
 }
 
 ```
+
+### 根据中序和先序求后序遍历数组
+
+已知一棵二叉树中没有重复节点，并且给定了这棵树的中序遍历数组和先序遍历数组，返回后序遍历数组。
+
+比如给定：
+
+int[] pre = { 1, 2, 4, 5, 3, 6, 7 };
+
+int[] in = { 4, 2, 5, 1, 6, 3, 7 };
+
+返回：{ 4, 5, 2, 6, 7, 3, 1}
+
+**思路：**
+
+1. 定义递归 process(pre, in, after, peri, perj, ini, inj, afteri, afterj)，其中 pre、in、after 为先序、中序、后序数组，peri, perj, ini, inj, afteri, afterj 为数组中的范围。含义为用 pre 数组 prei~prej 范围和 in 数组 ini~inj 范围生成后序遍历 after 数组 afteri~afterj 范围，其中所有数组的范围等长；
+2. pre 的一个元素为 after 的最后一个元素，同时也是二叉树的头；根据头节点在 in 中的位置推出左树和右树的长度，调用 process 用 pre 和 in 的左树（右树）得出 after 的左树（右树）；
+
+```js
+function getPosArr(pre, inArr) {
+  const inMap = new Map();
+  inArr.forEach((node, index) => {
+    inMap.set(node, index);
+  });
+  const pos = new Array(pre.length);
+  const process = (preStart, preEnd, inStart, inEnd, posStart, posEnd) => {
+    if (posStart <= posEnd && posStart >= 0) {
+      pos[posEnd] = pre[preStart];
+    }
+    let inMidIndex = inMap.get(pre[preStart]);
+    let inLeftStart = inStart,
+      inLeftEnd = inMidIndex - 1,
+      inRightStart = inMidIndex + 1,
+      inRightEnd = inEnd;
+    let preLeftStart = preStart + 1,
+      preLeftEnd = preLeftStart + inLeftEnd - inLeftStart,
+      preRightStart = preLeftEnd + 1,
+      preRightEnd = preEnd;
+    let posLeftStart = posStart,
+      posLeftEnd = posStart + preLeftEnd - preLeftStart,
+      posRightStart = posLeftEnd + 1,
+      posRightEnd = posEnd - 1;
+
+    if (preLeftStart <= preLeftEnd) {
+      process(
+        preLeftStart,
+        preLeftEnd,
+        inLeftStart,
+        inLeftEnd,
+        posLeftStart,
+        posLeftEnd
+      );
+    }
+    if (preRightStart <= preRightEnd) {
+      process(
+        preRightStart,
+        preRightEnd,
+        inRightStart,
+        inRightEnd,
+        posRightStart,
+        posRightEnd
+      );
+    }
+  };
+
+  process(0, pre.length - 1, 0, inArr.length - 1, 0, pos.length - 1);
+  return pos;
+}
+```
+
+### [从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
+
+![](../../image/二叉树-从前序与中序遍历构造二叉树.png)
+
+**递归**
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} preorder
+ * @param {number[]} inorder
+ * @return {TreeNode}
+ */
+var buildTree = function (preorder, inorder) {
+  const inorderMap = new Map();
+  for (let i = 0; i < inorder.length; i++) {
+    inorderMap.set(inorder[i], i);
+  }
+  const dfs = (preLeft, preRight, inLeft, inRight) => {
+    if (preLeft > preRight) return null;
+    const rootVal = preorder[preLeft];
+    const root = new TreeNode(rootVal, null, null);
+    const left = dfs(
+      preLeft + 1,
+      preLeft + inorderMap.get(rootVal) - inLeft,
+      inLeft,
+      inorderMap.get(rootVal) - 1
+    );
+    const right = dfs(
+      preLeft + inorderMap.get(rootVal) - inLeft + 1,
+      preRight,
+      inorderMap.get(rootVal) + 1,
+      inRight
+    );
+    root.left = left;
+    root.right = right;
+
+    return root;
+  };
+
+  return dfs(0, preorder.length - 1, 0, inorder.length - 1);
+};
+```
+
+**迭代**
+
+```js
+
+```
