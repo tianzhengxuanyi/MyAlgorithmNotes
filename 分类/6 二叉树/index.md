@@ -1232,3 +1232,131 @@ var buildTree = function (preorder, inorder) {
 ```js
 
 ```
+
+
+### 搜索二叉树转化成有序的双向链表
+
+双向链表节点结构和二叉树节点结构是一样的，如果你把last认为是left，next认为是right的话。
+
+给定一个搜索二叉树的头节点head，请转化成一条有序的双向链表，并返回链
+表的头节点。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+
+```ts
+interface TreeNode {
+    left: TreeNode | null;
+    right: TreeNode | null;
+}
+
+interface LinkList {
+    last: LinkList | null;
+    next: LinkList | null;
+}
+```
+
+**思路（二叉树的递归套路）：**
+
+1. 以X为头节点的二叉树，对左子树和右子树分别调用process，返回的Info包括左子树和右子树组织好的双向链表的头节点和尾节点（leftLinkHead、leftLinkTail、rightLinkHead、rightLinkTail），将X与leftLinkTail和rightLinkHead链接，返回leftLinkHead和rightLinkTail（需要注意边界条件，判断leftLinkHead、leftLinkTail、rightLinkHead、rightLinkTail是否为空）；
+
+```js
+var treeToDoublyList = function(root) {
+    if (root === null) {
+        return null;
+    }
+    function Info(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+    function process(root) {
+        if (root === null) {
+            return new Info(null, null);
+        }
+        let leftInfo = process(root.left);
+        let rightInfo = process(root.right);
+        if (leftInfo.end) {
+            leftInfo.end.right = root;
+            root.left = leftInfo.end;
+        }
+        if (rightInfo.start) {
+            rightInfo.start.left = root;
+            root.right = rightInfo.start
+        }
+
+        return new Info(leftInfo.start ? leftInfo.start : root, rightInfo.end ? rightInfo.end : root)
+    }
+    let result = process(root)
+    result.start.left = result.end;
+    result.end.right = result.start;
+    return result.start;
+};
+```
+
+### 最大的搜索二叉子树
+
+找到一棵二叉树中，最大的搜索二叉子树，返回最大搜索二叉子树的节点个数（扩展：返回最大搜索二叉子树的头节点）。
+
+**思路：**
+
+以X为头的二叉树的最大搜索二叉树有如下可能：
+1. 可能1：X参与最大搜索二叉树的构成；此时需要左树是BST，右树是BST，且X.value大于左树最大值，X.value小于右树最小值；
+2. 可能2、3：X不参与最大搜索二叉树的构成；此时最大搜索二叉子树可能来源于左树和右树，需要判断左树和右树最大搜索二叉子树的MaxBSTsize；
+3. 如果有可能1返回可能1，否则返回可能2、3中MaxBSTsize较大的；
+4. 所以递归需要返回的信息结构：
+    ```ts
+    interface Info {
+        MaxBSTHead: Node;
+        min: number;
+        max: number;
+        isBST: boolean;
+        MaxBSTSize: number;
+    }
+    ```
+
+```ts
+ class Node {
+        val: number;
+        left: Node | null;
+        right: Node | null;
+        constructor(val: number, left?: Node, right?: Node) {
+            this.val = val;
+            this.left = left ? left : null;
+            this.right = right ? right : null;
+        }
+    }
+
+    class MaxBSTNumInfo {
+        max: number;
+        min: number;
+        maxBSTNum: number;
+        maxBSTHead: Node | null;
+        constructor(max: number, min: number, maxBSTNum: number, maxBSTHead: Node | null) {
+            this.max = max;
+            this.min = min;
+            this.maxBSTNum = maxBSTNum;
+            this.maxBSTHead = maxBSTHead;
+        }
+    }
+    function getMaxBSTNum(head: Node): number {
+        if (head === null) {
+            return 0;
+        }
+        function process(head: Node | null): MaxBSTNumInfo {
+            if (head === null) {
+                return new MaxBSTNumInfo(-Infinity, Infinity, 0, null)
+            }
+            const leftInfo = process(head.left);
+            const rightInfo = process(head.right);
+            let min = Math.min(head.val, Math.min(leftInfo.min, rightInfo.min));
+            let max = Math.max(head.val, Math.max(leftInfo.max, rightInfo.max));
+            let maxBSTNum = Math.max(leftInfo.maxBSTNum, rightInfo.maxBSTNum);
+            let maxBSTHead = leftInfo.maxBSTNum > rightInfo.maxBSTNum ? leftInfo.maxBSTHead : rightInfo.maxBSTHead;
+
+            if (leftInfo.maxBSTHead === head.left && rightInfo.maxBSTHead === head.right && head.val > leftInfo.max && head.val < rightInfo.min) {
+                maxBSTNum = leftInfo.maxBSTNum + 1 + rightInfo.maxBSTNum;
+                maxBSTHead = head;
+            }
+            return new MaxBSTNumInfo(max, min, maxBSTNum,maxBSTHead)
+        }
+
+        return process(head).maxBSTNum;
+    }
+```
