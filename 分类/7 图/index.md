@@ -286,7 +286,6 @@ function getMinDistanceAndUmSelectNode(hashMap, hashSet) {
             minDistance = hashMap.get(node);
         }
     }
-  }
 
   return minNode;
 }
