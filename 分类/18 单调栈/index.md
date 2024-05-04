@@ -247,3 +247,99 @@ var dailyTemperatures = function (temperatures) {
 链接：https://leetcode.cn/problems/beautiful-towers-ii/submissions/
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+### 笔记
+
+- 右侧下一个大于的值
+- 右侧最大值
+- 右侧大于的最远值
+
+
+#### 右侧下一个大于（小于）的值（[每日温度](https://leetcode.cn/problems/daily-temperatures/description/)）（[商品折扣后的最终价格](https://leetcode.cn/problems/final-prices-with-a-special-discount-in-a-shop/description/)）
+
+**从左往右**
+1. 构建单调递减的单调栈（存放原数组下标，以下标对应值为序）
+2. 从左向右遍历原数组
+   1. 如果当前值大于栈顶下标对应值，依次弹出栈顶，直至栈顶下标对应值小于、等于当前值或栈空
+   2. 每个弹出下标对应值的右侧下一个大于的值为当前值
+   3. 将当前下标入栈
+```js
+var dailyTemperatures = function (temperatures) {
+    const st = [];
+    const ans = new Array(temperatures.length).fill(0);
+    for (let i = 0; i < temperatures.length; i++) {
+        while (st.length !== 0 && temperatures[i] > temperatures[st[st.length - 1]]) {
+            let j = st.pop();
+            ans[j] = i - j;
+        }
+        st.push(i);
+    }
+    return ans;
+};
+```
+
+**从右往左**
+1. 构建单调递减的单调栈（存放原数组下标，以下标对应值为序）
+2. 从右向左遍历原数组
+   1. 如果当前值大于或等于栈顶下标对应值，依次弹出栈顶，直至栈顶下标对应值小于当前值或栈空
+   2. 下一个大于当前值的下标为栈顶（栈为空，则没有下一个大于当前值的存在）
+   3. 将当前下标入栈
+```js
+var dailyTemperatures = function (temperatures) {
+    const st = [];
+    const ans = [];
+    for (let i = temperatures.length - 1; i >= 0; i--) {
+        while (st.length !== 0 && temperatures[st[st.length - 1]] <= temperatures[i]) {
+            st.pop();
+        }
+        ans[i] = st.length ? st[st.length - 1] - i : 0;
+        st.push(i);
+    }
+    return ans;
+};
+```
+
+#### 右侧大于的最远值（[最大宽度坡](https://leetcode.cn/problems/maximum-width-ramp/description/)）
+
+**排序**
+
+1. 将数组下标按对应值升序排序
+2. 遍历indexArr,当前index左侧的大于当前index的最小index，为符合条件的最远index
+
+```js
+var maxWidthRamp = function(nums) {
+    let n = nums.length;
+    let indexs = nums.map((_, i) => i);
+    indexs.sort((a, b) => nums[a] - nums[b]);
+    let ans = 0, m = n;
+    for (let i of indexs) {
+        ans = Math.max(ans, i - m);
+        m = Math.min(i, m);
+    }
+
+    return ans;
+};
+```
+
+**[单调栈](https://leetcode.cn/problems/maximum-width-ramp/solutions/666604/zui-da-kuan-du-po-dan-diao-zhan-cun-de-s-myj9/)**
+
+1. 正序遍历数组 A，将以 A[0] 开始的递减序列的元素下标依次存入栈中。
+2. 逆序遍历数组 A，若以栈顶元素为下标的元素值 A[stack.peek()] 小于等于当前遍历的元素 A[i]，即 A[stack.peek()] <= A[i]。此时就是一个满足条件的坡的宽度，并且这个宽度一定是栈顶这个坡底 i 能形成的最大宽度，将栈顶元素出栈并计算当前坡的宽度，保留最大值即可。
+
+```js
+var maxWidthRamp = function(nums) {
+    let n = nums.length;
+    let st = [0];
+    for (let i = 1; i < n; i++) {
+        if (nums[i] < nums[st[st.length - 1]]) st.push(i);
+    }
+    let ans = 0;
+    for (let i = n - 1; i >= 0; i--) {
+        while (st.length && nums[st[st.length - 1]] <= nums[i]) {
+            ans = Math.max(ans, i - st.pop())
+        }
+    }
+    return ans;
+};
+```
