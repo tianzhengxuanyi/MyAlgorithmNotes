@@ -300,7 +300,7 @@ var dailyTemperatures = function (temperatures) {
 };
 ```
 
-#### 右侧大于的最远值（[最大宽度坡](https://leetcode.cn/problems/maximum-width-ramp/description/)）
+#### 右侧大于的最远值（[最大宽度坡](https://leetcode.cn/problems/maximum-width-ramp/description/)）（[表现良好的最长时间](https://leetcode.cn/problems/longest-well-performing-interval/description/)）
 
 **排序**
 
