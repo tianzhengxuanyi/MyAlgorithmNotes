@@ -6,7 +6,7 @@
 
 **说明：**不允许修改给定的链表。
 
-![](.\image\day5-1.png)
+![](..\image\day5-1.png)
 
 **解1：哈希表**
 
@@ -35,9 +35,9 @@ function detectCycle(head: ListNode | null): ListNode | null {
 
 **解2：快慢指针**
 
-![](.\image\day5-2.png)
+![](..\image\day5-2.png)
 
-![](.\image\day5-3.png)
+![](..\image\day5-3.png)
 
 时间复杂度：O（N）
 
@@ -247,7 +247,7 @@ function getIntersectNode2(head1, head2) {
 
 
 
-![](.\image\day5-4.jpg)
+![](..\image\day5-4.jpg)
 
 ```js
 // 递归遍历二叉树
@@ -284,7 +284,7 @@ var preorderTraversal = function(root) {
 
 **前序遍历：非递归**
 
-![](.\image\day5-5.jpeg)
+![](..\image\day5-5.jpeg)
 
 ```js
 var preorderTraversal = function(root) {
@@ -333,11 +333,11 @@ var inorderTraversal = function(root) {
 
 **note：中序（左头右）**
 
-![](.\image\day5-6.jpeg)
+![](..\image\day5-6.jpeg)
 
 所有的树都可以被左边界分解掉
 
-![](.\image\day5-8.jpg)
+![](..\image\day5-8.jpg)
 
 ```js
 var inorderTraversal = function(root) {
@@ -383,7 +383,7 @@ var postorderTraversal = function(root) {
 
 **后序遍历（非递归）**
 
-![](.\image\day5-7.jpeg)
+![](..\image\day5-7.jpeg)
 
 ```js
 var postorderTraversal = function(root) {
@@ -417,7 +417,7 @@ var postorderTraversal = function(root) {
 
 ### 设计题：如何完成二叉树的宽度优先遍历（求一棵二叉树的宽度）
 
-![](.\image\day5-9.png)
+![](..\image\day5-9.png)
 
 利用队列，弹出队头节点，将左节点放入再放右节点。直到队列为空。
 
@@ -489,7 +489,7 @@ public static int void w(Node node){
 
 **空节点计入宽度：**
 
-![](.\image\day5-10.png)
+![](..\image\day5-10.png)
 
 ```js
 var widthOfBinaryTree = function(root) {

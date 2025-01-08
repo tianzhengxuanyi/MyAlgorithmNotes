@@ -21,7 +21,7 @@
 
 ### 如何判断一颗二叉树是否是搜索二叉树？
 
-![](.\image\day6-1.png)
+![](..\image\day6-1.png)
 
 **解1：**
 
@@ -109,7 +109,7 @@ var isValidBST = function(root) {
 
 ### 如何判断一颗二叉树是完全二叉树？
 
-![](D:\Fuser\Course\算法\笔记\image\day6-2.png)
+![](..\image\day6-2.png)
 
 **思路：**
 
@@ -189,7 +189,7 @@ function isFBT(root) {
 
 ### 如何判断一颗二叉树是否是平衡二叉树？
 
-![](D:\Fuser\Course\算法\笔记\image\day6-3.png)
+![](..\image\day6-3.png)
 
 判断是否为平衡二叉树 ：
 
@@ -230,7 +230,7 @@ function isBalancedProcess(root) {
 
 ### 最低公共祖先节点
 
-![](D:\Fuser\Course\算法\笔记\image\day6-4.png)
+![](..\image\day6-4.png)
 
 **思路1：**
 
