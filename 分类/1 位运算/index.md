@@ -201,6 +201,139 @@ function Swap(a, b) {
 
 如：long a=123；unsigned intb=1；计算 a & b。
 
+## [logTrick](https://leetcode.cn/problems/smallest-subarrays-with-maximum-bitwise-or/solutions/1830911/by-endlesscheng-zai1/)
+
+### [模板](https://leetcode.cn/problems/smallest-subarrays-with-maximum-bitwise-or/solutions/1830911/by-endlesscheng-zai1/)
+
+该模板可以做到
+
+- 求出所有子数组的按位或的结果，以及值等于该结果的子数组的个数。
+- 求按位或结果等于任意给定数字的子数组的最短长度/最长长度。
+末尾列出了一些题目，均可以用该模板秒杀。
+
+思考：对于起始位置为 i 的子数组的按位或，至多有多少种不同的结果？
+
+根据或运算的性质，我们可以从 x=nums[i] 开始，不断往右扩展子数组，按位或的结果要么使 x 不变，要么让 x 的某些比特位的值由 0 变 1。最坏情况下从 x=0 出发，每次改变一个比特位，最终得到 2^29 −1<10 ^9 ，因此至多有 30 种不同的结果。这意味着我们可以递推计算所有按位或的结果。
+
+另一个结论是，相同的按位或对应的子数组右端点会形成一个连续的区间，从而保证下面去重逻辑的正确性（这一性质还可以用来统计按位或结果及其对应的子数组的个数）。
+
+据此，我们可以倒着遍历 nums，在遍历的同时，用一个数组 ors 维护以 i 为左端点的子数组的按位或的结果，及其对应的子数组右端点的最小值。继续遍历到 nums[i−1] 时，我们可以把 nums[i−1] 和 ors 中的每个值按位或，合并值相同的结果。
+
+这样在遍历时，ors 中值最大的元素对应的子数组右端点的最小值，就是要求的最短子数组的右端点。
+
+注：下面代码用到了原地去重的技巧，如果你对此并不熟悉，可以先做做  26. 删除有序数组中的重复项。
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var smallestSubarrays = function (nums) {
+  const n = nums.length;
+  const ans = Array(n).fill(1);
+  const ors = []; // 子数组所有可能的或值不超过30个，保存或值和或值的最小下标
+  for (let i = n - 1; i >= 0; i--) {
+    // 枚举左端点
+    ors.push([0, i]);
+    let k = 0;
+    for (let or of ors) {
+      // 计算当前左端点所有可能的或值
+      or[0] |= nums[i];
+      if (ors[k][0] == or[0]) {
+        // 合并相同的或值
+        ors[k][1] = or[1]; // 取更小的下标
+      } else {
+        k += 1;
+        ors[k] = or;
+      }
+    }
+    ors.length = k + 1;
+    ans[i] = ors[0][1] - i + 1; // ors[i]的或值从大到小
+  }
+  return ans;
+};
+```
+
+### [3171. 找到按位或最接近 K 的子数组](https://leetcode.cn/problems/find-subarray-with-bitwise-or-closest-to-k/description/)
+
+给你一个数组 nums 和一个整数 k 。你需要找到 nums 的一个 子数组 ，满足子数组中所有元素按位或运算 OR 的值与 k 的 绝对差 尽可能 小 。换言之，你需要选择一个子数组 nums[l..r] 满足 |k - (nums[l] OR nums[l + 1] ... OR nums[r])| 最小。
+
+请你返回 最小 的绝对差值。
+
+子数组 是数组中连续的 非空 元素序列。
+
+**思路：**
+
+> 1. 双重遍历，将当前 nums[i]与依次与前面元素 nums[j]或运算，并将结果更新到 nums[j](更新后：`nums[j] = aj | aj+1 | ... | ai`)中，这样遍历结束可以得到所有子数组的或运算结果
+> 2. 在遍历过程中计算与 k 的绝对差，得到最小的绝对差
+> 3. 注意：双重遍历的时间复杂度为 O(n^2)，会超时
+> 4. 优化：
+>    1. 当 nums[i]与 nums[j]或运算的结果等于 nums[j]时，此时 nums[i]在于 j 前面的子数组的或运算结果相同，因此可以直接在 j 处 break；例如：`nums[i] | nums[j] = ai | nums[j] = nums[j]`，此时`nums[i] | nums[j-1] = ai | (aj-1 | aj | ... | ai-1) = ai | aj-1 | nums[j] = aj-1 | nums[j] = nums[j-1]`
+>    2. 当 nums[i] 小于 10^9 时，nums[i]最多有 29 位 1，所以最多 29 论循环，因此可以将时间复杂度优化到 O(nlogU)，U 为 nums[i]的最大值
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var minimumDifference = function (nums, k) {
+  const n = nums.length;
+  let ans = Infinity;
+  for (let i = 0; i < n; i++) {
+    ans = Math.min(ans, Math.abs(k - nums[i]));
+    for (let j = i - 1; j >= 0; j--) {
+      if ((nums[j] | nums[i]) === nums[j]) break;
+      nums[j] |= nums[i];
+      ans = Math.min(ans, Math.abs(k - nums[j]));
+    }
+  }
+  return ans;
+};
+```
+
+### [2411. 按位或最大的最小子数组长度](https://leetcode.cn/problems/smallest-subarrays-with-maximum-bitwise-or/description/)
+
+给你一个长度为 n 下标从 0 开始的数组 nums ，数组中所有数字均为非负整数。对于 0 到 n - 1 之间的每一个下标 i ，你需要找出 nums 中一个 最小 非空子数组，它的起始位置为 i （包含这个位置），同时有 最大 的 按位或运算值 。
+
+换言之，令 Bij 表示子数组 nums[i...j] 的按位或运算的结果，你需要找到一个起始位置为 i 的最小子数组，这个子数组的按位或运算的结果等于 max(Bik) ，其中 i <= k <= n - 1 。
+一个数组的按位或运算值是这个数组里所有数字按位或运算的结果。
+
+请你返回一个大小为 n 的整数数组 answer，其中 answer[i]是开始位置为 i ，按位或运算结果最大，且 最短 子数组的长度。
+
+子数组 是数组里一段连续非空元素组成的序列
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var smallestSubarrays = function (nums) {
+  const n = nums.length;
+  const ans = Array(n).fill(1);
+  const ors = []; // 子数组所有可能的或值不超过30个，保存或值和或值的最小下标
+  for (let i = n - 1; i >= 0; i--) {
+    // 枚举左端点
+    ors.push([0, i]);
+    let k = 0;
+    for (let or of ors) {
+      // 计算当前左端点所有可能的或值
+      or[0] |= nums[i];
+      if (ors[k][0] == or[0]) {
+        // 合并相同的或值
+        ors[k][1] = or[1]; // 取更小的下标
+      } else {
+        k += 1;
+        ors[k] = or;
+      }
+    }
+    ors.length = k + 1;
+    ans[i] = ors[0][1] - i + 1; // ors[i]的或值从大到小
+  }
+  return ans;
+};
+```
+
 ## 题目
 
 ### 题目一
