@@ -1,5 +1,8 @@
 ### DFS 深度优先搜索
 
+DFS 算法讲解
+[「代码随想录」DFS 算法精讲！](https://leetcode.cn/problems/all-paths-from-source-to-target/solutions/1666224/by-carlsun-2-66pf/)
+
 > 找连通块、判断是否有环等
 
 #### 连通块
