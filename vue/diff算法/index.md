@@ -342,4 +342,17 @@ const patchChildren: PatchChildrenFn = (
 
 **双端diff算法的流程：**
 
-1. 用startNewHead和startOldHead分别指向新节点和旧节点的开头，用endNewHead和endOldHead分别指向新节点和旧节点的结尾。
+1. 用startNewHead和startOldHead分别指向新节点和旧节点的开头，用endNewHead和endOldHead分别指向新节点和旧节点的结尾。循环执行以下if () else if () 操作，直到startNewHead大于endNewHead或者startOldHead大于endOldHead。
+   1. 比对startNewHead和startOldHead指向的节点，如果两个节点key相同，表明startOldHead的真实Dom的位置不需要移动，只要进行patch操作，然后将startNewHead和startOldHead都向后移动一位。
+   2. 比对endNewHead和endOldHead指向的节点，如果两个节点key相同，表明endOldHead的真实Dom的位置不需要移动，只要进行patch操作，然后将endNewHead和endOldHead都向前移动一位。
+   3. 比对startOldHead和endNewHead指向的节点，如果两个节点key相同，表明startOldHead的真实Dom的位置需要移动到endNewHead, 以endNewHead的后一位的真实DOM为锚点，进行patch操作，然后将startOldHead--，endNewHead++。
+   4. 比对endOldHead和startNewHead指向的节点，如果两个节点key相同，表明endOldHead的真实Dom的位置需要移动到startNewHead, 以startNewHead的前一位的真实DOM为锚点，进行patch操作，然后将endOldHead++，startNewHead--。
+   5. 如果以上四种情况都不满足，需要在旧节点中寻找与startNewHead指向的NewVNode节点key相同的节点
+      1. 如果找到对应节点，进行patch操作，并将对应真实DOM移动到 移动到头部节点 oldStartVNode.el 之前，以 oldStartVNode.el 为锚点，进行insert操作。之后对应节点的位置在旧节点中置空（undefined），更新startNewHead++。
+      2. 如果没有找到对应节点，说明该节点是新节点，需要挂载到头部节点 oldStartVNode.el 之前，以 oldStartVNode.el 为锚点，进行patch操作挂载新节点DOM，更新startNewHead++。
+2. 当循环终止时，判断：
+   1. 如果startNewHead小于endNewHead，说明新节点中还有未处理的节点，需要将这些节点挂载到头部节点 oldStartVNode.el (此时oldEndVNode越界) 之前，以 oldStartVNode.el 为锚点，进行patch操作挂载新节点DOM。
+   2. 如果startOldHead小于endOldHead，说明旧节点中还有未处理的节点，需要将这些节点卸载。
+
+### 快速diff算法
+
