@@ -56,6 +56,98 @@ class UnionFind {
     return this.size(x);
   }
 }
+``` 
+
+#### [1061. 按字典序排列最小的等效字符串](https://leetcode.cn/problems/lexicographically-smallest-equivalent-string/description/)
+ 
+给出长度相同的两个字符串s1 和 s2 ，还有一个字符串 baseStr 。
+
+其中  s1[i] 和 s2[i]  是一组等价字符。
+
+举个例子，如果 s1 = "abc" 且 s2 = "cde"，那么就有 'a' == 'c', 'b' == 'd', 'c' == 'e'。
+等价字符遵循任何等价关系的一般规则：
+
+- **自反性** ：'a' == 'a'
+- **对称性** ：'a' == 'b' 则必定有 'b' == 'a'
+- **传递性** ：'a' == 'b' 且 'b' == 'c' 就表明 'a' == 'c'
+
+例如， s1 = "abc" 和 s2 = "cde" 的等价信息和之前的例子一样，那么 baseStr = "eed" , "acd" 或 "aab"，这三个字符串都是等价的，而 "aab" 是 baseStr 的按字典序最小的等价字符串
+
+利用 s1 和 s2 的等价信息，找出并返回 baseStr 的按字典序排列最小的等价字符串。
+
+**并查集：**
+1. 初始化并查集：创建一个大小为 26 的数组，用于存储每个小写字母的等价关系。初始时，每个字母都属于自己的等价集合。
+2. 构建等价关系：遍历字符串 s1 和 s2，将它们的字符按照等价关系进行合并，以字典序小的字符作为根节点。
+
+```js
+/**
+ * @param {string} s1
+ * @param {string} s2
+ * @param {string} baseStr
+ * @return {string}
+ */
+var smallestEquivalentString = function (s1, s2, baseStr) {
+    // 初始化并查集（26个英文字母）
+    const unionSet = new UnionSet(26);
+
+    // 合并等价字符：建立字符间的等价关系
+    for (let i = 0; i < s1.length; i++) {
+        unionSet.union(s1[i].charCodeAt() - 97, s2[i].charCodeAt() - 97);
+    }
+
+    let ans = "";
+    // 构建结果字符串：查找每个字符的最小等价字符
+    for (let s of baseStr) {
+        let mnEqualCode = unionSet.find(s.charCodeAt() - 97);
+        ans += String.fromCharCode(mnEqualCode + 97) // 转换回字符
+    }
+    return ans;
+};
+
+class UnionSet {
+    constructor(n) {
+        this.fa = Array(n); // 父节点数组
+        for (let i = 0; i < n; i++) {
+            this.fa[i] = i; // 初始父节点指向自己
+        }
+        this.sizes = Array(n).fill(1); // 集合大小（本题未实际使用）
+    }
+
+    // 路径压缩查找
+    find(x) {
+        if (this.fa[x] !== x) {
+            this.fa[x] = this.find(this.fa[x]); // 路径压缩
+        }
+        return this.fa[x];
+    }
+
+    // 判断是否连通
+    isSame(x, y) {
+        return this.find(x) === this.find(y);
+    }
+
+    // 按字典序合并：始终保持较小的根节点为父
+    union(x, y) {
+        let fax = this.find(x), fay = this.find(y);
+
+        if (fax === fay) return false;
+
+        // 关键逻辑：优先选择较小的字符作为根
+        if (fax < fay) {
+            this.sizes[fax] += this.sizes[fay]; // 修改集合大小
+            this.fa[fay] = fax; // 将较大的根指向较小的根
+        } else {
+            this.sizes[fay] += this.sizes[fax]; // 修改集合大小
+            this.fa[fax] = fay; // 将较大的根指向较小的根
+        }
+        return true;
+    }
+
+    // 获取集合大小（本题未实际使用）
+    getSize(x) {
+        return this.sizes[x];
+    }
+}
 ```
 
 #### 岛屿问题
