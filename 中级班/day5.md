@@ -137,7 +137,7 @@ function fib(n: number): number {
 
 可以转换成（只需要注意n减去最多的数m）：
 
-$|F(n), F(n-1), F(n-2), F(n-3), F(n-4), ... ,F(n-m)| = |F(m), F(m-1),...F(1)|*matrix^{n-m}$，其中matrix为m*m的矩阵
+$|F(n), F(n-1), F(n-2), F(n-3), F(n-4), ... ,F(n-m + 1)| = |F(m), F(m-1),...F(1)|*matrix^{n-m}$，其中matrix为m*m的矩阵
 
 **题目：**
 
