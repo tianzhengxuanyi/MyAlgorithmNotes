@@ -98,3 +98,109 @@ var findCheapestPrice = function (n, flights, src, dst, k) {
 };
 
 ```
+
+#### [3620. 恢复网络路径](https://leetcode.cn/problems/fruit-into-baskets/description/)
+
+给你一个包含 n 个节点（编号从 0 到 n - 1）的有向无环图。图由长度为 m 的二维数组 edges 表示，其中 edges[i] = [ui, vi, costi] 表示从节点 ui 到节点 vi 的单向通信，恢复成本为 costi。
+
+一些节点可能处于离线状态。给定一个布尔数组 online，其中 online[i] = true 表示节点 i 在线。节点 0 和 n - 1 始终在线。
+
+从 0 到 n - 1 的路径如果满足以下条件，那么它是 有效 的：
+
+- 路径上的所有中间节点都在线。
+- 路径上所有边的总恢复成本不超过 k。
+
+对于每条有效路径，其 分数 定义为该路径上的最小边成本。
+
+返回所有有效路径中的 **最大** 路径分数（即最大 **最小** 边成本）。如果没有有效路径，则返回 -1。
+
+**最大化最小值 -> 二分**
+
+**思路：**
+
+二分查找最小边成本，判断在最小成本为c的情况下，是否存在有效路径，即路径的最小总成本小于k。
+
+```js
+/**
+ * @param {number[][]} edges
+ * @param {boolean[]} online
+ * @param {number} k
+ * @return {number}
+ */
+/**
+ * 寻找有效路径中的最大路径分数（即最大最小边成本）
+ * @param {number[][]} edges - 边数组，每个元素为[起点, 终点, 成本]
+ * @param {boolean[]} online - 节点在线状态数组
+ * @param {number} k - 最大允许的总恢复成本
+ * @return {number} - 所有有效路径中的最大路径分数，若无有效路径则返回-1
+ */
+var findMaxPathScore = function (edges, online, k) {
+    // 边界条件：若无边则直接返回-1
+    if (edges.length === 0) return -1;
+    
+    const n = online.length;
+    // 构建邻接表表示的图
+    const graph = Array.from({ length: n }, () => []);
+    // 记录边成本的最小值和最大值，用于二分查找范围
+    let mn = Infinity,
+        mx = 0;
+    
+    // 遍历所有边，构建图并筛选在线节点
+    for (let [x, y, c] of edges) {
+        // 只有起点和终点都在线的边才被加入图中
+        if (online[x] && online[y]) {
+            graph[x].push([y, c]);
+            mn = Math.min(mn, c);  // 更新最小边成本
+            mx = Math.max(mx, c);  // 更新最大边成本
+        }
+    }
+
+    // 记忆化数组，存储已计算的节点最小成本
+    let memo = Array(n).fill(-1);
+    
+    /**
+     * 深度优先搜索计算最小总成本
+     * @param {number} i - 当前节点
+     * @param {number} m - 要求的最小边成本
+     * @return {number} - 从i到终点的最小总成本，若不可达则返回Infinity
+     */
+    const dfs = (i, m) => {
+        // 到达终点，成本为0
+        if (i === n - 1) return 0;
+        // 若已计算过当前节点，直接返回记忆化结果
+        if (memo[i] != -1) return memo[i];
+        
+        let res = Infinity;  // 初始化结果为无穷大
+        // 遍历当前节点的所有邻接节点
+        for (let [next, cost] of graph[i]) {
+            // 跳过成本小于最小要求的边
+            if (cost < m) continue;
+            // 递归计算通过next节点到达终点的成本，并取最小值
+            res = Math.min(res, dfs(next, m) + cost);
+        }
+        
+        // 记忆化存储结果并返回
+        return (memo[i] = res);
+    };
+    
+    // 二分查找最大的最小边成本
+    let left = mn, right = mx;
+    while (left <= right) {
+        const mid = Math.floor((right - left) / 2) + left;
+        // 重置记忆化数组
+        memo.fill(-1);
+        // 检查当前mid值是否可行（从起点到终点的最小总成本是否不超过k）
+        if (dfs(0, mid) <= k) {
+            // 可行，尝试寻找更大的最小值
+            left = mid + 1;
+        } else {
+            // 不可行，尝试寻找更小的最小值
+            right = mid - 1;
+        }
+    }
+
+    // 若right小于最小边成本，说明无有效路径，否则返回right（最大可行的最小边成本）
+    return right < mn ? -1 : right;
+};
+
+```
