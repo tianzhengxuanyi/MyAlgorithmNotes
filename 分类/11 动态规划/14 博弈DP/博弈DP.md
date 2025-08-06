@@ -85,7 +85,7 @@ var divisorGame = function (n) {
 
 ```
 
-### [877. 石子游戏](https://leetcode.cn/problems/stone-game/description/)
+#### [877. 石子游戏](https://leetcode.cn/problems/stone-game/description/)
  
 Alice 和 Bob 用几堆石子在做游戏。一共有偶数堆石子，排成一行；每堆都有 正 整数颗石子，数目为 piles[i] 。
 
@@ -213,4 +213,101 @@ var stoneGame = function (piles) {
 var stoneGame = function (piles) {
     return true;
 };
+```
+
+#### [486. 预测赢家](https://leetcode.cn/problems/predict-the-winner/description/)
+
+给你一个整数数组 nums 。玩家 1 和玩家 2 基于这个数组设计了一个游戏。
+
+玩家 1 和玩家 2 轮流进行自己的回合，玩家 1 先手。开始时，两个玩家的初始分值都是 0 。每一回合，玩家从数组的任意一端取一个数字（即，nums[0] 或 nums[nums.length - 1]），取到的数字将会从数组中移除（数组长度减 1 ）。玩家选中的数字将会加到他的得分上。当数组中没有剩余数字可取时，游戏结束。
+
+如果玩家 1 能成为赢家，返回 true 。如果两个玩家得分相等，同样认为玩家 1 是游戏的赢家，也返回 true 。你可以假设每个玩家的玩法都会使他的分数最大化。
+
+```js
+/**
+ * 判断玩家1在预测赢家游戏中是否能获胜（动态规划空间优化解法）
+ * @param {number[]} nums - 整数数组，玩家从两端取数，取到的数字累加到得分
+ * @return {boolean} - 若玩家1得分大于等于玩家2返回true，否则返回false（假设双方都采取最优策略）
+ */
+var predictTheWinner = function (nums) {
+    const n = nums.length;
+    // 空间优化的DP数组：f[i%2][j]表示当前玩家在子数组nums[i...j]中能获得的最大得分差（当前玩家得分 - 对手得分）
+    // 使用2行数组是因为i的奇偶性决定当前行，可复用空间（替代n x n的二维数组）
+    const f = Array.from({ length: 2 }, () => Array(n).fill(0));
+
+    // 从最后一个元素开始向前遍历（子数组长度从1到n）
+    for (let i = n - 1; i >= 0; i--) {
+        // 基础情况：当子数组只有一个元素（i=j）时，当前玩家只能取这元素，得分差即为该元素值
+        f[i % 2][i] = nums[i];
+        // 遍历子数组的结束位置j（j > i，子数组长度从2开始）
+        for (let j = i + 1; j < n; j++) {
+            // 状态转移方程：
+            // 1. 取左端元素nums[i]，则剩余子数组[i+1...j]由对手操作，对手的得分差为f[(i+1)%2][j]
+            //    当前玩家得分差 = nums[i] - 对手得分差
+            // 2. 取右端元素nums[j]，则剩余子数组[i...j-1]由对手操作，对手的得分差为f[i%2][j-1]
+            //    当前玩家得分差 = nums[j] - 对手得分差
+            // 当前玩家选择两种方案中得分差更大的一种
+            f[i % 2][j] = Math.max(nums[i] - f[(i + 1) % 2][j], nums[j] - f[i % 2][j - 1]);
+        }
+    }
+
+    // 整个数组[0...n-1]的得分差若>=0，说明玩家1（先手）得分 >= 玩家2，返回true
+    return f[0][n - 1] >= 0;
+};
+
+```
+
+
+#### [1510. 石子游戏 IV](https://leetcode.cn/problems/stone-game-iv/description/)
+ 
+Alice 和 Bob 两个人轮流玩一个游戏，Alice 先手。
+
+一开始，有 n 个石子堆在一起。每个人轮流操作，正在操作的玩家可以从石子堆里拿走 任意 非零 平方数 个石子。
+
+如果石子堆里没有石子了，则无法操作的玩家输掉游戏。
+
+给你正整数 n ，且已知两个人都采取最优策略。如果 Alice 会赢得比赛，那么返回 True ，否则返回 False 。
+
+```js
+/**
+ * 判断爱丽丝在石子游戏IV中是否能获胜（假设双方都采取最优策略）
+ * @param {number} n - 初始石子数量
+ * @return {boolean} - 若爱丽丝能获胜返回true，否则返回false
+ * 游戏规则：玩家轮流从石子堆中拿走任意非零平方数个石子（如1、4、9、16...），无法操作的玩家输掉游戏，爱丽丝先手
+ */
+var winnerSquareGame = function (n) {
+    /**
+     * 递归函数（带记忆化）：判断当前玩家面对i个石子时能否获胜
+     * @param {number} i - 当前剩余石子数量
+     * @return {boolean} 当前玩家能否获胜
+     */
+    const dfs = (i) => {
+        // 基础情况1：若i是完全平方数（sqrt为整数），当前玩家可直接拿走全部i个石子获胜
+        let sqrt = Math.sqrt(i);
+        if (sqrt === Math.floor(sqrt)) return memo[i] = true;
+        
+        // 若已计算过i个石子的结果，直接返回记忆值（避免重复计算）
+        if (memo[i] !== undefined) return memo[i];
+
+        // 遍历所有可能的平方数（j²），j的范围：1 ≤ j < sqrt(i)（j² < i）
+        for (let j = 1; j < sqrt; j++) {
+            // 若当前玩家拿走j²个石子后，剩余i-j²个石子时对手无法获胜（!dfs(i-j²)），
+            // 则当前玩家可通过选择该j²获胜，记录结果到memo并返回true
+            if (!dfs(i - j * j)) {
+                return memo[i] = true;
+            }
+        }
+
+        // 若遍历所有可能的平方数后，对手都能获胜，则当前玩家输掉，记录结果到memo并返回false
+        return memo[i] = false;
+    }
+
+    // 从初始石子数量n开始递归计算Alice能否获胜
+    return dfs(n);
+};
+
+// 记忆化数组：memo[i]存储当剩余i个石子时当前玩家能否获胜（避免重复计算子问题）
+// 数组大小1e5+1覆盖题目可能的n范围（题目约束n为正整数，通常测试用例n不会超过1e5）
+const memo = Array(1e5 + 1);
+
 ```
