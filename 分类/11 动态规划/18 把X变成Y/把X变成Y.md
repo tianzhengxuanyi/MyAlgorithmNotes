@@ -191,4 +191,81 @@ var minimumOperationsToMakeEqual = function (x, y) {
 
 ```
 
+#### [2059. 转化数字的最小运算数](https://leetcode.cn/problems/minimum-operations-to-convert-number/description/)
 
+给你一个下标从 0 开始的整数数组 nums ，该数组由 互不相同 的数字组成。另给你两个整数 start 和 goal 。
+
+整数 x 的值最开始设为 start ，你打算执行一些运算使 x 转化为 goal 。你可以对数字 x 重复执行下述运算：
+
+如果 0 <= x <= 1000 ，那么，对于数组中的任一下标 i（0 <= i < nums.length），可以将 x 设为下述任一值：
+
+- x + nums[i]
+- x - nums[i]
+- x ^ nums[i]（按位异或 XOR）
+
+注意，你可以按任意顺序使用每个 nums[i] 任意次。使 x 越过 0 <= x <= 1000 范围的运算同样可以生效，但该该运算执行后将不能执行其他运算。
+
+返回将 x = start 转化为 goal 的最小操作数；如果无法完成转化，则返回 -1 。
+
+**BFS**
+
+把每一次操作看做为一条边，start看做为起点，goal看做为终点，求最短路径（BFS）；
+
+```js
+/**
+ * 计算将起始数字转化为目标数字所需的最少操作次数
+ * 支持的操作：
+ * 1. 与nums数组中的任一元素相加
+ * 2. 与nums数组中的任一元素相减
+ * 3. 与nums数组中的任一元素按位异或(XOR)
+ * 注意：当数字超出0-1000范围后无法继续执行操作
+ * @param {number[]} nums - 用于执行操作的数字数组
+ * @param {number} start - 起始数字
+ * @param {number} goal - 目标数字
+ * @return {number} - 最少操作次数，若无法完成转化则返回-1
+ */
+var minimumOperations = function (nums, start, goal) {
+    // 访问标记数组：记录0-1000范围内已访问过的数字，避免重复计算和循环
+    const visited = Array(1001).fill(false);
+    // BFS队列：存储[当前数字, 操作次数]，用于逐层探索最少操作路径
+    const q = [[start, 0]];
+    // 标记起始数字为已访问
+    visited[start] = true;
+
+    // BFS主循环：当队列不为空时继续探索
+    while (q.length) {
+        // 出队当前状态：[当前数字x, 当前操作次数t]
+        let [x, t] = q.shift();
+        // 遍历nums数组中的每个操作数
+        for (let y of nums) {
+            // 遍历三种操作类型
+            for (let op of ops) {
+                // 计算执行当前操作后的新数字
+                let nx = op(x, y);
+                // 如果新数字等于目标，直接返回当前操作次数+1（当前操作即为达成目标的最后一步）
+                if (nx == goal) return t + 1;
+                // 如果新数字在0-1000范围内且未被访问过
+                if (nx >= 0 && nx <= 1000 && !visited[nx]) {
+                    // 标记为已访问
+                    visited[nx] = true;
+                    // 入队新状态：[新数字, 操作次数+1]
+                    q.push([nx, t + 1]);
+                }
+            }
+        }
+    }
+
+    // 若遍历完所有可能状态仍未找到目标，返回-1
+    return -1;
+};
+
+// 操作函数1：两数相加
+const op1 = (x, y) => x + y;
+// 操作函数2：两数相减（x - y）
+const op2 = (x, y) => x - y;
+// 操作函数3：两数按位异或
+const op3 = (x, y) => x ^ y;
+// 操作函数数组：统一管理三种操作，便于循环遍历执行
+const ops = [op1, op2, op3];
+
+```
