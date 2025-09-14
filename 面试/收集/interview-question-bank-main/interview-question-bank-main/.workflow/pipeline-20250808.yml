@@ -1,0 +1,122 @@
+version: '1.0'
+name: pipeline-20250808
+displayName: 华为云云服务器CICD
+triggers:
+  trigger: manual
+  push:
+    branches:
+      precise:
+        - main
+variables:
+  global:
+    - SSH_PRIVATE_KEY
+stages:
+  - name: stage-86dc4dff
+    displayName: 华为云CICD
+    strategy: naturally
+    trigger: auto
+    executor:
+      - yangyunqiao
+    steps:
+      - step: build@nodejs
+        name: build_nodejs
+        displayName: Nodejs 构建
+        nodeVersion: 21.5.0
+        commands:
+          - '#!/bin/bash'
+          - set -ex
+          - ''
+          - '# --------------------------'
+          - '# 配置项'
+          - '# --------------------------'
+          - 'SERVER_IP="113.45.2.169"       # 云服务器公网IP'
+          - 'SERVER_USER="root"             # SSH登录用户'
+          - 'PROJECT_DIR="/home/web/interview-question-bank"  # 服务器项目路径'
+          - 'DIST_LOCAL="./docs/.vitepress/dist"            # 本地构建产物目录地址'
+          - 'DIST_REMOTE="/home/web/interview-question-bank/docs/.vitepress/dist"  # 服务器目标路径（Nginx 静态目录）'
+          - 'SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY"       # Gitee注入的SSH私钥内容（CI变量）'
+          - 'SSH_KEY_PATH="$HOME/.ssh/id_rsa"       # 本地 SSH 私钥路径（由 SSH_PRIVATE_KEY 写入）'
+          - ''
+          - '# --------------------------'
+          - '# 步骤1：配置SSH连接（基于 Gitee 注入的私钥）'
+          - '# --------------------------'
+          - echo "--------------------------"
+          - echo "配置SSH连接"
+          - echo "--------------------------"
+          - ''
+          - mkdir -p ~/.ssh
+          - echo "$SSH_PRIVATE_KEY" > "$SSH_KEY_PATH"
+          - chmod 600 "$SSH_KEY_PATH"
+          - chmod 700 ~/.ssh
+          - ''
+          - '# 添加服务器指纹到 known_hosts'
+          - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+          - ''
+          - '# --------------------------'
+          - '# 步骤2：本地构建（生成 dist 目录）'
+          - '# --------------------------'
+          - echo "===== 开始本地构建 ====="
+          - '# 确保使用足够新的 Node.js 版本'
+          - node -v
+          - npm -v
+          - ''
+          - npm config set registry https://registry.npmmirror.com/
+          - npm install
+          - ''
+          - '# 尝试构建，如果失败则退出'
+          - if ! npm run docs:build; then
+          - '    echo "构建失败，请检查错误信息"'
+          - '    exit 1'
+          - fi
+          - ''
+          - '# 检查构建产物'
+          - if [ ! -d "$DIST_LOCAL" ]; then
+          - '    echo "错误：构建后未生成预期目录 $DIST_LOCAL"'
+          - '    echo "当前目录内容："'
+          - '    ls -la'
+          - '    echo ".vitepress 目录内容："'
+          - '    ls -la .vitepress'
+          - '    exit 1'
+          - fi
+          - ''
+          - echo "===== 本地构建完成 ====="
+          - ''
+          - '# --------------------------'
+          - '# 步骤3：使用 scp 上传 dist 目录到服务器'
+          - '# --------------------------'
+          - echo "===== 开始上传产物 ====="
+          - '# 检查并创建远程目录结构'
+          - ssh -i "$SSH_KEY_PATH" "$SERVER_USER@$SERVER_IP" "
+          - '    if [ ! -d \"$DIST_REMOTE\" ]; then'
+          - '        echo ''远程目录不存在，正在创建...'''
+          - '        mkdir -p \"$DIST_REMOTE\"'
+          - '        chmod -R 755 \"/home/web/interview-question-bank/docs\"'
+          - '    fi'
+          - '    # 清空目录但保留目录本身'
+          - '    rm -rf \"$DIST_REMOTE\"/*'
+          - '"'
+          - ''
+          - ''
+          - '# 上传 dist 目录内容'
+          - scp -r -i "$SSH_KEY_PATH" "$DIST_LOCAL"/* "$SERVER_USER@$SERVER_IP:$DIST_REMOTE"
+          - echo "===== 产物上传完成 ====="
+          - ''
+          - '# --------------------------'
+          - '# 步骤4：服务器端操作（拉取代码 + 重启 Nginx）'
+          - '# --------------------------'
+          - echo "===== 服务器端操作 ====="
+          - ssh -i "$SSH_KEY_PATH" "$SERVER_USER@$SERVER_IP" "
+          - '  cd $PROJECT_DIR && git pull origin main'
+          - '  nginx -s reload'
+          - '"'
+          - echo "===== 部署完成！ ====="
+        artifacts:
+          - name: BUILD_ARTIFACT
+            path:
+              - ./docs/.vitepress/dist
+        caches:
+          - ~/.npm
+          - ~/.yarn
+        notify: []
+        strategy:
+          retry: '0'

@@ -1,0 +1,37 @@
+#!/bin/sh
+
+if ! type node >/dev/null 2>&1; then
+  echo 'node 未安装'
+  if [ -d "$HOME/.nvm" ]; then
+    echo "有 .nvm 这个目录"
+
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+    matchNvmUseNodeVersion=$(nvm current)
+    if [ "$matchNvmUseNodeVersion" == "none" ]; then
+      echo "没有找到 nvm 设置的 Node 版本,请执行 nvm install --lts"
+      exit 1
+    else
+      echo "检测到 nvm 设置了有效的 Node 版本: $matchNvmUseNodeVersion"
+      export PATH="$NVM_DIR/versions/node/$matchNvmUseNodeVersion/bin:$PATH"
+    fi
+  fi
+
+else
+  echo 'node 已安装'
+  nodeVersion=$(node -v)
+  npmVersion=$(npm -v)
+  echo "✅ node 版本:$nodeVersion"
+  echo $(which node)
+  echo "✅ npm 版本:$npmVersion"
+  echo $(which npm)
+fi
+
+# 执行 lint-staged (这里不需要 lint-staged,因为这是以 .md 文件为主)
+# echo "🚀 正在执行 lint-staged..."
+# npx lint-staged --verbose
+
+# 执行 commitlint
+echo "🚀 正在执行 commitlint..."
+npx --no -- commitlint --edit "$1"
