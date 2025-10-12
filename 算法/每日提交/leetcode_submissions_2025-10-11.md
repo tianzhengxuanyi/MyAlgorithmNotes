@@ -1,74 +1,152 @@
-### 打家劫舍
+### 2025-10-11
 
-#### [198. 打家劫舍](https://leetcode.cn/problems/house-robber/description/)
+#### [866. 回文质数](https://leetcode.cn/problems/prime-palindrome/description/)
 
-你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+给你一个整数 `n` ，返回大于或等于 `n` 的最小 **回文质数**。
 
-给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+一个整数如果恰好有两个除数：`1` 和它本身，那么它是 **质数** 。注意，`1` 不是质数。
 
-> 从第i间房子开始偷，能偷到的最大金额为`dp[i]`
->
-> 如果偷第i间房子，那么第i-1间房子就不能偷，所以能偷到的最大金额为`dp[i-2]+nums[i]`
->
-> 如果不偷第i间房子，那么能偷到的最大金额为`dp[i-1]`
->
-> 所以递推公式：`dp[i]=max(dp[i+2]+nums[i],dp[i+1])`
+* 例如，`2`、`3`、`5`、`7`、`11` 和 `13` 都是质数。
 
-```js
-/**
- * @param {number[]} nums
-> 递推公式：`dp[i]=max(dp[i+2]+nums[i],dp[i+1])`
+一个整数如果从左向右读和从右向左读是相同的，那么它是 **回文数** 。
 
-```js
-/**
- * @param {number[]} nums
- * @return {number}
- */
-var rob = function (nums) {
-    let p = p1 = nums[nums.length - 1], p2 = 0;
-    for (let i = nums.length - 2; i >= 0; i--) {
-        p = Math.max(p1, nums[i] + p2);
-        [p2, p1] = [p1, p];
-    }
-    return p;
-};
+* 例如，`101` 和 `12321` 都是回文数。
+
+测试用例保证答案总是存在，并且在 `[2, 2 * 108]` 范围内。
+
+**示例 1：**
+
+```
+输入：n = 6
+输出：7
 ```
 
-#### [⭐740. 删除并获得点数](https://leetcode.cn/problems/delete-and-earn/description/) `值域打家劫舍`
+**示例 2：**
 
-给你一个整数数组 nums ，你可以对它进行一些操作。
+```
+输入：n = 8
+输出：11
+```
 
-每次操作中，选择任意一个 nums[i] ，删除它并获得 nums[i] 的点数。之后，你必须删除 所有 等于 nums[i] - 1 和 nums[i] + 1 的元素。
+**示例 3：**
 
-开始你拥有 0 个点数。返回你能通过这些操作获得的最大点数。
+```
+输入：n = 13
+输出：101
+```
 
-> `nums=[2,2,3,3,3,4]`, 把 nums 转换成一个值域数组 a，其中 a[i] 表示 nums 中的等于 i 的元素之和。上面的例子中，a=[0,0,4,9,4]。因为 nums 中有 3 个 3，所以 a[3]=3+3+3=9。
->
->计算数组 a 的  `198. 打家劫舍`，即为答案。
+**提示：**
+
+* `1 <= n <= 108`
+
+##### 生成所有回文质数 二分
+
+- 生成所有的回文数
+- 过滤出所有的回文质数
+- 二分查找第一个大于等于n的回文质数
 
 ```js
 /**
- * @param {number[]} nums
- * @return {number}
+ * @function primePalindrome
+ * @description 查找大于等于给定数字的最小素数回文数
+ * @param {number} n - 输入的目标数字
+ * @return {number} 大于等于n的最小素数回文数
+ * @算法核心思想：预生成所有可能的回文数，筛选出素数后，使用二分查找快速定位目标值
+ * @时间复杂度：O(1) - 预计算阶段完成后查询为O(log n)
+ * @空间复杂度：O(k) - k为预生成的素数回文数数量
  */
-var deleteAndEarn = function (nums) {
-    const max = Math.max(...nums);
-    const arr = Array(max + 1).fill(0);
-    for (let num of nums) {
-        arr[num] += num;
-    }
-    return robbed(arr);
+var primePalindrome = function (n) {
+    return lowerBound(n);
 };
 
-function robbed(arr) {
-    const n = arr.length;
-    let p = p1 = arr[n - 1], p2 = 0;
-    for (let i = n-2; i >= 0; i--) {
-        p = Math.max(p1, arr[i] + p2);
-        [p1, p2] = [p, p1];
+/**
+ * @var {Array} palindrome - 存储预生成的回文数
+ */
+const palindrome = [];
+
+/**
+ * @constant {number} MX - 预生成回文数的最大值
+ */
+const MX = 2e8;
+
+/**
+ * 预生成所有小于MX的回文数
+ * 分为奇数长度和偶数长度两种情况生成
+ */
+outer: for (let base = 1; ; base *= 10) {
+    // 生成奇数长度的回文数
+    for (let i = base; i < base * 10; i++) {
+        let x = i;
+        // 将i的前几位逆序追加到i后面，形成奇数长度回文数
+        for (let t = Math.floor(x / 10); t > 0; t = Math.floor(t / 10)) {
+            x = x * 10 + t % 10;
+        }
+        if (x > MX) {
+            break outer;
+        }
+        palindrome.push(x);
     }
-    return p;
+    
+    // 生成偶数长度的回文数
+    for (let i = base; i < base * 10; i++) {
+        let x = i;
+        // 将i完全逆序追加到i后面，形成偶数长度回文数
+        for (let t = x; t > 0; t = Math.floor(t / 10)) {
+            x = x * 10 + t % 10;
+        }
+        if (x > MX) {
+            break outer;
+        }
+        palindrome.push(x);
+    }
 }
+
+/**
+ * @function isPrime
+ * @description 判断一个数是否为素数
+ * @param {number} x - 待判断的数字
+ * @return {boolean} 如果是素数返回true，否则返回false
+ * @算法核心思想：检查从2到√x的所有整数是否能整除x
+ * @时间复杂度：O(√n)
+ * @空间复杂度：O(1)
+ */
+const isPrime = (x) => {
+    if (x < 2) return false; // 小于2的数不是素数
+    let sqrt = Math.sqrt(x);
+    for (let i = 2; i <= sqrt; i++) {
+        if (x % i == 0) return false; // 能被i整除，不是素数
+    }
+    return true;
+};
+
+/**
+ * @var {Array} primes - 存储所有是素数的回文数
+ */
+const primes = palindrome.filter(isPrime);
+
+/**
+ * @function lowerBound
+ * @description 使用二分查找找到大于等于目标值的最小素数回文数
+ * @param {number} target - 目标值
+ * @return {number} 大于等于target的最小素数回文数
+ * @算法核心思想：二分查找有序数组中的下界
+ * @时间复杂度：O(log n)
+ * @空间复杂度：O(1)
+ */
+const lowerBound = (target) => {
+    let l = 0, r = primes.length;
+    while (l <= r) {
+        // 计算中间位置（避免整数溢出的写法）
+        let m = Math.floor((r - l) / 2) + l;
+        if (primes[m] < target) {
+            l = m + 1; // 目标值在右半部分
+        } else {
+            r = m - 1; // 目标值在左半部分或等于中间值
+        }
+    }
+    return primes[l]; // 返回下界位置的元素
+};
+
 ```
 
 #### [3186. 施咒的最大总伤害](https://leetcode.cn/problems/maximum-total-damage-with-spell-casting/description/)
