@@ -99,6 +99,64 @@ var smallestTrimmedNumbers = function (nums, queries) {
 
 ```
 
+##### 基数排序
+
+```js
+/**
+ * @function smallestTrimmedNumbers
+ * @description 查找数组中每个数字裁剪后第k小的元素的原始索引
+ * @param {string[]} nums - 数字字符串数组
+ * @param {number[][]} queries - 查询数组，每个查询为[k, trim]，表示要找裁剪后第k小元素的索引
+ * @return {number[]} 结果数组，对应每个查询的答案
+ * @算法核心思想：基数排序（从右到左逐位排序），优化处理多个查询
+ * @时间复杂度：O(m + maxTrim * n)，其中m是查询数量，n是nums数组长度，maxTrim是最大裁剪长度
+ * @空间复杂度：O(n + m)，用于存储索引数组和结果数组
+ */
+var smallestTrimmedNumbers = function (nums, queries) {
+    const n = nums.length, m = queries.length;
+    // 初始化索引数组，记录原始位置
+    let idx = Array.from({ length: n }, (_, i) => i);
+    // 对查询按裁剪长度进行排序，以便批量处理相同裁剪长度的查询
+    const sorted = Array.from({ length: m }, (_, i) => i).sort((a, b) => queries[a][1] - queries[b][1]);
+    // 找出最大裁剪长度和每个数字的字符长度
+    const mx = queries[sorted[m - 1]][1], chrLen = nums[0].length;
+    // 结果数组
+    const ans = Array(m);
+    
+    // 从1位开始，逐步处理到最大裁剪长度
+    for (let i = 1, j = 0; i <= mx; i++) {
+        // 创建10个桶（0-9）用于计数排序
+        const buckets = Array.from({length: 10}, () => []);
+        
+        // 将当前索引数组中的每个元素按照第i位数字放入对应的桶中
+        for (let index of idx) {
+            // 获取当前数字字符串从右数第i位的字符对应的数字
+            buckets[nums[index].charAt(chrLen - i)].push(index);
+        }
+        
+        // 清空索引数组，准备按桶顺序重新填充
+        idx.length = 0;
+        // 按顺序（0-9）将桶中的索引合并回索引数组
+        for (let bucket of buckets) {
+            idx.push(...bucket);
+        }
+        
+        // 处理所有裁剪长度等于当前i的查询
+        while (j < m && queries[sorted[j]][1] <= i) {
+            let [k, trim] = queries[sorted[j]];
+            // 只有当查询的裁剪长度正好等于当前处理的位数时，才记录结果
+            if (trim == i) {
+                ans[sorted[j]] = idx[k - 1]; // 第k小的元素在索引数组中的位置（注意索引从0开始）
+            }
+            j++;
+        }
+    }
+    
+    return ans;
+};
+
+```
+
 #### [2940. 找到 Alice 和 Bob 可以相遇的建筑](https://leetcode.cn/problems/find-building-where-alice-and-bob-can-meet/description/)
 
 给你一个下标从 **0** 开始的正整数数组 `heights` ，其中 `heights[i]` 表示第 `i` 栋建筑的高度。
@@ -368,7 +426,7 @@ class SegmentTree {
 
 **输入：** skill = [1,2,3,4], mana = [1,2]
 
-**输出：** 21
+**输出：** 
 
 **提示：**
 
