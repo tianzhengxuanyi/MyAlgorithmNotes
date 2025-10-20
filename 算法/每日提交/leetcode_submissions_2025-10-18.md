@@ -353,65 +353,6 @@ var assignElements = function (groups, elements) {
 
 ```
 
-/**
- * 功能：判断一副牌是否可以被分成若干个大小为X的组，其中X >= 2
- * 核心思想：计算所有卡牌数量的最大公约数(GCD)，若GCD >= 2则可以分组
- * 
- * @param {number[]} deck - 输入的卡牌数组，每个元素代表卡牌的数值
- * @return {boolean} 如果可以分组返回true，否则返回false
- * 
- * 时间复杂度：O(n + m log k)，其中n是数组长度，m是不同卡牌的数量，k是最大卡牌数量
- * 空间复杂度：O(m)，需要存储不同卡牌的出现次数
- */
-var hasGroupsSizeX = function (deck) {
-    // 使用哈希表统计每个卡牌的出现次数
-    const cnt = new Map();
-    for (let x of deck) {
-        cnt.set(x, (cnt.get(x) ?? 0) + 1);
-    }
-    
-    // 将所有卡牌数量提取到数组中
-    const vals = Array.from(cnt.values());
-    
-    // 特殊情况处理：如果只有一种卡牌，只需检查其数量是否大于等于2
-    if (vals.length == 1) return vals[0] >= 2;
-    
-    // 初始化最大公约数为第一个卡牌的数量
-    let g = vals[0];
-    
-    // 遍历所有卡牌数量，计算它们的最大公约数
-    for (let i = 1; i < vals.length; i++) {
-        g = gcd(g, vals[i]);
-        
-        // 剪枝优化：如果当前最大公约数已经为1，则无法分组，可以提前返回
-        if (g == 1) {
-            return false;
-        }
-    }
-    
-    // 所有卡牌数量的最大公约数大于等于2时，可以分组
-    return true;
-};
-
-/**
- * 辅助函数：使用欧几里得算法计算两个数的最大公约数
- * 
- * @param {number} x - 第一个数
- * @param {number} y - 第二个数
- * @return {number} x和y的最大公约数
- */
-const gcd = (x, y) => {
-    // 欧几里得算法：用较大数除以较小数，然后用余数继续除以除数，直到余数为0
-    while (y) {
-        let t = x % y;
-        x = y;  // 交换x和y的值
-        y = t;  // y变为余数
-    }
-    
-    // 当y为0时，x就是最大公约数
-    return x;
-};
-
 #### [1390. 四因数](https://leetcode.cn/problems/four-divisors/description/)
 
 给你一个整数数组 `nums`，请你返回该数组中恰有四个因数的这些整数的各因数之和。如果数组中不存在满足题意的整数，则返回 `0` 。
