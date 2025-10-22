@@ -1,202 +1,4 @@
-### 最大公约数
-
-#### 辗转相除法
-
-**迭代：**
-
-```js
-/**
- * @param {number} a
- * @param {number} b
- * @return {number}
- */
-var gcd = function (x, y) {
-    while (y !== 0) {
-        let temp = y;
-        y = x % y;
-        x = temp;
-    }
-    return x;
-};
-```
-
-**递归：**
-
-```js
-/**
- * @param {number} a
- * @param {number} b
- * @return {number}
- */
-var gcd = function (x, y) {
-    if (y === 0) return x;
-    return gcd(y, x % y);
-};
-```
-
-#### [1979. 找出数组的最大公约数](https://leetcode.cn/problems/find-greatest-common-divisor-of-array/description/)
-
-给你一个整数数组 `nums` ，返回数组中最大数和最小数的 **最大公约数** 。
-
-两个数的 **最大公约数** 是能够被两个数整除的最大正整数。
-
-**示例 1：**
-
-```
-输入：nums = [2,5,6,9,10]
-输出：2
-解释：
-nums 中最小的数是 2
-nums 中最大的数是 10
-2 和 10 的最大公约数是 2
-```
-
-**示例 2：**
-
-```
-输入：nums = [7,5,6,8,3]
-输出：1
-解释：
-nums 中最小的数是 3
-nums 中最大的数是 8
-3 和 8 的最大公约数是 1
-```
-
-**示例 3：**
-
-```
-输入：nums = [3,3]
-输出：3
-解释：
-nums 中最小的数是 3
-nums 中最大的数是 3
-3 和 3 的最大公约数是 3
-```
-
-**提示：**
-
-* `2 <= nums.length <= 1000`
-* `1 <= nums[i] <= 1000`
-
-##### 最大公约数模板
-
-```js
-/**
- * @param {number[]} nums
- * @return {number}
- */
-var findGCD = function(nums) {
-    let mn = Infinity, mx = -Infinity;
-    for (let x of nums) {
-        mn = Math.min(mn, x);
-        mx = Math.max(mx, x);
-    }
-
-    while (mn) {
-        let t = mx % mn;
-        mx = mn, mn = t; 
-    }
-
-    return mx;
-};
-```
-
-#### [914. 卡牌分组](https://leetcode.cn/problems/x-of-a-kind-in-a-deck-of-cards/description/)
-
-给定一副牌，每张牌上都写着一个整数。
-
-此时，你需要选定一个数字 `X`，使我们可以将整副牌按下述规则分成 1 组或更多组：
-
-* 每组都有 `X` 张牌。
-* 组内所有的牌上都写着相同的整数。
-
-仅当你可选的 `X >= 2` 时返回 `true`。
-
-**示例 1：**
-
-```
-输入：deck = [1,2,3,4,4,3,2,1]
-输出：true
-解释：可行的分组是 [1,1]，[2,2]，[3,3]，[4,4]
-```
-
-**示例 2：**
-
-```
-输入：deck = [1,1,1,2,2,2,3,3]
-输出：false
-解释：没有满足要求的分组。
-```
-
-**提示：**
-
-* `1 <= deck.length <= 104`
-* `0 <= deck[i] < 104`
-
-##### 计数的最大公约数
-
-```js
-/**
- * 功能：判断一副牌是否可以被分成若干个大小为X的组，其中X >= 2
- * 核心思想：计算所有卡牌数量的最大公约数(GCD)，若GCD >= 2则可以分组
- * 
- * @param {number[]} deck - 输入的卡牌数组，每个元素代表卡牌的数值
- * @return {boolean} 如果可以分组返回true，否则返回false
- * 
- * 时间复杂度：O(n + m log k)，其中n是数组长度，m是不同卡牌的数量，k是最大卡牌数量
- * 空间复杂度：O(m)，需要存储不同卡牌的出现次数
- */
-var hasGroupsSizeX = function (deck) {
-    // 使用哈希表统计每个卡牌的出现次数
-    const cnt = new Map();
-    for (let x of deck) {
-        cnt.set(x, (cnt.get(x) ?? 0) + 1);
-    }
-    
-    // 将所有卡牌数量提取到数组中
-    const vals = Array.from(cnt.values());
-    
-    // 特殊情况处理：如果只有一种卡牌，只需检查其数量是否大于等于2
-    if (vals.length == 1) return vals[0] >= 2;
-    
-    // 初始化最大公约数为第一个卡牌的数量
-    let g = vals[0];
-    
-    // 遍历所有卡牌数量，计算它们的最大公约数
-    for (let i = 1; i < vals.length; i++) {
-        g = gcd(g, vals[i]);
-        
-        // 剪枝优化：如果当前最大公约数已经为1，则无法分组，可以提前返回
-        if (g == 1) {
-            return false;
-        }
-    }
-    
-    // 所有卡牌数量的最大公约数大于等于2时，可以分组
-    return true;
-};
-
-/**
- * 辅助函数：使用欧几里得算法计算两个数的最大公约数
- * 
- * @param {number} x - 第一个数
- * @param {number} y - 第二个数
- * @return {number} x和y的最大公约数
- */
-const gcd = (x, y) => {
-    // 欧几里得算法：用较大数除以较小数，然后用余数继续除以除数，直到余数为0
-    while (y) {
-        let t = x % y;
-        x = y;  // 交换x和y的值
-        y = t;  // y变为余数
-    }
-    
-    // 当y为0时，x就是最大公约数
-    return x;
-};
-
-```
-
+### 2025-10-20
 
 #### [1250. 检查「好数组」](https://leetcode.cn/problems/check-if-it-is-a-good-array/description/)
 
@@ -356,5 +158,78 @@ const gcd = (x, y) => {
     return x;
 };
 
+```
+
+#### [2011. 执行操作后的变量值](https://leetcode.cn/problems/final-value-of-variable-after-performing-operations/description/)
+
+存在一种仅支持 4 种操作和 1 个变量 `X` 的编程语言：
+
+* `++X` 和 `X++` 使变量 `X` 的值 **加** `1`
+* `--X` 和 `X--` 使变量 `X` 的值 **减** `1`
+
+最初，`X` 的值是 `0`
+
+给你一个字符串数组 `operations` ，这是由操作组成的一个列表，返回执行所有操作后，`X` 的 **最终值** 。
+
+**示例 1：**
+
+```
+输入：operations = ["--X","X++","X++"]
+输出：1
+解释：操作按下述步骤执行：
+最初，X = 0
+--X：X 减 1 ，X =  0 - 1 = -1
+X++：X 加 1 ，X = -1 + 1 =  0
+X++：X 加 1 ，X =  0 + 1 =  1
+```
+
+**示例 2：**
+
+```
+输入：operations = ["++X","++X","X++"]
+输出：3
+解释：操作按下述步骤执行： 
+最初，X = 0
+++X：X 加 1 ，X = 0 + 1 = 1
+++X：X 加 1 ，X = 1 + 1 = 2
+X++：X 加 1 ，X = 2 + 1 = 3
+```
+
+**示例 3：**
+
+```
+输入：operations = ["X++","++X","--X","X--"]
+输出：0
+解释：操作按下述步骤执行：
+最初，X = 0
+X++：X 加 1 ，X = 0 + 1 = 1
+++X：X 加 1 ，X = 1 + 1 = 2
+--X：X 减 1 ，X = 2 - 1 = 1
+X--：X 减 1 ，X = 1 - 1 = 0
+```
+
+**提示：**
+
+* `1 <= operations.length <= 100`
+* `operations[i]` 将会是 `"++X"`、`"X++"`、`"--X"` 或 `"X--"`
+
+##### 模拟
+
+```js
+/**
+ * @param {string[]} operations
+ * @return {number}
+ */
+var finalValueAfterOperations = function(operations) {
+    let ans = 0;
+    for (let x of operations) {
+        if (x == "++X" || x == "X++") {
+            ans++;
+        } else {
+            ans--;
+        }
+    }
+    return ans;
+};
 ```
 
