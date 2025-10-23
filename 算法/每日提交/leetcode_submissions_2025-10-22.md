@@ -133,3 +133,55 @@ var maxFrequency = function(nums, k, numOperations) {
 };
 ```
 
+##### 双指针 + 三指针
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @param {number} numOperations
+ * @return {number}
+ */
+var maxFrequency = function (nums, k, numOperations) {
+    const n = nums.length;
+    nums.sort((a, b) => a - b);
+    let ans = 0;
+    let left = 0, right = 0;
+    let cnt = 0; // 相同元素的数量
+
+    // 变成的元素x在nums中
+    for (let i = 0; i < n; i++) {
+        let x = nums[i];
+        cnt++;
+        if (i < n - 1 && x == nums[i + 1]) {
+            continue;
+        }
+        // 窗口[left, right)为 在范围[x - k, x + k]的元素
+        while (right < n && nums[right] <= x + k) {
+            right++;
+        }
+        while (nums[left] < x - k) {
+            left++;
+        }
+        ans = Math.max(ans, Math.min(right - left, cnt + numOperations));
+        cnt = 0;
+    }
+
+    if (ans >= numOperations) return ans;
+
+    // 变成的元素y不在nums中
+    // 设[left, right]内的元素都可以变成y
+    // 从y - 1到 y,只有当y + k在nums中，双指针right才会右移，right - left变大（left也可能右移，当y - k - 1在nums的时候）
+    // 所以只需枚举nums作为right
+    for (right = 0, left = 0; right < n; right++) {
+        let x = nums[right];
+        while (nums[left] < x - 2 * k) {
+            left++;
+        }
+        ans = Math.max(ans, Math.min(right - left + 1, numOperations));
+    }
+
+    return ans;
+};
+```
+
