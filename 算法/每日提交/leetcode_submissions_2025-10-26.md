@@ -1,0 +1,371 @@
+### 2025-10-26
+
+#### [629. K 个逆序对数组](https://leetcode.cn/problems/k-inverse-pairs-array/description/)
+
+对于一个整数数组 `nums`，**逆序对**是一对满足 `0 <= i < j < nums.length` 且 `nums[i] > nums[j]`的整数对 `[i, j]` 。
+
+给你两个整数 `n` 和 `k`，找出所有包含从 `1` 到 `n` 的数字，且恰好拥有 `k` 个 **逆序对** 的不同的数组的个数。由于答案可能很大，只需要返回对 `109 + 7` 取余的结果。
+
+**示例 1：**
+
+```
+输入：n = 3, k = 0
+输出：1
+解释：
+只有数组 [1,2,3] 包含了从1到3的整数并且正好拥有 0 个逆序对。
+```
+
+**示例 2：**
+
+```
+输入：n = 3, k = 1
+输出：2
+解释：
+数组 [1,3,2] 和 [2,1,3] 都有 1 个逆序对。
+```
+
+**提示：**
+
+* `1 <= n <= 1000`
+* `0 <= k <= 1000`
+
+##### 基础版 超时
+
+```js
+/**
+ * @param {number} n
+ * @param {number} k
+ * @return {number}
+ */
+var kInversePairs = function (n, k) {
+    // 定义1-i中有j个逆序对的可能方案数
+    const dfs = (i, j) => {
+        // baseCase1: 0个逆序对，1-i顺序排序为一个方案
+        if (j == 0) return 1;
+        // base case2: i小于1且j大于0，不存在可能方案
+        if (i < 1) return 0;
+
+        let res = 0;
+        // 枚举把元素i放在位置p，左右还保持顺序排序
+        // 左侧不产生逆序对，右侧产生i-p个逆序对
+        for (let p = 1; p <= i; p++) {
+            let pair = i - p;
+            res += dfs(i - 1, j - pair);
+        }
+
+        return res;
+    }
+
+    return dfs(n, k);
+};
+
+const MOD = 1e9 + 7;
+```
+
+##### 状态设定 和转移方程 动态规划  前缀和优化
+
+```js
+/**
+ * @param {number} n
+ * @param {number} k
+ * @return {number}
+ */
+var kInversePairs = function (n, k) {
+    const dp = Array(k + 1).fill(0);
+    const prefix = Array(k + 2).fill(0);
+    for (let i = 1; i <= n; i++) {
+        dp[0] = 1;
+        for (let j = 1; j <= k; j++) {
+            let p2 = j - i + Math.min(i, k - j + i), p1 = Math.max(j - i + 1, 0);
+            dp[j] = (prefix[p2 + 1] - prefix[p1] + MOD) % MOD;
+        }
+        prefix[0] = 0;
+        for (let j = 0; j <= k; j++) {
+            prefix[j + 1] = (prefix[j] + dp[j]) % MOD
+        }
+    }
+    return dp[k];
+};
+
+const MOD = 1e9 + 7;
+```
+
+#### [979. 在二叉树中分配硬币](https://leetcode.cn/problems/distribute-coins-in-binary-tree/description/)
+
+给你一个有 `n` 个结点的二叉树的根结点 `root` ，其中树中每个结点 `node` 都对应有 `node.val` 枚硬币。整棵树上一共有 `n` 枚硬币。
+
+在一次移动中，我们可以选择两个相邻的结点，然后将一枚硬币从其中一个结点移动到另一个结点。移动可以是从父结点到子结点，或者从子结点移动到父结点。
+
+返回使每个结点上 **只有** 一枚硬币所需的 **最少** 移动次数。
+
+**示例 1：**
+
+![](https://assets.leetcode.com/uploads/2019/01/18/tree1.png)
+
+```
+输入：root = [3,0,0]
+输出：2
+解释：一枚硬币从根结点移动到左子结点，一枚硬币从根结点移动到右子结点。
+```
+
+**示例 2：**
+
+![](https://assets.leetcode.com/uploads/2019/01/18/tree2.png)
+
+```
+输入：root = [0,3,0]
+输出：3
+解释：将两枚硬币从根结点的左子结点移动到根结点（两次移动）。然后，将一枚硬币从根结点移动到右子结点。
+```
+
+**提示：**
+
+* 树中节点的数目为 `n`
+* `1 <= n <= 100`
+* `0 <= Node.val <= n`
+* 所有 `Node.val` 的值之和是 `n`
+
+##### 贡献法：转换成每条边经过了多少枚硬币
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var distributeCoins = function(root) {
+    let ans = 0;
+    const dfs = (node) => {
+        if (!node) return [0, 0];
+        let nodeCnt = 0, valCnt = 0;
+        let [lnc, lvc] = dfs(node.left);
+        let [rnc, rvc] = dfs(node.right);
+        ans += Math.abs(lnc - lvc) + Math.abs(rnc - rvc);
+
+        return [lnc + rnc + 1, lvc + rvc + node.val];
+    }
+
+    dfs(root);
+
+    return ans;
+};
+```
+
+#### [891. 子序列宽度之和](https://leetcode.cn/problems/sum-of-subsequence-widths/description/)
+
+一个序列的 **宽度** 定义为该序列中最大元素和最小元素的差值。
+
+给你一个整数数组 `nums` ，返回 `nums` 的所有非空 **子序列** 的 **宽度之和** 。由于答案可能非常大，请返回对 `109 + 7` **取余** 后的结果。
+
+**子序列** 定义为从一个数组里删除一些（或者不删除）元素，但不改变剩下元素的顺序得到的数组。例如，`[3,6,2,7]` 就是数组 `[0,3,1,6,2,2,7]` 的一个子序列。
+
+**示例 1：**
+
+```
+输入：nums = [2,1,3]
+输出：6
+解释：子序列为 [1], [2], [3], [2,1], [2,3], [1,3], [2,1,3] 。
+相应的宽度是 0, 0, 0, 1, 1, 2, 2 。
+宽度之和是 6 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2]
+输出：0
+```
+
+**提示：**
+
+* `1 <= nums.length <= 105`
+* `1 <= nums[i] <= 105`
+
+##### 每个元素最为最大值和最小值的子序列个数，贡献为(maxCnt - minCnt) * val。排序后,当前元素i为最大值的子序列个数为[0, i - 1]选或不选 2^i，最小值为[i + 1, n - 1]选或不选 2^(n - i - 1)
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var sumSubseqWidths = function (nums) {
+    const n = nums.length;
+    nums.sort((a, b) => a - b);
+    let ans = 0n;
+    for (let i = 0; i < n; i++) {
+        ans = (ans + (pow(2, i) - pow(2, n - i - 1)) * BigInt(nums[i]) % MOD) % MOD;
+    }
+
+    return Number(ans);
+};
+
+
+const MOD = BigInt(1e9 + 7);
+
+const pow = (x, n) => {
+    x = BigInt(x), n = BigInt(n);
+    let res = 1n;
+    while (n) {
+        if (n & 1n) {
+            res = res * x % MOD;
+        }
+        x = x * x % MOD;
+        n = n >> 1n;
+    }
+    return res;
+}
+```
+
+#### [1588. 所有奇数长度子数组的和](https://leetcode.cn/problems/sum-of-all-odd-length-subarrays/description/)
+
+给你一个正整数数组 `arr` ，请你计算所有可能的奇数长度子数组的和。
+
+**子数组** 定义为原数组中的一个连续子序列。
+
+请你返回 `arr` 中 **所有奇数长度子数组的和** 。
+
+**示例 1：**
+
+```
+输入：arr = [1,4,2,5,3]
+输出：58
+解释：所有奇数长度子数组和它们的和为：
+[1] = 1
+[4] = 4
+[2] = 2
+[5] = 5
+[3] = 3
+[1,4,2] = 7
+[4,2,5] = 11
+[2,5,3] = 10
+[1,4,2,5,3] = 15
+我们将所有值求和得到 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58
+```
+
+**示例 2：**
+
+```
+输入：arr = [1,2]
+输出：3
+解释：总共只有 2 个长度为奇数的子数组，[1] 和 [2]。它们的和为 3 。
+```
+
+**示例 3：**
+
+```
+输入：arr = [10,11,12]
+输出：66
+```
+
+**提示：**
+
+* `1 <= arr.length <= 100`
+* `1 <= arr[i] <= 1000`
+
+**进阶：**
+
+你可以设计一个 O(n) 时间复杂度的算法解决此问题吗？
+
+
+```js
+/**
+ * @param {number[]} arr
+ * @return {number}
+ */
+var sumOddLengthSubarrays = function (arr) {
+    const n = arr.length;
+    let ans = 0;
+    for (let i = 0; i < n; i++) {
+        // 左侧不包含arr[i]的子数组（以arr[i+1]为结尾）长度为偶数和奇数的个数
+        let leftOdd = Math.ceil(i / 2), leftEven = i - leftOdd + 1; // 偶数个数包含0
+        let rightOdd = Math.ceil((n - i - 1) / 2), rightEven = n - 1 - i - rightOdd + 1; // 偶数个数包含0
+        ans += arr[i] * (leftEven * rightEven + leftOdd * rightOdd)
+    }
+
+    return ans;
+};
+```
+
+#### [2063. 所有子字符串中的元音](https://leetcode.cn/problems/vowels-of-all-substrings/description/)
+
+给你一个字符串 `word` ，返回 `word` 的所有子字符串中 **元音的总数** ，元音是指 `'a'`、`'e'`*、*`'i'`*、*`'o'`和 `'u'` *。*
+
+**子字符串** 是字符串中一个连续（非空）的字符序列。
+
+**注意：** 由于对 `word` 长度的限制比较宽松，答案可能超过有符号 32 位整数的范围。计算时需当心。
+
+**示例 1：**
+
+```
+输入：word = "aba"
+输出：6
+解释：
+所有子字符串是："a"、"ab"、"aba"、"b"、"ba" 和 "a" 。
+- "b" 中有 0 个元音
+- "a"、"ab"、"ba" 和 "a" 每个都有 1 个元音
+- "aba" 中有 2 个元音
+因此，元音总数 = 0 + 1 + 1 + 1 + 1 + 2 = 6 。
+```
+
+**示例 2：**
+
+```
+输入：word = "abc"
+输出：3
+解释：
+所有子字符串是："a"、"ab"、"abc"、"b"、"bc" 和 "c" 。
+- "a"、"ab" 和 "abc" 每个都有 1 个元音
+- "b"、"bc" 和 "c" 每个都有 0 个元音
+因此，元音总数 = 1 + 1 + 1 + 0 + 0 + 0 = 3 。
+```
+
+**示例 3：**
+
+```
+输入：word = "ltcd"
+输出：0
+解释："ltcd" 的子字符串均不含元音。
+```
+
+**示例 4：**
+
+```
+输入：word = "noosabasboosa"
+输出：237
+解释：所有子字符串中共有 237 个元音。
+```
+
+**提示：**
+
+* `1 <= word.length <= 105`
+* `word` 由小写英文字母组成
+
+##### 贡献法：计算每个元音字母所在子串的个数
+
+```js
+/**
+ * @param {string} word
+ * @return {number}
+ */
+var countVowels = function (word) {
+    const n = word.length;
+    let ans = 0n;
+    for (let i = 0; i < n; i++) {
+        if (vowel.has(word[i])) {
+            // 左侧有 i + 1 个选择，右侧有 n - i 个选择
+            ans += BigInt(i + 1) * BigInt(n - i);
+        }
+    }
+
+    return Number(ans);
+};
+
+const vowel = new Set(["a", "e", "i", "o", "u"]);
+```
