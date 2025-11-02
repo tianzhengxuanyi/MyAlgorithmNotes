@@ -47,15 +47,15 @@ def make_graphql_request(query, variables=None, operation_name=None, csrf_token=
         return None
 
 # 获取LeetCode提交记录
-def get_leetcode_submissions(csrf_token, session_id):
+def get_leetcode_submissions(csrf_token, session_id, date):
     # 设置cookie
     cookies = {
         "LEETCODE_SESSION": session_id,
         "XSRF-TOKEN": csrf_token
     }
     
-    # 获取前一日的日期
-    yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    # # 获取前一日的日期
+    # yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     
     # 构建GraphQL查询
     query = """
@@ -97,9 +97,9 @@ def get_leetcode_submissions(csrf_token, session_id):
     yesterday_submissions = []
     for submission in submissions:
         submission_date = datetime.datetime.fromisoformat(submission["lastSubmittedAt"].replace('Z', '+00:00')).strftime('%Y-%m-%d')
-        if submission_date == yesterday:
+        if submission_date == str(date):
             # 获取完整的提交代码
-            submissionList = get_yesterday_submissions(submission["titleSlug"])
+            submissionList = get_yesterday_submissions(submission["titleSlug"], date)
             for item in submissionList:
                 if item["status"] == "AC":
                     submission_detail = get_submission_detail(item["id"])
@@ -111,11 +111,12 @@ def get_leetcode_submissions(csrf_token, session_id):
     return yesterday_submissions
 
 # 获取提交列表
-def get_yesterday_submissions(question_slug):
+def get_yesterday_submissions(question_slug, date):
     """
-    获取指定题目的提交列表，并过滤出昨天的提交
+    获取指定题目的提交列表，并过滤出指定日期的提交
     :param question_slug: 题目slug
-    :return: 昨天的提交列表
+    :param date: 日期字符串，格式为 'YYYY-MM-DD'
+    :return: 指定日期的提交列表
     """
     # 构建请求体
     payload = {
@@ -142,10 +143,9 @@ def get_yesterday_submissions(question_slug):
         submissions = data['data']['submissionList']['submissions']
         
         # 计算昨天的开始和结束时间戳
-        today = datetime.date.today()
-        yesterday = today - timedelta(days=1)
-        yesterday_start = datetime.datetime.combine(yesterday, datetime.time.min).timestamp()
-        yesterday_end = datetime.datetime.combine(today, datetime.time.min).timestamp()
+        date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+        date_start = datetime.datetime.combine(date, datetime.time.min).timestamp()
+        date_end = datetime.datetime.combine(date, datetime.time.max).timestamp()
         
         # 过滤出昨天的提交
         yesterday_submissions = []
@@ -153,7 +153,7 @@ def get_yesterday_submissions(question_slug):
             if 'timestamp' in submission:
                 submission_time = int(submission['timestamp'])
                 # 检查提交时间是否在昨天范围内
-                if yesterday_start <= submission_time < yesterday_end and submission["submissionComment"]:
+                if date_start <= submission_time < date_end and submission["submissionComment"]:
                     yesterday_submissions.append(submission)
         
         return yesterday_submissions
@@ -398,22 +398,41 @@ def generate_markdown(submissions):
 
     return markdown_content
 
+
+def get_user_date():
+    while True:
+        try:
+            # 获取用户输入的日期字符串
+            date_str = input("请输入日期（格式：YYYY-MM-DD）: ")
+            if (date_str.strip() == ""):
+                date_str = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+            # 解析日期字符串为 datetime.date 对象
+            date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date().strftime('%Y-%m-%d')
+            return date
+        except ValueError:
+            print("日期格式错误，请使用YYYY-MM-DD格式重新输入！")
+
 # 主函数
 def main():
     print("欢迎使用LeetCode提交记录收集工具！")
     csrf_token = "bsEtupJkWLs0wsOLwZbiHpeeBf3Vg6KU2erUHiYvVLQkMbhV3FFvZG6FrXBrVR4D"
     session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiZTc4NGRlZGQxMGI3YjgxMWI0YzczYWJlZTc4MzZkNjIiLCJpcCI6IjE4MC4xMDIuMTU2LjE3MCIsIl90aW1lc3RhbXAiOjE3NTk4MDA0MjAuNDYxNzAzLCJleHBpcmVkX3RpbWVfIjoxNzYyMzY5MjAwLCJ2ZXJzaW9uX2tleV8iOjF9.IRaOqIo2SAslDpQ2uGRTEMzsjAqT6036nSyfcaaHIgs"
     
-    print("正在获取前一日的提交记录...")
-    submissions = get_leetcode_submissions(csrf_token, session_id)
+    # 调用函数获取用户输入的日期
+    user_date = get_user_date()
+    print(f"正在获取{user_date}的提交记录...")
+    submissions = get_leetcode_submissions(csrf_token, session_id, user_date)
     
     # print(f"找到{len(submissions)}条提交记录", submissions)
+    if not submissions:
+        print("没有找到前一日的提交记录")
+        return
     
     # 生成Markdown文档
     markdown_content = generate_markdown(submissions)
     
     # 保存到文件
-    filename = f"./算法/每日提交/leetcode_submissions_{(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')}.md"
+    filename = f"./算法/每日提交/leetcode_submissions_{user_date}.md"
     with open(filename, "w", encoding="utf-8") as f:
         f.write(markdown_content)
     
