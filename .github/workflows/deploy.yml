@@ -64,6 +64,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          # 禁用Jekyll（关键！避免Jekyll处理静态文件导致404）
-          enable_jekyll: false
