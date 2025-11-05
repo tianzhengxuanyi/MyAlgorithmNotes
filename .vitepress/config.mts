@@ -57,8 +57,10 @@ const algorithmSidebar = generateSidebarRoutes(
     '.'
 );
 
-console.log("🚀 ~ 生成的算法sidebar配置:", JSON.stringify(algorithmSidebar, null, 2));
-
+const dailySidebar = generateSidebarRoutes(
+    path.join(process.cwd(), 'algorithm/每日提交'), 
+    '.'
+);
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     title: "My Notes",
@@ -80,6 +82,11 @@ export default defineConfig({
                         text: "算法",
                         collapsed: true,
                         items: algorithmSidebar
+                    },
+                    {
+                        text: "算法-每日提交",
+                        collapsed: true,
+                        items: dailySidebar
                     },
                 ],
             },
