@@ -70,6 +70,7 @@ const dailySidebar = generateSidebarRoutes(
 );
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+    base: "/MyAlgorithmNotes/",
     title: "My Notes",
     description: "My Notes",
     srcDir: "./algorithm",
