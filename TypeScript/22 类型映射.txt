@@ -82,24 +82,7 @@ type CreateMutable<Type> = {
 键名重映射的语法是在键名映射的后面加上**as + 新类型**子句。这里的“新类型”通常是一个模板字符串，里面可以对原始键名进行各种操作。
 
 ```ts
-interface Person {
-  name: string;
-  age: number;
-  location: string;
-}
 
-type Getters<T> = {
-  [P in keyof T
-    as `get${Capitalize<string & P>}`]: () => T[P];
-};
-
-type LazyPerson = Getters<Person>;
-// 等同于
-type LazyPerson = {
-  getName: () => string;
-  getAge: () => number;
-  getLocation: () => string;
-}
 ```
 
 上面示例中，类型LazyPerson是类型Person的映射，并且把键名改掉了。

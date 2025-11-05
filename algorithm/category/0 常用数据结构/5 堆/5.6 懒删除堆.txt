@@ -196,7 +196,6 @@ class UnionSet {
         return true;
     }
 }
-
 ```
 
 #### [3408. 设计任务管理器](https://leetcode.cn/problems/design-task-manager/description/)

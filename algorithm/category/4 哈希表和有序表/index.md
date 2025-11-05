@@ -1,7 +1,7 @@
 ## 哈希表
-HashSet <key> 由增（add）、删（remove）、查（contains）
+`HashSet <key>` 由增（add）、删（remove）、查（contains）
 
-HashMap<key,value> value是伴随数据，排序组织以key来
+`HashMap<key,value>` value是伴随数据，排序组织以key来
 
 HashMap由增/更新（add）、删（remove）、查（containkey）、拿（get）key的value
 

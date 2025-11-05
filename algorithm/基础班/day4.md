@@ -32,9 +32,9 @@
 Java中的Array.sort()在基础类型时选择快排，非基础类型时选择归并保持稳定性
 
 ## 哈希表
-HashSet <key> 由增（add）、删（remove）、查（contains）
+`HashSet <key>` 由增（add）、删（remove）、查（contains）
 
-HashMap<key,value> value是伴随数据，排序组织以key来
+`HashMap<key,value>` value是伴随数据，排序组织以key来
 
 HashMap由增/更新（add）、删（remove）、查（containkey）、拿（get）key的value
 
