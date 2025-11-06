@@ -432,7 +432,7 @@ def main():
     markdown_content = generate_markdown(submissions)
     
     # 保存到文件
-    filename = f"./算法/每日提交/leetcode_submissions_{user_date}.md"
+    filename = f"./algorithm/每日提交/leetcode_submissions_{user_date}.md"
     with open(filename, "w", encoding="utf-8") as f:
         f.write(markdown_content)
     
