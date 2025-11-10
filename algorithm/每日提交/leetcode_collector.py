@@ -13,8 +13,8 @@ headers = {
     "Accept": "application/json",
 }
 
-csrf_token = "sUIGJxeGqDi8TueXil3WYWooOXOyTBUcyvTXA17skBRfmrcPr0cMcbMfzo1GqbwK"
-session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpcCI6IjIyMS4xODEuMjE2LjIyNiIsImRldmljZV9pZCI6IjI1YjRjZDg3NTRkZDU3NzBiZDNlZDg4MWQ4NWMwYTcwIiwiX2F1dGhfdXNlcl9pZCI6IjQwNTM2NDQiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjY1ZjJmMTNmZGUyOWRhNWRmMDliNjNiZTgwYWI2ZGIyNmY4YzM1MzFjZjQ5ZTRkNGI3NWMzZDQwNGFkNzg0MGIiLCJpZCI6NDA1MzY0NCwiZW1haWwiOiIxMTQ1OTg2ODg5QHFxLmNvbSIsInVzZXJuYW1lIjoidGlhbnpoZW5neHVhbnlpIiwidXNlcl9zbHVnIjoidGlhbnpoZW5neHVhbnlpIiwiYXZhdGFyIjoiaHR0cHM6Ly9hc3NldHMubGVldGNvZGUuY24vYWxpeXVuLWxjLXVwbG9hZC91c2Vycy90aWFuemhlbmd4dWFueWkvYXZhdGFyXzE2Mzc0MTQ5NTEucG5nIiwicGhvbmVfdmVyaWZpZWQiOnRydWUsIl90aW1lc3RhbXAiOjE3NTk5Njg2NDcuNzkwMzA4LCJleHBpcmVkX3RpbWVfIjoxNzYyNTQyMDAwLCJ2ZXJzaW9uX2tleV8iOjF9.DojcWUmdHnSeNur74Ojzuz4hX4Rb9FlUDqM0YShpDpM"
+csrf_token = "JWAnhFrw1vj2k0YTGxwpMGusr4WXJvWg"
+session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiY2I2OWEzM2YzYWZiM2YyZmI0ZmUyYjVmMGMwMjgwNjciLCJpcCI6IjExNC4yMjEuMTE2LjQiLCJfdGltZXN0YW1wIjoxNzYyNDI5MzI4LjQzODcwNCwiZXhwaXJlZF90aW1lXyI6MTc2NDk2MTIwMCwidmVyc2lvbl9rZXlfIjoxLCJsYXRlc3RfdGltZXN0YW1wXyI6MTc2Mjc3ODM2OH0.7CaG_e9sSYxCID2wmGPEz19TiSQPvsTWTrHPp9juvI0"
 
 # 添加通用GraphQL请求方法
 def make_graphql_request(query, variables=None, operation_name=None, csrf_token=csrf_token, session_id=session_id):
@@ -360,11 +360,11 @@ def process_list(list_content, list_type):
     return '\n'.join(result) + '\n'
 
 # 生成Markdown文档
-def generate_markdown(submissions):
+def generate_markdown(submissions, user_date):
     if not submissions:
         return "# 没有找到前一日的提交记录\n"
     
-    yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    yesterday = user_date if user_date else (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     markdown_content = f"### {yesterday}\n\n"
     
     # 按题目分组提交
@@ -429,7 +429,7 @@ def main():
         return
     
     # 生成Markdown文档
-    markdown_content = generate_markdown(submissions)
+    markdown_content = generate_markdown(submissions, user_date)
     
     # 保存到文件
     filename = f"./algorithm/每日提交/leetcode_submissions_{user_date}.md"
