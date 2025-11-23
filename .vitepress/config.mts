@@ -69,7 +69,7 @@ const dailySidebar = generateSidebarRoutes(
     "."
 );
 
-const dailySidebar = generateSidebarRoutes(
+const templateSidebar = generateSidebarRoutes(
     path.join(process.cwd(), "algorithm/模板"),
     "."
 );
@@ -117,7 +117,7 @@ export default defineConfig({
                     {
                         text: "算法-模板",
                         collapsed: true,
-                        items: dailySidebar,
+                        items: templateSidebar,
                     },
                 ],
             },
