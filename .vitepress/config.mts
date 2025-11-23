@@ -68,6 +68,11 @@ const dailySidebar = generateSidebarRoutes(
     path.join(process.cwd(), "algorithm/每日提交"),
     "."
 );
+
+const dailySidebar = generateSidebarRoutes(
+    path.join(process.cwd(), "algorithm/模板"),
+    "."
+);
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: "/MyAlgorithmNotes/",
@@ -106,6 +111,11 @@ export default defineConfig({
                     },
                     {
                         text: "算法-每日提交",
+                        collapsed: true,
+                        items: dailySidebar,
+                    },
+                    {
+                        text: "算法-模板",
                         collapsed: true,
                         items: dailySidebar,
                     },
