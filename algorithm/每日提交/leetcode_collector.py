@@ -403,12 +403,23 @@ def get_user_date():
     while True:
         try:
             # 获取用户输入的日期字符串
-            date_str = input("请输入日期（格式：YYYY-MM-DD）: ")
-            if (date_str.strip() == ""):
-                date_str = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-            # 解析日期字符串为 datetime.date 对象
-            date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date().strftime('%Y-%m-%d')
-            return date
+            date_str = input("请输入日期（格式：YYYY-MM-DD，多个日期用逗号分隔）: ")
+            if date_str.strip() == "":
+                # 如果用户没有输入，默认使用昨天的日期
+                yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+                return [yesterday]
+            
+            # 分割多个日期
+            dates = date_str.split(',')
+            formatted_dates = []
+            
+            for date in dates:
+                # 去除空格并解析日期字符串为 datetime.date 对象
+                date = date.strip()
+                formatted_date = datetime.datetime.strptime(date, '%Y-%m-%d').date().strftime('%Y-%m-%d')
+                formatted_dates.append(formatted_date)
+            
+            return formatted_dates
         except ValueError:
             print("日期格式错误，请使用YYYY-MM-DD格式重新输入！")
 
@@ -418,25 +429,27 @@ def main():
     csrf_token = "bsEtupJkWLs0wsOLwZbiHpeeBf3Vg6KU2erUHiYvVLQkMbhV3FFvZG6FrXBrVR4D"
     session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiZTc4NGRlZGQxMGI3YjgxMWI0YzczYWJlZTc4MzZkNjIiLCJpcCI6IjE4MC4xMDIuMTU2LjE3MCIsIl90aW1lc3RhbXAiOjE3NTk4MDA0MjAuNDYxNzAzLCJleHBpcmVkX3RpbWVfIjoxNzYyMzY5MjAwLCJ2ZXJzaW9uX2tleV8iOjF9.IRaOqIo2SAslDpQ2uGRTEMzsjAqT6036nSyfcaaHIgs"
     
-    # 调用函数获取用户输入的日期
-    user_date = get_user_date()
-    print(f"正在获取{user_date}的提交记录...")
-    submissions = get_leetcode_submissions(csrf_token, session_id, user_date)
+    # 调用函数获取用户输入的日期列表
+    user_dates = get_user_date()
     
-    # print(f"找到{len(submissions)}条提交记录", submissions)
-    if not submissions:
-        print("没有找到前一日的提交记录")
-        return
-    
-    # 生成Markdown文档
-    markdown_content = generate_markdown(submissions, user_date)
-    
-    # 保存到文件
-    filename = f"./algorithm/每日提交/leetcode_submissions_{user_date}.md"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(markdown_content)
-    
-    print(f"Markdown文档已保存到：{os.path.abspath(filename)}")
+    # 对每个日期进行处理
+    for user_date in user_dates:
+        print(f"正在获取{user_date}的提交记录...")
+        submissions = get_leetcode_submissions(csrf_token, session_id, user_date)
+        
+        if not submissions:
+            print(f"{user_date}没有找到提交记录")
+            continue
+        
+        # 生成Markdown文档
+        markdown_content = generate_markdown(submissions, user_date)
+        
+        # 保存到文件
+        filename = f"./algorithm/每日提交/leetcode_submissions_{user_date}.md"
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(markdown_content)
+        
+        print(f"{user_date}的Markdown文档已保存到：{os.path.abspath(filename)}")
 
 if __name__ == "__main__":
     main()
