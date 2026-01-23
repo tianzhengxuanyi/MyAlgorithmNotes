@@ -13,8 +13,8 @@ headers = {
     "Accept": "application/json",
 }
 
-csrf_token = "9efpb6lii0Uk18ocJDNI8vb6W5Ng26Ts"
-session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiNjdhOGY1YzBkMDk5ZWEwNTFjZTVhNzU5YjAyNTk3NGIiLCJpcCI6IjExNy44OC4yNDYuMjQ3IiwiX3RpbWVzdGFtcCI6MTc2ODkxMTcxNC43NTg3OTIsImV4cGlyZWRfdGltZV8iOjE3NzE0NDEyMDAsInZlcnNpb25fa2V5XyI6MX0.SzkgkxSNmXUrmg5ddZ1xaQQOFse60m5sJBIO4VJVugE"
+csrf_token = "L3aukSQp9JvC2Scj9ZY6L26WSUrhLqxA"
+session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiNjdhOGY1YzBkMDk5ZWEwNTFjZTVhNzU5YjAyNTk3NGIiLCJpcCI6IjEyMS4yMzcuNTQuOTEiLCJfdGltZXN0YW1wIjoxNzY5MTY2ODA3LjAwNzAyOTUsImV4cGlyZWRfdGltZV8iOjE3NzE3MDA0MDAsInZlcnNpb25fa2V5XyI6MX0.B4msVLsLc_BobI4f8yISHonOf9adZL1EymG4WaNsNdI"
 # 添加通用GraphQL请求方法
 def make_graphql_request(query, variables=None, operation_name=None, csrf_token=csrf_token, session_id=session_id):
     """发起LeetCode GraphQL请求的通用方法"""
@@ -46,12 +46,7 @@ def make_graphql_request(query, variables=None, operation_name=None, csrf_token=
         return None
 
 # 获取LeetCode提交记录
-def get_leetcode_submissions(csrf_token, session_id, date):
-    # 设置cookie
-    cookies = {
-        "LEETCODE_SESSION": session_id,
-        "XSRF-TOKEN": csrf_token
-    }
+def get_leetcode_submissions(date=None):
     
     # # 获取前一日的日期
     # yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -425,8 +420,6 @@ def get_user_date():
 # 主函数
 def main():
     print("欢迎使用LeetCode提交记录收集工具！")
-    csrf_token = "bsEtupJkWLs0wsOLwZbiHpeeBf3Vg6KU2erUHiYvVLQkMbhV3FFvZG6FrXBrVR4D"
-    session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiZTc4NGRlZGQxMGI3YjgxMWI0YzczYWJlZTc4MzZkNjIiLCJpcCI6IjE4MC4xMDIuMTU2LjE3MCIsIl90aW1lc3RhbXAiOjE3NTk4MDA0MjAuNDYxNzAzLCJleHBpcmVkX3RpbWVfIjoxNzYyMzY5MjAwLCJ2ZXJzaW9uX2tleV8iOjF9.IRaOqIo2SAslDpQ2uGRTEMzsjAqT6036nSyfcaaHIgs"
     
     # 调用函数获取用户输入的日期列表
     user_dates = get_user_date()
@@ -434,7 +427,7 @@ def main():
     # 对每个日期进行处理
     for user_date in user_dates:
         print(f"正在获取{user_date}的提交记录...")
-        submissions = get_leetcode_submissions(csrf_token, session_id, user_date)
+        submissions = get_leetcode_submissions(user_date)
         
         if not submissions:
             print(f"{user_date}没有找到提交记录")
