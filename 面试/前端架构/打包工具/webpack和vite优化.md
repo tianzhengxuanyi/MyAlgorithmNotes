@@ -5,7 +5,7 @@
 |             | webpack                                                      | vite                                                         |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Thead多线程 | loader中使用thread-loader，代码压缩使用terser-webpack-plugin | vite默认使用esbuild压缩代码（比terser快20-40 倍），所以无需使用terser多线程（`rollup-plugin-terser`的多线程模式（需安装 terser））。 |
-| Cache缓存   | 对babel-loader和EsLintWebpackPlugin缓存                      |                                                              |
+| Cache缓存   | 对babel-loader和EsLintWebpackPlugin缓存                      | vite预构建的缓存在nodemodules/.vite，通过cacheDir配置        |
 |             |                                                              |                                                              |
 |             |                                                              |                                                              |
 |             |                                                              |                                                              |
@@ -72,19 +72,20 @@ module.exports = {
 
 - **vite**
 
-  ```javascript
-  import { terser } from 'rollup-plugin-terser'
   
-  export default defineConfig({
-    build: {
-      minify: 'terser', // boolean | 'terser' | 'esbuild'  默认为'esbuild'
-      terserOptions: {
-        parallel: true // 多线程压缩
-      }
-    }
-  })
   
-  ```
+ ```javascript
+ import { terser } from 'rollup-plugin-terser'
+ 
+ export default defineConfig({
+     build: {
+         minify: 'terser', // boolean | 'terser' | 'esbuild'  默认为'esbuild'
+         terserOptions: {
+             parallel: true // 多线程压缩
+         }
+     }
+ })
+ ```
 
   #### cache缓存
 
