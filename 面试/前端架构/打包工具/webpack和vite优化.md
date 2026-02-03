@@ -362,7 +362,6 @@ export default defineConfig({
         //    }
         //
         //    return null;
-        }
       }
     }
   }
@@ -422,7 +421,7 @@ module.exports = {
   ],
   optimization: {
     // ...
-  ],
+  },
   // ...
 };
 ```
@@ -474,8 +473,6 @@ module.exports = {
     rules: [
       		// ...
         ],
-      },
-    ],
   },
   plugins: [
     // ...
