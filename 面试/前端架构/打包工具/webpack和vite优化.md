@@ -241,7 +241,7 @@ module.exports = {
 | --------------- | ------------------------------------------------------------ | ----------------------------------------------- |
 | Tree Shaking    | 默认开启                                                     | 默认开启                                        |
 | 按需import      | 对 UI 库使用按需导入；对于菜单使用按需加载                   | 对 UI 库使用按需导入；对于菜单使用按需加载      |
-| 代码分割        |                                                              | build.rollupOptions.output.manualChunks拆分代码 |
+| 代码分割        | optimization.splitChunks                                     | build.rollupOptions.output.manualChunks拆分代码 |
 | Babel           | Babel 为编译的每个文件都插入了辅助代码，使代码体积过大！禁用了 Babel 自动对每个文件的 runtime 注入，而是引入 `@babel/plugin-transform-runtime` 并且使所有辅助代码从这里引用。 | -                                               |
 | Image Minimizer | `image-minimizer-webpack-plugin`: 用来压缩图片的插件         | 使用`vite-plugin-imagemin`处理图片              |
 | css压缩         | CssMinimizerPlugin                                           | 默认使用esbuild压缩css（build.minify）          |
@@ -644,5 +644,155 @@ export default defineConfig({
   ]
 })
 
+```
+
+### 运行性能优化
+
+|                    | webpack                                             | vite                                                         |
+| ------------------ | --------------------------------------------------- | ------------------------------------------------------------ |
+| Preload / Prefetch | 提前加载资源，使用@vue/preload-webpack-plugin库     | build.modulePreload，默认情况下，一个 [模块预加载 polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill) 会被自动注入 |
+| 浏览器缓存         | 使用contenthash生成文件名，发布新版本后直接使用缓存 | build.rollupOptions.output中的**`entryFileNames`**、**`chunkFileNames`**（默认为"[name]-[hash].js"）、**`assetFileNames`**配置hash文件名 |
+|                    |                                                     |                                                              |
+
+#### Preload/Prefetch
+
+- **webpack**
+
+- `Preload`：告诉浏览器立即加载资源。
+- `Prefetch`：告诉浏览器在空闲时才开始加载资源。
+
+它们共同点：
+
+- 都只会加载资源，并不执行。
+- 都有缓存。
+
+它们区别：
+
+- `Preload`加载优先级高，`Prefetch`加载优先级低。
+- `Preload`只能加载当前页面需要使用的资源，`Prefetch`可以加载当前页面资源，也可以加载下一个页面需要使用的资源。
+
+总结：
+
+- 当前页面优先级高的资源用 `Preload` 加载。
+- 下一个页面需要使用的资源用 `Prefetch` 加载。
+
+它们的问题：兼容性较差。
+
+- 我们可以去 [Can I Use](https://caniuse.com/) 网站查询 API 的兼容性问题。
+- `Preload` 相对于 `Prefetch` 兼容性好一点。
+
+1. 下载包
+
+```text
+npm i @vue/preload-webpack-plugin -D
+```
+
+1. 配置 webpack.prod.js
+
+```javascript
+const PreloadWebpackPlugin = require("@vue/preload-webpack-plugin");
+
+module.exports = {
+  entry: "./src/main.js",
+  output: { // ...
+  },
+  module: {
+    rules: [
+      // ...
+    ],
+  },
+  plugins: [
+    // ...
+    new PreloadWebpackPlugin({
+      rel: "preload", // preload兼容性更好
+      as: "script",
+      // rel: 'prefetch' // prefetch兼容性更差
+    }),
+  ],
+  optimization: {
+   	// ...
+  },
+  // ...
+};
+```
+
+- **vite**
+
+build.modulePreload
+
+- **类型：** `boolean | { polyfill?: boolean, resolveDependencies?: ResolveModulePreloadDependenciesFn }`
+- **默认值：** `{ polyfill: true }`
+
+默认情况下，一个 [模块预加载 polyfill](https://guybedford.com/es-module-preloading-integrity#modulepreload-polyfill) 会被自动注入。该 polyfill 会自动注入到每个 `index.html` 入口的的代理模块中。如果构建通过 `build.rollupOptions.input` 被配置为了使用非 HTML 入口的形式，那么必须要在你的自定义入口中手动引入该 polyfill：
+
+```
+import 'vite/modulepreload-polyfill'
+```
+
+#### 浏览器缓存
+
+- **webpack**
+
+- fullhash（webpack4 是 hash）
+
+每次修改任何一个文件，所有文件名的 hash 至都将改变。所以一旦修改了任何一个文件，整个项目的文件缓存都将失效。
+
+- chunkhash
+
+根据不同的入口文件(Entry)进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。我们 js 和 css 是同一个引入，会共享一个 hash 值。
+
+- contenthash
+
+根据文件内容生成 hash 值，只有文件内容变化了，hash 值才会变化。所有文件 hash 值是独享且不同的。
+
+```javascript
+// ...
+
+module.exports = {
+  entry: "./src/main.js",
+  output: {
+    // ...
+    // [contenthash:8]使用contenthash，取8位长度
+    filename: "static/js/[name].[contenthash:8].js", // 入口文件打包输出资源命名方式
+    chunkFilename: "static/js/[name].[contenthash:8].chunk.js", // 动态导入输出资源命名方式
+    assetModuleFilename: "static/media/[name].[hash][ext]", // 图片、字体等资源命名方式（注意用hash）
+  },
+  module: {
+    rules: [
+      // ...
+    ],
+  },
+  plugins: [
+    // ...
+    // 提取css成单独文件
+    new MiniCssExtractPlugin({
+      // 定义输出文件名和目录
+      filename: "static/css/[name].[contenthash:8].css",
+      chunkFilename: "static/css/[name].[contenthash:8].chunk.css",
+    }),
+  ],
+  optimization: {
+   	// 提取runtime文件
+    // 将 hash 值单独保管在一个 runtime 文件中，这样文件a的文件名hash改变不会导致引用文件a的文件内容的变化
+    runtimeChunk: {
+      name: (entrypoint) => `runtime~${entrypoint.name}`, // runtime文件命名规则
+    },
+  },
+  // ...
+};
+```
+
+- **vite**
+
+```javascript
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        chunkFileNames: "[name]-[hash].js", // string | ((chunkInfo: PreRenderedChunk) => string)
+      }
+    }
+  }
+})
 ```
 
