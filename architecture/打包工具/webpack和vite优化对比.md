@@ -1,4 +1,6 @@
-### 提升打包构建速度
+# webpack和vite优化对比
+
+## 提升打包构建速度
 
 
 
@@ -10,9 +12,9 @@
 | OneOf           | 只能匹配上一个 loader, 剩下的就不匹配了(vue-loader不支持oneOf) | -                                                            |
 |                 |                                                              |                                                              |
 
-#### Thead多线程
+### Thead多线程
 
-- **webpack**
+#### webpack
 
 ```javascript
 const os = require("os");
@@ -70,7 +72,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
   
   
@@ -87,7 +89,7 @@ module.exports = {
  })
  ```
 
-  #### cache缓存
+### cache缓存
 
   ```javascript
   // ...
@@ -134,9 +136,9 @@ module.exports = {
   };
   ```
 
-#### Exclude/Include
+### Exclude/Include
 
-- **webpack**
+#### webpack
 
 ```javascript
 // ...
@@ -172,7 +174,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
 ```javascript
 export default defineConfig({
@@ -187,9 +189,9 @@ export default defineConfig({
 })
 ```
 
-#### Oneof
+### Oneof
 
-- **webpack**
+#### webpack
 
 ```javascript
 const path = require("path");
@@ -235,7 +237,7 @@ module.exports = {
 };
 ```
 
-### 打包体积优化
+## 打包体积优化
 
 |                 | webpack                                                      | vite                                            |
 | --------------- | ------------------------------------------------------------ | ----------------------------------------------- |
@@ -250,9 +252,9 @@ module.exports = {
 | 定位体积问题    | webpack-bundle-analyzer                                      | 可视化工具：rollup-plugin-visualizer            |
 |                 |                                                              |                                                 |
 
-#### 代码分割
+### 代码分割
 
-- ##### **webpack**
+##### **webpack代码分割**
 
 ```javascript
 // webpack.prod.js
@@ -302,16 +304,15 @@ module.exports = {
 };
 ```
 
-- ##### **vite**
+#####  **vite代码分割**
 
-  ###### 生产构建阶段：Rollup 原生拆分规则
+> 生产构建阶段：Rollup 原生拆分规则
 
-  ###### 规则 1：入口文件作为独立 chunk
-
+1. **入口文件作为独立 chunk**
   - 项目的入口文件（如 `src/main.js`）会被打包成独立的 `index-[hash].js`（或对应入口名），作为主 chunk；
   - 如果配置了多入口（`build.rollupOptions.input`），每个入口都会生成独立的主 chunk。
 
-  ###### 规则 2：动态导入（`import()`）自动拆分为独立 chunk
+2. **动态导入（`import()`）自动拆分为独立 chunk**
 
   这是最核心的默认拆分逻辑！只要你在代码中使用 `import()` 做懒加载（比如路由懒加载），Vite 会自动将动态导入的模块拆成单独的 chunk：
 
@@ -324,7 +325,7 @@ module.exports = {
   - 动态导入的模块会生成独立 chunk，首屏只加载主 chunk，懒加载模块在触发时才加载；
   - 如果多个动态导入共享同一个子模块，该子模块会被提取为**公共 chunk**（比如两个页面都导入 `src/utils/request.js`，则 `request.js` 会被拆成独立 chunk）。
 
-  ###### 规则 3：公共依赖自动提取为共享 chunk
+3. **公共依赖自动提取为共享 chunk**
 
   在 Vite 生产构建时（基于 Rollup），**被至少两个不同的「顶级 chunk」引用、且体积超过最小阈值** 的公共依赖模块，会被自动提取为独立的共享 chunk；反之则会内联到引用它的 chunk 中。
 
@@ -333,13 +334,13 @@ module.exports = {
 
   这里的关键前提：
 
-  1. **顶级 chunk**：指入口 chunk（如 `index.js`）或动态导入生成的 chunk（如 `home.js`、`about.js`），而非嵌套的子模块；
-  2. **静态导入**：仅针对 `import xxx from 'xxx'` 静态导入的模块，动态导入 `import()` 的模块本身就是独立 chunk，其内部公共依赖按上述规则处理。
+  - **顶级 chunk**：指入口 chunk（如 `index.js`）或动态导入生成的 chunk（如 `home.js`、`about.js`），而非嵌套的子模块；
+  - **静态导入**：仅针对 `import xxx from 'xxx'` 静态导入的模块，动态导入 `import()` 的模块本身就是独立 chunk，其内部公共依赖按上述规则处理。
 
-  ###### 	规则4：自动CSS 分割代码 
+4. **自动CSS 分割代码**
   Vite 实现了自动 CSS 代码分割的能力，即实现一个 chunk 对应一个 css 文件，而按需加载的 chunk，也对应单独的一份 js 和 css 文件，这样做也能提升 CSS 文件的缓存复用率。（build.cssCodeSplit默认为true，设为false整个项目中的所有 CSS 将被提取到一个 CSS 文件中。）
 
-##### 手动拆分
+###### 手动拆分
 
 ```javascript
 export default defineConfig({
@@ -370,9 +371,9 @@ export default defineConfig({
 
 
 
-#### Babel
+### Babel
 
-- **webpack**
+#### webpack
 
 ```bash
 npm i @babel/plugin-transform-runtime -D
@@ -426,9 +427,9 @@ module.exports = {
 };
 ```
 
-#### Image Minimizer
+### Image Minimizer
 
-- **webpack**
+#### webpack
 
 1. 下载包
 
@@ -514,7 +515,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
 ```javascript
 import viteImagemin from 'vite-plugin-imagemin'
@@ -531,9 +532,9 @@ export default defineConfig({
 })
 ```
 
-#### css压缩
+### css压缩
 
-- **webpack**
+#### webpack
 
 ```javascript
 // ...
@@ -572,9 +573,9 @@ module.exports = {
 };
 ```
 
-####  gzip压缩
+###  gzip压缩
 
-- **webpack**
+#### webpack
 
 ```javascript
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -592,7 +593,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
 ```javascript
 import compression from 'vite-plugin-compression'
@@ -608,9 +609,9 @@ export default defineConfig({
 })
 ```
 
-#### 定位体积问题
+### 定位体积问题
 
-- **webpack**
+#### webpack
 
 ```javascript
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -627,7 +628,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
 ```javascript
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -646,7 +647,7 @@ export default defineConfig({
 
 ```
 
-### 运行性能优化
+## 运行性能优化
 
 |                    | webpack                                             | vite                                                         |
 | ------------------ | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -654,9 +655,9 @@ export default defineConfig({
 | 浏览器缓存         | 使用contenthash生成文件名，发布新版本后直接使用缓存 | build.rollupOptions.output中的**`entryFileNames`**、**`chunkFileNames`**（默认为"[name]-[hash].js"）、**`assetFileNames`**配置hash文件名 |
 |                    |                                                     |                                                              |
 
-#### Preload/Prefetch
+### Preload/Prefetch
 
-- **webpack**
+#### webpack
 
 - `Preload`：告诉浏览器立即加载资源。
 - `Prefetch`：告诉浏览器在空闲时才开始加载资源。
@@ -716,7 +717,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
 build.modulePreload
 
@@ -729,9 +730,9 @@ build.modulePreload
 import 'vite/modulepreload-polyfill'
 ```
 
-#### 浏览器缓存
+### 浏览器缓存
 
-- **webpack**
+#### webpack
 
 - fullhash（webpack4 是 hash）
 
@@ -782,7 +783,7 @@ module.exports = {
 };
 ```
 
-- **vite**
+#### vite
 
 ```javascript
 export default defineConfig({

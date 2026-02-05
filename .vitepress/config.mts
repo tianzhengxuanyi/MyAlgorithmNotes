@@ -80,6 +80,11 @@ const architectureSidebar = generateSidebarRoutes(
     ".",
 );
 
+const designPatternsSidebar = generateSidebarRoutes(
+    path.join(process.cwd(), "design-patterns"),
+    ".",
+);
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: "/Notes/",
@@ -103,7 +108,8 @@ export default defineConfig({
         nav: [
             { text: "Home", link: "/" },
             { text: "算法", link: "/algorithm/" },
-            { text: "架构", link: "/architecture/" },
+            { text: "前端架构", link: "/architecture/" },
+            { text: "设计模式", link: "/design-patterns/" },
         ],
 
         sidebar: {
@@ -137,6 +143,13 @@ export default defineConfig({
                     text: "架构",
                     link: "/architecture/index.md",
                     items: architectureSidebar
+                }
+            ],
+            "/design-patterns/": [
+                {
+                    text: "设计模式",
+                    link: "/design-patterns/index.md",
+                    items: designPatternsSidebar
                 }
             ],
         },
