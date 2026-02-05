@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 import fs from "fs";
 import path from "path";
 
-const srcDir = "./algorithm";
+const srcDir = "./";
 const absoluteSrcDir = path.resolve(srcDir);
 /**
  * 生成sidebar路由配置
@@ -20,7 +20,7 @@ function generateSidebarRoutes(basePath: string, targetPath: string): any[] {
     // 先处理目录，再处理文件，保持顺序
     const directories = entries.filter((entry) => entry.isDirectory());
     const files = entries.filter(
-        (entry) => entry.isFile() && entry.name.endsWith(".md")
+        (entry) => entry.isFile() && entry.name.endsWith(".md"),
     );
 
     // 处理目录（递归）
@@ -43,9 +43,10 @@ function generateSidebarRoutes(basePath: string, targetPath: string): any[] {
 
         const fileName = file.name.replace(/\.md$/, "");
         // 修正link路径：从basePath开始计算相对路径
+        // const relativePath = path.join(basePath, targetPath, file.name);
         const relativePath = path.relative(
             absoluteSrcDir,
-            path.join(basePath, targetPath, file.name)
+            path.join(basePath, targetPath, file.name),
         );
         const linkPath = `/${relativePath.replace(/\\/g, "/")}`;
 
@@ -61,24 +62,30 @@ function generateSidebarRoutes(basePath: string, targetPath: string): any[] {
 // 生成算法目录的sidebar配置
 const algorithmSidebar = generateSidebarRoutes(
     path.join(process.cwd(), "algorithm/category"),
-    "."
+    ".",
 );
 
 const dailySidebar = generateSidebarRoutes(
     path.join(process.cwd(), "algorithm/每日提交"),
-    "."
+    ".",
 );
 
 const templateSidebar = generateSidebarRoutes(
     path.join(process.cwd(), "algorithm/模板"),
-    "."
+    ".",
 );
+
+const architectureSidebar = generateSidebarRoutes(
+    path.join(process.cwd(), "architecture"),
+    ".",
+);
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-    base: "/MyAlgorithmNotes/",
+    base: "/Notes/",
     title: "My Notes",
     description: "My Notes",
-    srcDir: "./algorithm",
+    srcDir,
     ignoreDeadLinks: true,
     // 核心：MD 解析配置
     markdown: {
@@ -95,33 +102,44 @@ export default defineConfig({
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: "Home", link: "/" },
-            { text: "Examples", link: "/markdown-examples" },
+            { text: "算法", link: "/algorithm/" },
+            { text: "架构", link: "/architecture/" },
         ],
 
-        sidebar: [
-            {
-                text: "Examples",
-                items: [
-                    // { text: "Markdown Examples", link: "/markdown-examples" },
-                    // { text: "Runtime API Examples", link: "/api-examples" },
-                    {
-                        text: "算法",
-                        collapsed: true,
-                        items: algorithmSidebar,
-                    },
-                    {
-                        text: "算法-每日提交",
-                        collapsed: true,
-                        items: dailySidebar,
-                    },
-                    {
-                        text: "算法-模板",
-                        collapsed: true,
-                        items: templateSidebar,
-                    },
-                ],
-            },
-        ],
+        sidebar: {
+            "/algorithm/": [
+                {
+                    text: "算法",
+                    link: "/algorithm/index.md",
+                    items: [
+                        // { text: "Markdown Examples", link: "/markdown-examples" },
+                        // { text: "题单", link: "/algorithm/index.md" },
+                        {
+                            text: "分类",
+                            collapsed: true,
+                            items: algorithmSidebar,
+                        },
+                        {
+                            text: "每日提交",
+                            collapsed: true,
+                            items: dailySidebar,
+                        },
+                        {
+                            text: "模板",
+                            collapsed: true,
+                            items: templateSidebar,
+                        },
+                    ],
+                }
+            ],
+            "/architecture/": [
+                {
+                    text: "架构",
+                    link: "/architecture/index.md",
+                    items: architectureSidebar
+                }
+            ],
+        },
 
         socialLinks: [
             { icon: "github", link: "https://github.com/vuejs/vitepress" },
