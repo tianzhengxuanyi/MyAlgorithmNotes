@@ -7,7 +7,7 @@ npm install -g pnpm
 ### 2. 创建 pnpm workplace
 
 目录结构
-![目录结构](../../asset/image/pnpm+nx目录结构.png)
+![目录结构](/asset/image/pnpm+nx目录结构.png)
 
 2.1 新建 pnpm workplace 工作空间文件 pnpm-workspace.yaml ，具体如下:
 

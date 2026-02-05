@@ -55,7 +55,7 @@ Vite并非完全“零打包”，会对node_modules中的第三方依赖执行�
 
 - 启动时不打包：仅启动开发服务器，不递归遍历、打包业务代码。
 
-- 浏览器原生加载：HTML中通过<script type="module">，浏览器按ESM规范按需发起HTTP请求加载源码文件。
+- 浏览器原生加载：HTML中通过`<script type="module">`，浏览器按ESM规范按需发起HTTP请求加载源码文件。
 
 - 实时编译：开发服务器接收请求后，按需对单个文件转译（TS→JS、JSX→JS、Vue SFC→JS等），返回给浏览器。
 
