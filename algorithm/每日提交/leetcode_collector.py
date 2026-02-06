@@ -13,8 +13,8 @@ headers = {
     "Accept": "application/json",
 }
 
-csrf_token = "L3aukSQp9JvC2Scj9ZY6L26WSUrhLqxA"
-session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiNjdhOGY1YzBkMDk5ZWEwNTFjZTVhNzU5YjAyNTk3NGIiLCJpcCI6IjEyMS4yMzcuNTQuOTEiLCJfdGltZXN0YW1wIjoxNzY5MTY2ODA3LjAwNzAyOTUsImV4cGlyZWRfdGltZV8iOjE3NzE3MDA0MDAsInZlcnNpb25fa2V5XyI6MX0.B4msVLsLc_BobI4f8yISHonOf9adZL1EymG4WaNsNdI"
+csrf_token = "wLkeVjvhzxQyfBLjY3TdfaRdP0LWLbGf"
+session_id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiNDA1MzY0NCIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiNjVmMmYxM2ZkZTI5ZGE1ZGYwOWI2M2JlODBhYjZkYjI2ZjhjMzUzMWNmNDllNGQ0Yjc1YzNkNDA0YWQ3ODQwYiIsImlkIjo0MDUzNjQ0LCJlbWFpbCI6IjExNDU5ODY4ODlAcXEuY29tIiwidXNlcm5hbWUiOiJ0aWFuemhlbmd4dWFueWkiLCJ1c2VyX3NsdWciOiJ0aWFuemhlbmd4dWFueWkiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL3RpYW56aGVuZ3h1YW55aS9hdmF0YXJfMTYzNzQxNDk1MS5wbmciLCJwaG9uZV92ZXJpZmllZCI6dHJ1ZSwiZGV2aWNlX2lkIjoiNjdhOGY1YzBkMDk5ZWEwNTFjZTVhNzU5YjAyNTk3NGIiLCJpcCI6IjE4MC4xMDIuMTU2LjUzIiwiX3RpbWVzdGFtcCI6MTc3MDM4MjAyNy4wMjExMjQ0LCJleHBpcmVkX3RpbWVfIjoxNzcyOTEwMDAwLCJ2ZXJzaW9uX2tleV8iOjEsImxhdGVzdF90aW1lc3RhbXBfIjoxNzcwMzg2NTg1fQ.YjsWj2GdfrseTZK1m99Vn61hhHZ53UqQXD-MhIeiyWU"
 # 添加通用GraphQL请求方法
 def make_graphql_request(query, variables=None, operation_name=None, csrf_token=csrf_token, session_id=session_id):
     """发起LeetCode GraphQL请求的通用方法"""
@@ -397,21 +397,47 @@ def get_user_date():
     while True:
         try:
             # 获取用户输入的日期字符串
-            date_str = input("请输入日期（格式：YYYY-MM-DD，多个日期用逗号分隔）: ")
+            date_str = input("请输入日期（格式：YYYY-MM-DD，多个日期用逗号分隔，或开始日期到结束日期用to连接）: ")
             if date_str.strip() == "":
                 # 如果用户没有输入，默认使用昨天的日期
                 yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 return [yesterday]
             
-            # 分割多个日期
-            dates = date_str.split(',')
             formatted_dates = []
             
-            for date in dates:
-                # 去除空格并解析日期字符串为 datetime.date 对象
-                date = date.strip()
-                formatted_date = datetime.datetime.strptime(date, '%Y-%m-%d').date().strftime('%Y-%m-%d')
-                formatted_dates.append(formatted_date)
+            # 处理日期范围（开始日期to结束日期）
+            if 'to' in date_str:
+                # 分割日期范围
+                date_range = date_str.split('to')
+                if len(date_range) != 2:
+                    print("日期范围格式错误，请使用'开始日期to结束日期'格式！")
+                    continue
+                
+                start_date_str = date_range[0].strip()
+                end_date_str = date_range[1].strip()
+                
+                # 解析开始日期和结束日期
+                start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+                
+                # 确保开始日期不晚于结束日期
+                if start_date > end_date:
+                    print("开始日期不能晚于结束日期！")
+                    continue
+                
+                # 生成日期范围内的所有日期
+                current_date = start_date
+                while current_date <= end_date:
+                    formatted_dates.append(current_date.strftime('%Y-%m-%d'))
+                    current_date += datetime.timedelta(days=1)
+            else:
+                # 处理单个日期或多个日期（逗号分隔）
+                dates = date_str.split(',')
+                for date in dates:
+                    # 去除空格并解析日期字符串为 datetime.date 对象
+                    date = date.strip()
+                    formatted_date = datetime.datetime.strptime(date, '%Y-%m-%d').date().strftime('%Y-%m-%d')
+                    formatted_dates.append(formatted_date)
             
             return formatted_dates
         except ValueError:
