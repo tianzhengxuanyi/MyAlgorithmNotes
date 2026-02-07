@@ -359,7 +359,7 @@ def generate_markdown(submissions, user_date):
         return "# 没有找到前一日的提交记录\n"
     
     yesterday = user_date if user_date else (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    markdown_content = f"### {yesterday}\n\n"
+    markdown_content = f"# {yesterday}\n\n"
     
     # 按题目分组提交
     for submission in submissions:
@@ -370,7 +370,7 @@ def generate_markdown(submissions, user_date):
         questionFrontendId = submission["question"]["questionFrontendId"]
         
         question_url = f"https://leetcode.cn/problems/{title_slug}/description/"
-        markdown_content += f"#### [{questionFrontendId}. {title}]({question_url})\n\n"
+        markdown_content += f"## [{questionFrontendId}. {title}]({question_url})\n\n"
         markdown_content += f"{md(question['translatedContent'])}\n\n"
         # markdown_content += f"{convert_html_to_markdown(question['translatedContent'])}\n\n"
         
@@ -387,7 +387,7 @@ def generate_markdown(submissions, user_date):
             elif lang_tag == "c++":
                 lang_tag = "cpp"
             
-            markdown_content += f"##### {submission.get('submissionComment', {}).get('comment', '题解')}\n\n"
+            markdown_content += f"### {submission.get('submissionComment', {}).get('comment', '题解')}\n\n"
             markdown_content += f"```{lang_tag}\n{code}\n```\n\n"
 
     return markdown_content
