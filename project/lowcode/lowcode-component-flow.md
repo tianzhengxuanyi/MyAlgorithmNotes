@@ -1123,6 +1123,189 @@ components().addBaseComponent({
 5. **事件绑定**：组件事件被绑定到相应处理函数
 6. **数据响应**：双向绑定数据生效
 
+### 5.4 拖动事件添加流程
+
+#### 5.4.1 物料区元素拖动事件添加
+
+**核心代码**
+
+**MaterialMixins 混入**
+
+```typescript
+// designer/src/designer/material/material-mixins.ts
+export default {
+  data() {
+    return {
+      draggingTag: null,
+      draggingNode: null,
+      mouseDown: false,
+    };
+  },
+  methods: {
+    setMaterialDragging(dom: HTMLElement) {
+      if (!dom || !(dom instanceof HTMLElement)) {
+        return;
+      }
+      simulatorDragonStore().dragon.setMaterialDraggable(
+        SimulatorDragType.component_material,
+        [dom, dom.getAttribute("tag")],
+        dragendHandler
+      );
+    },
+  },
+};
+```
+
+**BaseMaterial 组件**
+
+```vue
+<template>
+  <div class="base-material flex flex-col flex-1">
+    <!-- 省略其他代码 -->
+    <div
+      :ref="setMaterialDragging"  <!-- 关键：通过ref调用setMaterialDragging方法 -->
+      draggable="true"             <!-- 关键：设置元素为可拖动 -->
+      :tag="element.name"          <!-- 存储组件标签名 -->
+      class="components-item m-1"
+    >
+      <!-- 组件内容 -->
+    </div>
+    <!-- 省略其他代码 -->
+  </div>
+</template>
+
+<script lang="ts">
+import MaterialMixins from "../material-mixins";  // 导入混入
+
+export default defineComponent({
+  name: "BaseMaterial",
+  mixins: [MaterialMixins],  // 应用混入
+  // 省略其他代码
+});
+</script>
+```
+
+**物料区拖动事件添加流程**
+
+1. **初始化**：BaseMaterial 组件加载时，通过 `mixins: [MaterialMixins]` 混入拖动能力
+2. **渲染**：每个物料组件元素设置 `draggable="true"` 属性和 `:tag="element.name"`
+3. **绑定**：Vue 的 `:ref="setMaterialDragging"` 为每个元素调用 `setMaterialDragging` 方法
+4. **注册**：`setMaterialDragging` 调用 `simulatorDragonStore().dragon.setMaterialDraggable`
+5. **事件处理**：`ComponentMaterialDraggable.setDraggable` 为元素注册 `ondragstart` 和 `ondragend` 事件
+
+#### 5.4.2 画布元素拖动事件添加
+
+**核心代码**
+
+**渲染器中的实现**
+
+```typescript
+// renderer-core/src/renderer/design/index.ts
+// 在组件渲染过程中
+simulatorDragonStore().dragon.setMaterialDraggable(
+  SimulatorDragType.canvas_component, 
+  [result, node]
+);
+```
+
+**工具栏中的实现**
+
+```typescript
+// designer/src/designer/app-content/tools/index.vue
+// 为画布中的组件添加移动拖动能力
+simulatorDragonStore().dragon.setMaterialDraggable(
+  SimulatorDragType.canvas_component_move, 
+  [dom, cid]
+);
+```
+
+**画布元素拖动事件添加流程**
+
+1. **画布组件拖动**：
+   - 当组件在画布中渲染时，渲染器调用 `setMaterialDraggable`
+   - 使用 `SimulatorDragType.canvas_component` 类型
+   - 传递 `[result, node]` 参数
+
+2. **画布组件移动**：
+   - 当用户选择画布中的组件时，工具栏为组件添加移动拖动能力
+   - 使用 `SimulatorDragType.canvas_component_move` 类型
+   - 传递 `[dom, cid]` 参数
+
+3. **事件处理**：
+   - `CanvasModelDraggable.setDraggable` 为画布组件注册拖动事件
+   - `CanvasComponentMoveDraggable.setDraggable` 为组件移动注册拖动事件
+
+#### 5.4.3 拖动事件处理核心
+
+**ModelDragon 分发机制**
+
+```typescript
+// renderer-core/src/simulator/dragon.ts
+setMaterialDraggable(
+  dragType: SimulatorDragType,
+  args: Array<any>,
+  dragendCb?: Function
+) {
+  if (dragType == SimulatorDragType.canvas_component) {
+    // 画布组件拖动
+    this.canvasModelDraggable.setDraggable(...args);
+  } else if (dragType == SimulatorDragType.canvas_component_move) {
+    // 画布组件移动
+    this.canvasComponentMoveDraggable.setDraggable(...args);
+  } else if (dragType == SimulatorDragType.component_material) {
+    // 物料组件拖动
+    this.componentMaterialDraggable.setDraggable(...args);
+  } else if (dragType == SimulatorDragType.page_component) {
+    // 页面组件拖动
+    this.pageComponentDraggable.setDraggable(...args);
+  }
+  // 注册拖动结束回调
+  if (typeof dragendCb === "function") {
+    this.simulatorDragon.eventHandlerStore.onDragend({
+      key: dragendCb,
+      handler: dragendCb as any,
+    });
+  }
+}
+```
+
+#### 5.4.4 拖动事件流程总览
+
+**流程图**
+
+```
+┌─────────────────────┐     ┌─────────────────────┐
+│ 物料区组件          │     │ 画布组件            │
+└────────┬────────────┘     └────────┬────────────┘
+         │                            │
+┌────────▼────────────┐     ┌────────▼────────────┐
+│ setMaterialDragging │     │ 渲染器/工具栏调用   │
+└────────┬────────────┘     └────────┬────────────┘
+         │                            │
+┌────────▼────────────┐     ┌────────▼────────────┐
+│ setMaterialDraggable│     │ setMaterialDraggable│
+└────────┬────────────┘     └────────┬────────────┘
+         │                            │
+┌────────▼────────────┐     ┌────────▼────────────┐
+│ ComponentMaterial   │     │ CanvasModel/CanvasComponent │
+│ Draggable.setDraggable │  │ MoveDraggable.setDraggable  │
+└────────┬────────────┘     └────────┬────────────┘
+         │                            │
+┌────────▼────────────┐     ┌────────▼────────────┐
+│ 注册 ondragstart    │     │ 注册 ondragstart    │
+│ 和 ondragend 事件   │     │ 和 ondragend 事件   │
+└─────────────────────┘     └─────────────────────┘
+```
+
+**拖动类型管理**
+
+| 拖动类型 | 用途 | 实现类 |
+|---------|------|--------|
+| component_material | 物料区组件拖拽 | ComponentMaterialDraggable |
+| canvas_component | 画布组件拖拽 | CanvasModelDraggable |
+| canvas_component_move | 画布组件移动 | CanvasComponentMoveDraggable |
+| page_component | 页面组件拖拽 | PageComponentDraggable |
+
 ## 六、技术要点总结
 
 ### 6.1 核心技术点
@@ -1164,6 +1347,325 @@ components().addBaseComponent({
    - 增强拖拽体验
    - 完善响应式布局支持
 
+## 六、Simulator 模块详解
+
+### 6.1 模块架构设计
+
+**Simulator 模块**是低代码平台中负责拖拽交互的核心模块，位于 `renderer-core/src/simulator` 目录。该模块采用了面向对象的设计模式，通过抽象类和具体实现的分离，构建了一个灵活、可扩展的拖拽系统。
+
+#### 6.1.1 核心文件结构
+
+| 文件 | 职责 | 核心功能 |
+|------|------|----------|
+| abstract-dragon.ts | 抽象基类 | 定义拖拽核心逻辑和接口 |
+| dragon.ts | 具体实现 | 处理拖拽释放和组件操作 |
+| model-draggable.ts | 拖动处理器 | 不同类型的拖拽实现 |
+| dragon-type.ts | 类型定义 | 定义拖拽相关的类型和接口 |
+| dragon-target.ts | 目标计算 | 计算拖拽目标和插入点 |
+| dragon-padding-target.ts | 容器撑高 | 处理容器高度调整 |
+| simulator-dragon-store.ts | 状态管理 | 提供拖拽状态的全局访问 |
+
+#### 6.1.2 架构层次
+
+```
+┌─────────────────────┐
+│ ModelDragon (API)   │
+└────────┬────────────┘
+         │ 委托
+┌────────▼────────────┐
+│ SimulatorModelDragon │
+└────────┬────────────┘
+         │ 继承
+┌────────▼────────────┐
+│ AbstractSimulatorDragon │
+└────────┬────────────┘
+         │ 组合
+┌────────▼────────────┐     ┌─────────────────────┐
+│ DragonTargetUtil    │     │ DragonPaddingTargetUtil │
+└─────────────────────┘     └─────────────────────┘
+
+┌─────────────────────┐
+│ AbstractModelDraggable │
+└────────┬────────────┘
+         ├────────────┬────────────┬────────────┐
+┌────────▼┐ ┌────────▼┐ ┌───────────▼┐ ┌───────────▼┐
+│CanvasModel│ │CanvasComponent│ │ComponentMaterial│ │PageComponent │
+│Draggable │ │MoveDraggable  │ │Draggable       │ │Draggable     │
+└──────────┘ └───────────────┘ └────────────────┘ └──────────────┘
+```
+
+### 6.2 设计思路分析
+
+#### 6.2.1 抽象与实现分离
+
+**设计思路**：采用抽象基类 `AbstractSimulatorDragon` 定义核心拖拽逻辑，具体实现由 `SimulatorModelDragon` 负责。这种设计使得拖拽核心逻辑与具体实现分离，便于扩展和维护。
+
+**技术价值**：
+- 核心逻辑集中管理，降低代码冗余
+- 具体实现可独立演进，不影响核心逻辑
+- 便于单元测试和代码覆盖率分析
+
+#### 6.2.2 类型化的拖拽处理
+
+**设计思路**：通过 `SimulatorDragType` 枚举定义不同的拖拽类型，为每种类型提供专门的处理器。
+
+**技术价值**：
+- 清晰区分不同拖拽场景的处理逻辑
+- 便于添加新的拖拽类型
+- 提供统一的拖拽API接口
+
+#### 6.2.3 坐标系统设计
+
+**设计思路**：实现了基于 DOM 元素位置的坐标系统，通过 `NodeCoordination` 类管理组件的位置信息。
+
+**技术价值**：
+- 精确计算拖拽目标和插入点
+- 支持复杂的布局场景
+- 为拖拽预览提供准确的位置信息
+
+#### 6.2.4 事件驱动架构
+
+**设计思路**：采用事件驱动模式，通过 `DragonEventHandlerStore` 管理拖拽相关的事件。
+
+**技术价值**：
+- 松耦合的组件通信
+- 支持多个监听器同时响应拖拽事件
+- 便于扩展拖拽相关的功能
+
+### 6.3 核心功能实现
+
+#### 6.3.1 物料区拖拽
+
+**实现类**：`ComponentMaterialDraggable`
+
+**核心逻辑**：
+- 从物料区拖拽组件到画布
+- 设置拖拽类型为 "create"
+- 获取组件的节点定义
+- 生成新的组件ID
+- 打开快捷配置面板
+
+**代码示例**：
+
+```typescript
+handleDragstart(e: DragEvent, tag: string) {
+  e.stopPropagation();
+  this.dragon.setType("create");
+  this.dragon.setFromNode(components().getComponentByName(tag).node())
+  e.dataTransfer.setDragImage(this.dragon.getMoveGhost(), 100, 16);
+  this.dragon.generateCoordinate();
+  setTimeout(() => {
+    this.dragon.setIsDragging(true);
+  }, 0);
+}
+```
+
+#### 6.3.2 画布组件移动
+
+**实现类**：`CanvasComponentMoveDraggable`
+
+**核心逻辑**：
+- 在画布内移动组件
+- 设置拖拽类型为 "move"
+- 处理组件的删除和插入
+- 维护组件的层级关系
+
+**代码示例**：
+
+```typescript
+boostMove(): ElementNode {
+  let parentNode = getByCoordinate(this.getRootPage,
+    this.getInsertion.targetCoordinate.node.coordinate);
+  const sourceNode = cloneDeep(this.getFromNode);
+  // 目标对象为自己，不需要处理
+  if (this.getFromNode.cid === this.getInsertion.targetCoordinate.node.cid) {
+    return null;
+  }
+  // 计算插入位置和方向
+  // 处理节点移动
+  // ...
+}
+```
+
+#### 6.3.3 画布元素拖拽
+
+**实现类**：`CanvasModelDraggable`
+
+**核心逻辑**：
+- 拖拽画布中的元素
+- 处理元素的拖拽状态
+- 提供视觉反馈
+
+**代码示例**：
+
+```typescript
+setDraggable(result: RuntimeNode, node: ElementNode) {
+  const modelDragon = this.dragon;
+  const simulatorBox = modelDragon.getSimulatorBox;
+  const dragstartHandler = (e: DragEvent) => {
+    e.dataTransfer.setData("Text", e.target["id"]);
+    e.stopPropagation();
+    $(simulatorBox).addClass("dragging");
+    modelDragon.setType("move");
+    modelDragon.setFromNode(node);
+    e.dataTransfer.setDragImage(modelDragon.getMoveGhost(), 100, 16);
+    modelDragon.generateCoordinate();
+    e.dataTransfer.effectAllowed = "move";
+    setTimeout(() => {
+      modelDragon.setIsDragging(true);
+    }, 0);
+  };
+  // 绑定事件
+  // ...
+}
+```
+
+#### 6.3.4 页面组件拖拽
+
+**实现类**：`PageComponentDraggable`
+
+**核心逻辑**：
+- 拖拽页面级组件
+- 处理页面组件的特殊逻辑
+- 同步页面关系
+
+**代码示例**：
+
+```typescript
+handleDragend(e: DragEvent, node: ElementNode) {
+  const sourceNode = this.dragon.boost();
+  this.dragon.cancelDragging();
+  e.stopPropagation();
+
+  const persistencePageStore = persistencePage();
+
+  if (!sourceNode) {
+    return;
+  }
+  sourceNode.slock = true;
+  await persistencePageStore.linkSubComponent(sourceNode as any, false);
+  // 处理页面组件的特殊逻辑
+  // ...
+}
+```
+
+### 6.4 技术实现要点
+
+#### 6.4.1 HTML5 Drag & Drop API
+
+**设计思路**：使用原生的 HTML5 Drag & Drop API 实现拖拽功能，同时增强其能力。
+
+**技术要点**：
+- 使用 `ondragstart`、`ondragend`、`ondragover` 等事件
+- 自定义拖拽图像（ghost）
+- 处理拖拽过程中的视觉反馈
+
+#### 6.4.2 坐标计算
+
+**设计思路**：实现了精确的坐标计算系统，用于确定拖拽目标和插入点。
+
+**技术要点**：
+- 遍历组件树生成坐标信息
+- 基于鼠标位置计算插入点
+- 支持不同的插入类型（覆盖、行内、块级）
+
+#### 6.4.3 性能优化
+
+**设计思路**：通过多种手段优化拖拽性能，确保流畅的用户体验。
+
+**技术要点**：
+- 防抖处理（`debounceInTime`）
+- 坐标缓存
+- 事件委托
+- 异步处理
+
+#### 6.4.4 视觉反馈
+
+**设计思路**：提供丰富的视觉反馈，增强用户体验。
+
+**技术要点**：
+- 拖拽图像（ghost）
+- 插入位置指示
+- 拖拽状态样式
+- 容器撑高效果
+
+### 6.5 扩展性设计
+
+#### 6.5.1 插件机制
+
+**设计思路**：通过抽象接口和事件系统，支持插件扩展。
+
+**扩展点**：
+- 自定义拖动处理器
+- 扩展拖拽类型
+- 监听拖拽事件
+
+#### 6.5.2 跨平台支持
+
+**设计思路**：考虑不同平台的差异，提供统一的拖拽体验。
+
+**支持特性**：
+- PC端和移动端的适配
+- 不同浏览器的兼容性
+- 响应式布局的支持
+
+### 6.6 代码优化建议
+
+#### 6.6.1 性能优化
+
+1. **坐标计算优化**：
+   - 使用缓存机制，避免频繁重新计算坐标
+   - 采用增量计算，只更新变化的部分
+
+2. **事件处理优化**：
+   - 使用事件委托减少事件监听器数量
+   - 优化防抖策略，根据拖拽速度动态调整
+
+3. **渲染优化**：
+   - 使用 `requestAnimationFrame` 优化拖拽过程中的视觉更新
+   - 减少DOM操作，使用虚拟DOM
+
+#### 6.6.2 代码结构
+
+1. **模块化拆分**：
+   - 将坐标计算逻辑进一步模块化
+   - 分离拖拽逻辑和UI逻辑
+
+2. **类型安全**：
+   - 完善TypeScript类型定义
+   - 添加运行时类型检查
+
+3. **错误处理**：
+   - 增强错误处理机制
+   - 添加拖拽过程中的异常捕获
+
+#### 6.6.3 功能扩展
+
+1. **高级拖拽功能**：
+   - 实现网格对齐
+   - 添加组件间的吸附效果
+   - 支持批量拖拽
+
+2. **拖拽预览**：
+   - 增强拖拽过程中的预览效果
+   - 提供更直观的插入位置指示
+
+3. **无障碍支持**：
+   - 增强键盘导航支持
+   - 添加屏幕阅读器支持
+
+### 6.7 总结
+
+**Simulator 模块**是低代码平台中实现拖拽交互的核心组件，通过精心的架构设计和技术实现，提供了流畅、直观的拖拽体验。其主要特点包括：
+
+1. **架构清晰**：采用抽象基类和具体实现的分离，代码结构清晰易维护
+2. **功能完善**：支持多种拖拽类型，满足不同场景的需求
+3. **性能优化**：通过多种手段优化拖拽性能，确保流畅的用户体验
+4. **扩展性强**：提供统一的API和事件系统，支持功能扩展
+5. **用户友好**：丰富的视觉反馈，增强用户体验
+
+这种设计不仅满足了低代码平台的拖拽需求，也为其他需要类似功能的应用提供了参考。通过理解 Simulator 模块的设计思路和实现细节，开发者可以更好地定制和扩展低代码平台的拖拽功能，为用户提供更加直观、高效的可视化开发体验。
+
 ## 七、总结
 
 低代码平台的组件流程从注册到渲染是一个完整的生态系统，涵盖了：
@@ -1172,7 +1674,8 @@ components().addBaseComponent({
 2. **物料展示**：在左侧面板展示可拖拽组件
 3. **拖拽创建**：从物料区拖拽到画布创建组件
 4. **组件渲染**：将配置转换为实际的Vue组件
+5. **拖拽交互**：通过Simulator模块实现流畅的拖拽体验
 
 这个流程体现了现代低代码平台的核心能力，通过可视化操作降低了开发门槛，同时保持了足够的灵活性和扩展性。
 
-通过理解这个完整流程，开发者可以更好地掌握低代码平台的工作原理，为平台的定制化开发和扩展提供基础。
+通过理解这个完整流程，开发者可以更好地掌握低代码平台的工作原理，为平台的定制化开发和扩展提供基础。特别是Simulator模块的设计，展示了如何构建一个高性能、可扩展的拖拽系统，对于其他需要类似功能的应用也具有参考价值。
