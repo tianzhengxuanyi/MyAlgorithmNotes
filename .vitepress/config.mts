@@ -85,6 +85,12 @@ const designPatternsSidebar = generateSidebarRoutes(
     ".",
 );
 
+// 生成项目目录的sidebar配置
+const projectSidebar = generateSidebarRoutes(
+    path.join(process.cwd(), "project"),
+    ".",
+);
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: "/MyAlgorithmNotes/",
@@ -110,6 +116,7 @@ export default defineConfig({
             { text: "算法", link: "/algorithm/" },
             { text: "前端架构", link: "/architecture/" },
             { text: "设计模式", link: "/design-patterns/" },
+            { text: "项目", link: "/project/" },
         ],
 
         sidebar: {
@@ -150,6 +157,13 @@ export default defineConfig({
                     text: "设计模式",
                     link: "/design-patterns/index.md",
                     items: designPatternsSidebar
+                }
+            ],
+            "/project/": [
+                {
+                    text: "项目",
+                    link: "/project/",
+                    items: projectSidebar
                 }
             ],
         },
