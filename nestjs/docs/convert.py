@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 将 doc（实际为 docx 格式）文件转换为 markdown 文件
 提取图片到 nestjs/images 目录
@@ -20,6 +21,8 @@ nsmap = {
 }
 
 docs_dir = os.path.dirname(os.path.abspath(__file__))
+
+print(docs_dir, "docs_dir")
 nestjs_dir = os.path.dirname(docs_dir)
 images_dir = os.path.join(nestjs_dir, 'images')
 os.makedirs(images_dir, exist_ok=True)
