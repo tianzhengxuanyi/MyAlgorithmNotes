@@ -20,15 +20,17 @@ nsmap = {
     'pic': 'http://schemas.openxmlformats.org/drawingml/2006/picture',
 }
 
+child_dir = "10 接口开发"
 docs_dir = os.path.dirname(os.path.abspath(__file__))
 
 print(docs_dir, "docs_dir")
 nestjs_dir = os.path.dirname(docs_dir)
+docs_dir = os.path.join(docs_dir, child_dir)
 images_dir = os.path.join(nestjs_dir, 'images')
 os.makedirs(images_dir, exist_ok=True)
-
+print(os.listdir(docs_dir))
 for filename in sorted(os.listdir(docs_dir)):
-    if not filename.endswith('.doc'):
+    if not filename.endswith('.doc') and not filename.endswith('.docx'):
         continue
 
     filepath = os.path.join(docs_dir, filename)
