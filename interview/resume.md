@@ -11,8 +11,9 @@
 
 
 - 熟悉各种 web 前端技术，包括 HTML(5)/CSS(3)/JS(ES6)等，能快速、准确还原设计稿
-- 熟练使用 Vue、Typescript 以及相关库(Vue Router、Pinia、Element Plus 等) ，了解 React 框架
+- 熟练使用 Vue、Typescript 以及相关库(Vue Router、Pinia、Element Plus 等) ，了解 React 框架，node 和nestjs开发
 - 熟悉浏览器渲染机制和前端性能优化
+- langchain rag检索 langgraph多智能体搭建
 - 了解 AntV X6、 Echarts 等前端图表库，具备实际项目开发经验
 - 了解常见的数据结构与算法
 
