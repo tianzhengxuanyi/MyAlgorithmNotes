@@ -1,4 +1,25 @@
-## Node.js 相关面试题
+## Node.js 
+
+### ES6模块和CommonJS模块的区别？
+
+1. 模块定义方式
+   - CommonJS模块：使用require()函数引入模块，模块导出通过exports对象实现。
+   - ES6模块：使用import和export语句引入模块，模块导出通过export语句实现。
+2. 加载方式
+   - CommonJS模块：同步加载。
+   - ES6模块：异步加载。
+3. 依赖分析
+   - CommonJS模块：动态，会在运行时解析模块的依赖关系。
+   - ES6模块：静态，在编译时解析依赖关系。
+**TODO：Q**
+4. 模块作用域
+   - CommonJS模块：每个模块都有自己的作用域，模块内部的变量和函数不会影响到其他模块。
+   - ES6模块：模块作用域是静态的，模块内部的变量和函数不会影响到其他模块。
+**TODO：Q**
+5. 导出的值
+   - CommonJS模块：导出的是值。
+   - ES6模块：导出的是对象引用。
+
 
 ### 什么是Stream流？
 
@@ -145,4 +166,254 @@ if (isMainThread) {
     parentPort.postMessage("Hello, parent!");
   });
 }
+```
+
+### 如何在node中实现文件的压缩和解压？
+
+使用内置的zlib模块实现文件的压缩和解压。
+
+**文件压缩：**
+
+```js
+const fs = require('fs');
+const zlib = require('zlib');
+
+const inputFile = 'input.txt';
+const outputFile = 'input.txt.gz';
+
+const gzip = zlib.createGzip();
+const input = fs.createReadStream(inputFile);
+const output = fs.createWriteStream(outputFile);
+
+input.pipe(gzip).pipe(output);
+
+output.on('finish', () => {
+    console.log(`File successfully compressed to ${outputFile}`);
+});
+```
+
+**文件解压：**
+```js
+const fs = require('fs');
+const zlib = require('zlib');
+
+const inputFile = 'input.txt.gz';
+const outputFile = 'output.txt';
+
+const gunzip = zlib.createGunzip();
+const input = fs.createReadStream(inputFile);
+const output = fs.createWriteStream(outputFile);
+
+input.pipe(gunzip).pipe(output);
+
+output.on('finish', () => {
+    console.log(`File successfully decompressed to ${outputFile}`);
+});
+```
+
+### 在node中如何处理文件上传和下载？
+
+通过express和multer模块实现文件上传和下载。
+
+```js
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// 配置 multer
+const storage = multer.diskStorage({
+  // 上传文件存储目录
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  // 上传文件存储文件名
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({ 
+  storage,
+  // 限制上传文件类型
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|gif/;
+    const mimeType = fileTypes.test(file.mimetype);
+    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimeType && extname) {
+      return cb(null, true);
+    }
+    cb('Error: File type not supported!');
+  },
+  // 限制上传文件大小
+  limits: { fileSize: 2 * 1024 * 1024 },  // 2MB
+});
+
+// 上传接口
+// upload.single('file') 中间件 用于处理单个文件上传
+app.post('/upload', upload.single('file'), (req, res) => {
+  res.send('File uploaded successfully.');
+});
+
+// 下载接口
+app.get('/download/:filename', (req, res) => {
+  const filePath = path.join(__dirname, 'uploads', req.params.filename);
+  res.download(filePath);
+});
+
+// 流式下载接口
+app.get('/download/:filename', (req, res) => {
+  const filePath = path.join(__dirname, 'uploads', req.params.filename);
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.pipe(res);
+});
+
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+```
+
+### 如何在Node.js中实现纳米级别的高精度计时？
+
+使用`process.hrtime()`方法
+
+```js
+const startTime = process.hrtime();
+
+// 执行一些代码
+for (let i = 0; i < 1e6; i++) {
+  // 模拟一些耗时操作
+}
+
+// [秒, 纳秒]
+const elapsedTime = process.hrtime(startTime);
+console.log(`执行时间为 ${elapsedTime[0]} 秒 ${elapsedTime[1]} 纳秒`);
+```
+
+### 如何在Node.js中实现数据的缓存，提高性能？
+
+- 内存缓存：使用node-cache、memory-cache
+- 分布式缓存：使用Redis
+
+**内存缓存：node-cache**
+```js
+const NodeCache = require('node-cache');
+const myCache = new NodeCache();
+
+// 设置缓存数据
+myCache.set("key", "value", 10000); // 数据10秒后过期
+
+// 获取缓存数据
+const value = myCache.get("key");
+console.log(value); // 输出 'value'
+```
+
+**内存缓存：memory-cache**
+```js
+const cache = require('memory-cache');
+
+// 设置缓存数据
+cache.put('key', 'value', 10000); // 数据10秒后过期
+
+// 获取缓存数据
+const value = cache.get('key');
+console.log(value); // 输出 'value'
+```
+
+**分布式缓存：Redis**
+```js
+const redis = require('redis');
+const client = redis.createClient();
+
+client.on('error', (err) => {
+  console.log('Error ' + err);
+});
+
+// 连接 Redis 服务器
+client.connect();
+
+// 设置缓存数据，10秒后过期
+client.set('key', 'value', 'EX', 10);
+
+// 获取缓存数据
+client.get('key', (err, value) => {
+  if (err) throw err;
+  console.log(value); // 输出 'value'（如果数据未过期）
+});
+```
+
+### Node.js中的守护进程如何实现的？
+
+使用child_process模块创建守护进程，通过将父进程退出并且保持子进程运行，实现守护进程的功能。
+1. 使用 spawn 方法创建子进程
+2. 使用 detached 选项使子进程独立于父进程运行
+3. 将输出重定向到文件，以便子进程不依赖终端
+4. 退出父进程，使子进程成为孤儿进程
+
+```js
+const { spawn } = require('child_process');
+const fs = require('fs');
+
+// 定义守护进程的基本逻辑
+function startDaemon() {
+  const out = fs.openSync('./out.log', 'a');
+  const err = fs.openSync('./err.log', 'a');
+
+  const child = spawn(process.argv[0], ['child.js'], {
+    detached: true,
+    stdio: ['ignore', out, err]
+  });
+
+  // 让子进程不依赖父进程关闭
+  child.unref();
+
+  console.log(`Daemon process started with PID: ${child.pid}`);
+}
+
+// 如果当前进程是父进程，则启动守护进程
+if (process.argv[2] !== 'daemon') {
+  startDaemon();
+  process.exit();
+}
+
+// 子进程的逻辑（保存在 child.js 文件中）
+if (process.argv[2] === 'daemon') {
+  setInterval(() => {
+    console.log(`Daemon running with PID: ${process.pid}`);
+  }, 1000);
+}
+```
+
+### 如何在Node.js中处理文件系统的监控？
+
+使用fs.watch或者fs.watchFile方法监控文件系统的变化。fs.watch适合监听目录的变化，fs.watchFile适合监听单个文件的变化。
+
+**fs.watch：**
+1. 基于事件驱动的文件系统监控，可以监听文件或目录的变化事件，包括rename和change事件
+2. 支持控制是否递归监听目录
+
+```js
+const fs = require('fs');
+
+fs.watch('path/to/file/or/directory', (eventType, filename) => {
+  if (filename) {
+    console.log(`${filename} file Changed due to ${eventType}`);
+  }
+});
+```
+
+**fs.watchFile：**
+1. 基于轮询的文件系统监控，可以监听单个文件的变化事件
+2. 支持设置轮询间隔时间，默认1000毫秒
+
+```js
+const fs = require('fs');
+
+fs.watchFile('path/to/file', { interval: 500 }, (curr, prev) => {
+  console.log(`File modified at: ${curr.mtime}`);
+});
 ```

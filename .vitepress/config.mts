@@ -10,9 +10,14 @@ const absoluteSrcDir = path.resolve(srcDir);
  * @param targetPath 目标路径（相对于basePath）
  * @returns sidebar配置数组
  */
-function generateSidebarRoutes(basePath: string, targetPath: string): any[] {
+function generateSidebarRoutes(basePath: string, targetPath: string, excludeFiles: string[] = []): any[] {
     const fullPath = path.join(basePath, targetPath);
     const items: any[] = [];
+
+    // 如果目录不存在，返回空数组
+    if (!fs.existsSync(fullPath)) {
+        return items;
+    }
 
     // 读取目录内容
     const entries = fs.readdirSync(fullPath, { withFileTypes: true });
@@ -26,7 +31,7 @@ function generateSidebarRoutes(basePath: string, targetPath: string): any[] {
     // 处理目录（递归）
     for (const dir of directories) {
         const dirPath = path.join(targetPath, dir.name);
-        const childItems = generateSidebarRoutes(basePath, dirPath);
+        const childItems = generateSidebarRoutes(basePath, dirPath, excludeFiles);
 
         if (childItems.length > 0) {
             items.push({
@@ -40,6 +45,7 @@ function generateSidebarRoutes(basePath: string, targetPath: string): any[] {
     // 处理md文件
     for (const file of files) {
         if (file.name === "index.md") continue; // 跳过index.md文件
+        if (excludeFiles.includes(file.name)) continue; // 跳过排除的文件
 
         const fileName = file.name.replace(/\.md$/, "");
         // 修正link路径：从basePath开始计算相对路径
@@ -91,6 +97,13 @@ const projectSidebar = generateSidebarRoutes(
     ".",
 );
 
+// 生成面试目录的sidebar配置（排除resume.md）
+const interviewSidebar = generateSidebarRoutes(
+    path.join(process.cwd(), "interview"),
+    ".",
+    ["resume.md"]
+);
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: "/MyAlgorithmNotes/",
@@ -117,6 +130,7 @@ export default defineConfig({
             { text: "前端架构", link: "/architecture/" },
             { text: "设计模式", link: "/design-patterns/" },
             { text: "项目", link: "/project/" },
+            { text: "面试", link: "/interview/" },
         ],
 
         sidebar: {
@@ -164,6 +178,13 @@ export default defineConfig({
                     text: "项目",
                     link: "/project/",
                     items: projectSidebar
+                }
+            ],
+            "/interview/": [
+                {
+                    text: "面试",
+                    link: "/interview/index.md",
+                    items: interviewSidebar
                 }
             ],
         },
