@@ -214,7 +214,7 @@ container.appendChild(fragment);
 </head>
 ```
 
-- 使用 `defer` 属性。`defer` 属性使得脚本延迟执行，直到 HTML 文档解析完毕。这意味着脚本不会阻塞 HTML 渲染，且会按照文档中 `<script>` 标签的顺序执行。适用于依赖 DOM 元素的脚本（如操作页面内容）。
+- 使用 `defer` 属性。`defer` 属性使得脚本延迟执行，直到 HTML 文档解析完毕**(dom树构建完成，DOMContentLoaded事件触发之前)**。这意味着脚本不会阻塞 HTML 渲染，且会按照文档中 `<script>` 标签的顺序执行。适用于依赖 DOM 元素的脚本（如操作页面内容）。
 
 ```html
 <head>
