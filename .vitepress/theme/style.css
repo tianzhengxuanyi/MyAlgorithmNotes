@@ -137,3 +137,46 @@
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
 
+/**
+ * Component: Star Filter
+ * -------------------------------------------------------------------------- */
+
+.star-filter {
+  padding: 0 24px 12px;
+}
+
+.star-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 20px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.star-filter-btn:hover {
+  color: var(--vp-c-text-1);
+  border-color: var(--vp-c-brand-1);
+}
+
+.star-filter-btn.active {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+}
+
+.star-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* 收藏筛选激活时，隐藏未标记的题目 section */
+[data-star-hidden="true"] {
+  display: none !important;
+}
+
