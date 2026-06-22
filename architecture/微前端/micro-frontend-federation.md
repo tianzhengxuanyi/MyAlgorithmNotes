@@ -2,7 +2,7 @@
 
 ## 一、整体架构
 
-平台采用 **Module Federation** 实现微前端架构，基于 `@originjs/vite-plugin-federation`（定制版 `1.4.1-jh.1`），将系统拆分为 **1 个主应用 + 6 个子应用**，各子应用独立开发、独立部署、运行时动态加载。
+平台采用 **Module Federation** 实现微前端架构，基于 `@originjs/vite-plugin-federation`，将系统拆分为 **1 个主应用 + 6 个子应用**，各子应用独立开发、独立部署、运行时动态加载。
 
 ### 1.1 应用拓扑
 
