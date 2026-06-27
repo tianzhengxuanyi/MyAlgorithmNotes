@@ -10,7 +10,7 @@
 - 熟悉浏览器渲染机制和前端性能优化
 - 熟悉node 和nestjs开发
 - 熟悉数据结构与算法、设计模式，具备良好的代码质量和可维护性。
-- 熟悉微前端架构，具备微前端项目（模块联邦和qikun）开发经验。
+- 熟悉微前端架构，具备微前端项目（模块联邦）开发经验。
 - 熟悉langchain rag检索 langgraph多智能体搭建
 
 ### 工作经历
@@ -65,3 +65,66 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 #### 内存泄漏问题排查  ---> text 和el版本问题 popover
 #### 首屏秒开  ----> 打包优化
 #### 表格高性能 ----> 虚拟滚动
+
+
+### 专业技能
+
+**基础语言**
+- 精通 HTML5/CSS3/JavaScript(ES6+)，熟练使用 TypeScript 进行类型安全开发
+- 熟悉浏览器渲染管线（解析→布局→绘制→合成），具备系统性性能优化实战经验
+
+**框架 & 生态**
+- 精通 Vue3 生态（Vue Router、Pinia、Element Plus、VueUse），深入理解响应式原理与编译时优化
+- 熟练使用 React 及其生态（Hooks、Zustand/Redux Toolkit、React Router），了解 Next.js SSR 方案
+- 熟悉 JSON Schema 驱动的低代码/可视化搭建方案，具备组件库设计与封装经验
+
+**工程化工具**
+- 熟练使用 Vite/Webpack 进行构建配置与优化，具备自定义 Vite 插件开发能力
+- 熟练使用 pnpm workspace + Nx 管理 Monorepo，熟悉 CI/CD 流程与 ESLint/Prettier/Husky 代码规范体系
+- 了解 Vitest 单元测试、Playwright E2E 测试
+
+**性能 & 进阶工程**
+- 熟悉 Module Federation 微前端架构，具备从 0 到 1 的微前端改造与落地经验
+- 熟悉虚拟滚动、Tree Shaking、Code Splitting 等性能优化手段，具备首屏 LCP/FCP 优化实战
+- 了解 Storybook 组件文档化、Lighthouse 自动化性能审计
+
+**全栈 & AI**
+- 熟悉 Node.js + NestJS 后端开发，了解 RESTful API 与数据库交互
+- 熟悉 LLM 应用集成（SSE 流式输出、LangChain RAG 检索、LangGraph 多智能体工作流搭建）
+
+---
+
+### 工作经历
+
+**江苏金恒信息科技股份有限公司（南京）**　2023.07 - 至今
+
+**JH4J-CODE 企业级低代码开发平台**　2023.10 - 至今
+
+项目描述：面向 B/S 架构的企业级低代码平台，通过 JSON Schema 驱动的可视化搭建与预构建组件，实现应用快速创建与部署，支撑公司核心产品研发与项目交付。
+
+技术栈：Vue3、TypeScript、Pinia、Vue Router、Element Plus、TanStack Table、Module Federation、Vite、NestJS、LangGraph
+
+#### 一、微前端 + 模块联邦架构升级
+- 主导平台微前端架构改造，基于 Module Federation 拆分为 1 个主应用 + 5 个子应用，各子应用独立开发部署，运行时动态加载远程模块；通过共享依赖抽取与版本协商，产物体积减少约 35%
+- 开发自定义 Vite 插件实现增量构建，仅重新编译变更模块，构建耗时降低约 40%；本地开发自动将远程模块引用替换为 Monorepo 仓库内模块，实现多模块联调
+- 采用 pnpm workspace + Nx 管理 Monorepo 仓库，实现模块依赖隔离与版本统一管理，CI 构建效率提升约 50%
+
+#### 二、可视化低代码组件库开发
+- 基于 Vue3 + TS + Pinia 搭建低代码组件库，采用 JSON Schema 声明式渲染方案，支持 20+ 组件的可视化拖拽搭建与实时预览
+- 集成 Monaco Editor 实现 SFC 实时编译与智能提示；组件库按功能域划分（表单/表格/图表），支持按需加载与版本独立发布
+- 封装部门挑选框（树形结构+单/多选）、横向柱状图（ECharts 二次封装+拖拽建模）等业务组件，支撑 3 条产品线复用
+
+#### 三、高级表格组件封装（advance-table）
+- 基于 TanStack Table 二次封装，采用 Engine + Feature 插件架构，通过 TableFeature 机制扩展单元格编辑、行列合并等能力，实现关注点分离
+- 单元格编辑支持 AsyncValidator 校验、自定义 validator 及 trigger 触发时机，编辑态/展示态无缝切换
+- 集成行级 + 列级虚拟滚动，万级数据渲染帧率稳定 60fps；DataSource 层统一管理后端请求、分页排序筛选及树形数据转换
+
+#### 四、性能专项优化
+- 排查并修复 Vue3 组件库版本兼容导致的内存泄漏问题（Popover 组件未正确销毁引用），页面内存占用降低约 60%
+- 基于 RBAC 权限模型实现菜单/按钮级细粒度权限控制，采用路由动态注册 + 自定义权限指令双轨方案；权限树平铺 + 虚拟滚动，菜单授权页面 FCP 从 3.2s 降至 0.8s
+- 菜单树懒加载 + 路由组件按需加载 + Tree Shaking，首屏 LCP 从 2.8s 降至 1.2s
+
+#### 五、内置 AI 智能开发助手
+- 基于 SSE 实现流式对话输出，对接 LangGraph 工作流，构建自然语言 → 页面 Schema → 渲染产物的端到端生成链路
+- 支持上下文感知的代码补全与智能推荐，开发效率提升约 30%
+- 后端基于 NestJS + LangChain RAG 实现知识库检索，提升 AI 回复准确率
