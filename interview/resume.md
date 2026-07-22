@@ -75,7 +75,7 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 
 **框架 & 生态**
 - 精通 Vue3 生态（Vue Router、Pinia、Element Plus、VueUse），深入理解响应式原理与编译时优化
-- 熟练使用 React 及其生态（Hooks、Zustand/Redux Toolkit、React Router），了解 Next.js SSR 方案
+<!-- - 熟练使用 React 及其生态（Hooks、Zustand/Redux Toolkit、React Router），了解 Next.js SSR 方案 -->
 - 熟悉 JSON Schema 驱动的低代码/可视化搭建方案，具备组件库设计与封装经验
 
 **工程化工具**
@@ -86,7 +86,7 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 **性能 & 进阶工程**
 - 熟悉 Module Federation 微前端架构，具备从 0 到 1 的微前端改造与落地经验
 - 熟悉虚拟滚动、Tree Shaking、Code Splitting 等性能优化手段，具备首屏 LCP/FCP 优化实战
-- 了解 Storybook 组件文档化、Lighthouse 自动化性能审计
+<!-- - 了解 Storybook 组件文档化、Lighthouse 自动化性能审计 -->
 
 **全栈 & AI**
 - 熟悉 Node.js + NestJS 后端开发，了解 RESTful API 与数据库交互
