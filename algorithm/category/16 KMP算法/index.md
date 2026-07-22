@@ -62,6 +62,8 @@ KMP 算法（Knuth-Morris-Pratt 算法）是一个著名的字符串匹配算法
 
 3. 前缀和后缀最大相等的长度：
 
+**注意：** next[j] 对应子串 str2[0~j] 的真相等前后缀；「真前后缀」规定长度不能等于字符串全长，因此前缀只能到 0~j-1，不能带上末尾 j。失配发生在 str2[x]，失效区间是 str2[0 ~ x-1]，所以不包含 str2[x]。
+
     - 下标位置为0的最大相等的长度为-1，下标位置为1的最大相等的长度为0；
     - 下标位置为i的最大相等的长度：
       - 获取下标位置为i-1的最大相等长度p；
@@ -101,3 +103,63 @@ KMP 算法（Knuth-Morris-Pratt 算法）是一个著名的字符串匹配算法
 4. 时间复杂度O(N)
 
 ![](../../image/KMP-1.png)
+
+
+5. 完整模版
+
+```js
+function getIndexOf(str1, str2) {
+    const str1Arr = str1.split("");
+    const str2Arr = str2.split("");
+    // 获取前缀和后缀最大相等的长度
+    const next = getNextArr(str2Arr);
+    // str1Arr下标
+    let i1 = 0;
+    // str2Arr下标
+    let i2 = 0;
+
+    while (i1 < str1Arr.length && i2 < str2Arr.length) {
+        // 2.1 如果str1和str2数组i1位置与i2位置相同，则i1和i2一起加一
+        if (str1Arr[i1] === str2Arr[i2]) {
+            i1 += 1;
+            i2 += 1;
+        } else if (i2 === 0) {
+            // 2.6
+            i1 += 1;
+        } else {
+            // 2.3
+            i2 = next[i2]
+        }
+    }
+
+    // 2.2
+    return i2 === str2Arr.length ? i1 - i2 : -1;
+}
+
+function getNextArr(arr) {
+    if (arr.length < 2) {
+        return [-1];
+    }
+    const next = new Array(arr.length);
+    next[0] = -1;
+    next[1] = 0;
+
+    let prev = 0;
+    let currIndex = 2;
+
+    while (currIndex < arr.length) {
+        if (arr[currIndex - 1] === arr[prev]) {
+            // 如果位置p字符和位置i-1的字符相同，则位置i的最大相等长度为p+1,i++并且p++
+            next[currIndex++] = ++prev;
+        } else if (prev > 0) {
+            // 如果位置p字符和位置i-1的字符不相同，获取下标位置为p的最大相等长度p1，继续判断p1与i-1位置字符是否相同
+            prev = next[prev];
+        } else {
+            // 循环执行直到返回到位置0表示前缀和后缀最大相等的长度为0
+            next[currIndex++] = 0;
+        }
+    }
+
+    return next;
+}
+```
