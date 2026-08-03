@@ -68,7 +68,13 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 
 
 ### 专业技能
-
+- 精通 HTML5/CSS3/JavaScript(ES6+)，熟练使用 TypeScript，掌握泛型、高级类型，搭建项目类型约束体系
+- 熟练运用 Vue3 生态（Vue Router、Pinia、Element Plus、VueUse），深入理解响应式原理与编译时优化
+- 熟练使用 Vite/Webpack 进行构建配置与优化，具备自定义 Vite 插件开发能力
+- 熟练使用 pnpm workspace管理 Monorepo，熟悉ESLint/Prettier/Husky　+ Github Actions代码规范体系
+- 熟悉 Module Federation 微前端架构，参与 Module Federation 微前端架构落地
+- 熟悉虚拟滚动、Tree Shaking、Code Splitting 等性能优化手段，具备首屏 LCP/FCP 优化实战
+- 熟悉 Node.js + NestJS 后端开发，了解 RESTful API 与数据库交互      
 **基础语言**
 - 精通 HTML5/CSS3/JavaScript(ES6+)，熟练使用 TypeScript 进行类型安全开发
 - 熟悉浏览器渲染管线（解析→布局→绘制→合成），具备系统性性能优化实战经验
