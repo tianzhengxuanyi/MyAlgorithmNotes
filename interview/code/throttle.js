@@ -11,7 +11,7 @@ function throttle(fn, delay) => {
   }
 }
 
-function throttle(fn, delay) => {
+function throttle2(fn, delay) => {
   let lastTime = 0;
   return function (...args) {
     const now = Date.now();
