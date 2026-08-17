@@ -18,3 +18,27 @@ RAG标准流程为离线和在线两个阶段。
 4. 重排(reRank): 用 Cross-Encoder 重新打分排序
 5. 拼接提示词：将用户查询、召回文档（Top-K）拼接为提示词
 6. 生成：LLM输出回答（带引用）
+
+
+## 离线阶段
+
+### 加载文档
+
+#### PDF
+
+使用node pdf-parse库加载PDF文档
+
+```ts
+const buffer = typeof content === 'string' ? Buffer.from(content) : content
+// pdf-parse v2 使用 PDFParse 类，data 接受 Uint8Array
+const parser = new PDFParse({ data: new Uint8Array(buffer) })
+```
+
+#### Markdown
+
+使用node marked库加载Markdown文档
+
+```ts
+const text = typeof content === 'string' ? content : content.toString('utf8')
+const tokens = marked.lexer(text)
+```
