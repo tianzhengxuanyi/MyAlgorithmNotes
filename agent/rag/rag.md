@@ -113,3 +113,13 @@ const tokens = marked.lexer(text)
 → 输出干净标准化文本
 → 进入分块预处理
 ```
+
+#### rag处理流水线pipeline
+
+```
+Fetcher→Parser→Enhancer→Chunker→Enricher→Indexer 
+```
+
+- Fetcher: 如果是url，请求对应资源
+- Parser：根据mimeType选择对应的parser解析文档，提取文档的文本以block[]的结构输出。
+- Enhancer
