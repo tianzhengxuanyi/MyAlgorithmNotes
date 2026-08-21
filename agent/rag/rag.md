@@ -120,6 +120,6 @@ const tokens = marked.lexer(text)
 Fetcher→Parser→Enhancer→Chunker→Enricher→Indexer 
 ```
 
-- Fetcher: 如果是url，请求对应资源
+- Fetcher: 读取文件，并判断文件类型(根据文件内容的魔数、文件名后缀)
 - Parser：根据mimeType选择对应的parser解析文档，提取文档的文本以block[]的结构输出。
 - Enhancer
