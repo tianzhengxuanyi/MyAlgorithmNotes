@@ -128,3 +128,66 @@
 
 > 
 > 第一章核心是框架即权衡：Vue 选声明式 + 编译运行时结合 + 虚拟 DOM，用 PatchFlags/静态提升平衡性能与灵活性。Vapor 是 Vue3.6 推出的可选高性能模式，编译期直接生成 DOM 操作与细粒度 effect，去掉 VNode 和整树 diff；但因依赖编译期静态结构确定，对 h/动态 JSX/动态组件/SSR 适配差，且初期为兼顾生态、跨平台、灵活性而选择增强型 VDOM，待编译器与生态成熟后才作为可选模式推出。
+
+# 《Vue.js 设计与实现》第二章（框架设计的核心要素）Vue 相关精简笔记
+
+> 
+> 剔除通用框架设计理论，**只记录和Vue3直接相关、面试能用的知识点**
+
+## 2.1 开发体验（Vue相关）
+
+- Vue 在开发环境提供精准的友好警告（模板语法错误、props校验、响应式陷阱等），帮助快速定位问题
+- 生产环境直接移除全部警告代码，不增加线上包体积（依靠 `__DEV__` 环境常量控制）
+
+## 2.2 体积控制 & Tree-Shaking（Vue3重点）
+
+1. Vue3 基于 ESM 模块化，**原生支持 Tree-Shaking**，未使用的模块（如内置组件、某些API）会被打包工具剔除
+2. `/*#__PURE__*/` 注释：Vue源码大量使用，辅助打包工具识别纯函数，安全剔除无副作用代码
+3. 特性开关（`__FEATURES__`）：编译期开关，可关闭某些不使用的内置能力进一步减包（如可选关闭 `v-model`、`Transition`）
+
+## 2.3 Vue3 的多构建产物（面试高频）
+
+Vue3 会输出多种格式包，适配不同场景：
+
+- **ESM（esm-bundler）**：给webpack/vite等打包工具使用，支持tree-shaking，**业务项目默认选用**
+- **ESM（esm-browser）**：直接浏览器 `<script type="module">` 引入，不支持tree-shaking
+- **IIFE（global）**：script直接引入，挂载全局 `Vue` 对象（CDN直接用）
+- **CJS**：Node环境使用
+
+> 
+> 区分 runtime-only / full 包：
+> 
+> 
+> - runtime-only：**不含编译器**，模板必须预编译成render函数（生产推荐，体积更小）
+> - full：包含编译器，可以运行时编译template（仅动态模板场景使用）
+
+## 2.4 统一错误处理（Vue内部机制）
+
+Vue3 内部封装 `callWithErrorHandling` 统一捕获各类回调异常：生命周期、watch、渲染函数、事件回调
+
+- 异常统一交给 `app.config.errorHandler` 处理，用户可全局自定义兜底
+- 避免单个组件异常直接导致整个应用崩溃
+
+## 2.5 TypeScript 类型支持
+
+- Vue3 源码由TS编写，天然提供完善类型定义
+- Composition API（ref/reactive/computed等）类型推导友好，优于Vue2的Option API
+- 内置组件、全局API、SFC都有配套类型支持
+
+## ✅ 一句话总结（口述）
+
+Vue3 通过 `__DEV__`、特性开关、ESM+Tree-Shaking、多产物分发控制包体积；内部统一错误捕获，原生完善TS支持；同时区分full包和runtime-only包，是否携带编译器是核心差异。
+
+## 📌 面试高频追问（本章衍生）
+
+### Q：Vite项目默认用哪个版本的Vue包？
+
+esm-bundler + runtime-only，不包含编译器，SFC模板在vite插件预编译。
+
+### Q：runtime-only包什么时候不能用？
+
+运行时动态传入字符串template的场景，必须引入full完整版。
+
+### Q：Tree-Shaking为什么Vue2不行，Vue3可以？
+
+Vue2 是对象式导出，大量副作用；Vue3 ESM分模块导出，纯函数+`#__PURE__`，支持tree-shaking。
