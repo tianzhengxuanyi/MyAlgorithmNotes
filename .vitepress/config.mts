@@ -110,6 +110,12 @@ const agentSidebar = generateSidebarRoutes(
     "."
 );
 
+// 生成面试目录的sidebar配置（排除resume.md）
+const vueSidebar = generateSidebarRoutes(
+    path.join(process.cwd(), "vue"),
+    "."
+);
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: "/MyAlgorithmNotes/",
@@ -138,6 +144,7 @@ export default defineConfig({
             { text: "项目", link: "/project/" },
             { text: "面试", link: "/interview/" },
             { text: "智能体", link: "/agent/" },
+            { text: "Vue", link: "/vue/" },
         ],
 
         sidebar: {
@@ -199,6 +206,13 @@ export default defineConfig({
                     text: "智能体",
                     link: "/agent/index.md",
                     items: agentSidebar
+                }
+            ],
+            "/vue/": [
+                {
+                    text: "Vue",
+                    link: "/vue/index.md",
+                    items: vueSidebar
                 }
             ],
         },
