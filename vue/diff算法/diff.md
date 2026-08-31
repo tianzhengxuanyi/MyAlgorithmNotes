@@ -343,16 +343,16 @@ const patchChildren: PatchChildrenFn = (
 **双端 diff 算法的流程：**
 
 1. 用 startNewHead 和 startOldHead 分别指向新节点和旧节点的开头，用 endNewHead 和 endOldHead 分别指向新节点和旧节点的结尾。循环执行以下 if () else if () 操作，直到 startNewHead 大于 endNewHead 或者 startOldHead 大于 endOldHead。
-   1. 比对 startNewHead 和 startOldHead 指向的节点，如果两个节点 key 相同，表明 startOldHead 的真实 Dom 的位置不需要移动，只要进行 patch 操作，然后将 startNewHead 和 startOldHead 都向后移动一位。
-   2. 比对 endNewHead 和 endOldHead 指向的节点，如果两个节点 key 相同，表明 endOldHead 的真实 Dom 的位置不需要移动，只要进行 patch 操作，然后将 endNewHead 和 endOldHead 都向前移动一位。
-   3. 比对 startOldHead 和 endNewHead 指向的节点，如果两个节点 key 相同，表明 startOldHead 的真实 Dom 的位置需要移动到 endNewHead, 以 endNewHead 的后一位的真实 DOM 为锚点，进行 patch 操作，然后将 startOldHead--，endNewHead++。
-   4. 比对 endOldHead 和 startNewHead 指向的节点，如果两个节点 key 相同，表明 endOldHead 的真实 Dom 的位置需要移动到 startNewHead, 以 startNewHead 的前一位的真实 DOM 为锚点，进行 patch 操作，然后将 endOldHead++，startNewHead--。
+   1. 比对 startNewHead 和 startOldHead 指向的节点，如果两个节点 key 相同，表明 startOldHead 的真实 Dom 的位置不需要移动，只要进行 patch 操作，然后将 startNewHead 和 startOldHead 都向后移动一位（`++`）。
+   2. 比对 endNewHead 和 endOldHead 指向的节点，如果两个节点 key 相同，表明 endOldHead 的真实 Dom 的位置不需要移动，只要进行 patch 操作，然后将 endNewHead 和 endOldHead 都向前移动一位（`--`）。
+   3. 比对 startOldHead 和 endNewHead 指向的节点，如果两个节点 key 相同，表明 startOldHead 的真实 Dom 需要移动到当前旧尾之后：以 `oldEndVNode.el.nextSibling` 为锚点 `insertBefore`，再 patch，然后将 startOldHead++、endNewHead--。
+   4. 比对 endOldHead 和 startNewHead 指向的节点，如果两个节点 key 相同，表明 endOldHead 的真实 Dom 需要移动到当前旧头之前：以 `oldStartVNode.el` 为锚点 `insertBefore`，再 patch，然后将 endOldHead--、startNewHead++。
    5. 如果以上四种情况都不满足，需要在旧节点中寻找与 startNewHead 指向的 NewVNode 节点 key 相同的节点
-      1. 如果找到对应节点，进行 patch 操作，并将对应真实 DOM 移动到 移动到头部节点 oldStartVNode.el 之前，以 oldStartVNode.el 为锚点，进行 insert 操作。之后对应节点的位置在旧节点中置空（undefined），更新 startNewHead++。
+      1. 如果找到对应节点，进行 patch 操作，并将对应真实 DOM 移动到头部节点 oldStartVNode.el 之前，以 oldStartVNode.el 为锚点，进行 insert 操作。之后对应节点的位置在旧节点中置空（undefined），更新 startNewHead++。
       2. 如果没有找到对应节点，说明该节点是新节点，需要挂载到头部节点 oldStartVNode.el 之前，以 oldStartVNode.el 为锚点，进行 patch 操作挂载新节点 DOM，更新 startNewHead++。
-2. 当循环终止时，判断：
-   1. 如果 startNewHead 小于 endNewHead，说明新节点中还有未处理的节点，需要将这些节点挂载到头部节点 oldStartVNode.el (此时 oldEndVNode 越界) 之前，以 oldStartVNode.el 为锚点，进行 patch 操作挂载新节点 DOM。
-   2. 如果 startOldHead 小于 endOldHead，说明旧节点中还有未处理的节点，需要将这些节点卸载。
+2. 当循环终止时，判断（循环退出后新旧两侧不可能同时还有未处理区间）：
+   1. 如果 startNewHead <= endNewHead，说明新节点中还有未处理的节点（此时旧区间已耗尽）。锚点取 `newChildren[endNewHead + 1]?.el`（不存在则为 `null`，表示挂到容器末尾），依次 patch 挂载剩余新节点。
+   2. 如果 startOldHead <= endOldHead，说明旧节点中还有未处理的节点，需要将这些节点卸载（跳过已被置为 undefined 的项）。
 
 ```js
 function vue2Diff(oldChildren, newChildren, container) {
@@ -366,6 +366,16 @@ function vue2Diff(oldChildren, newChildren, container) {
   oldChildren.forEach((child, i) => (keyIndexMap[child.key] = i));
 
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    // 非理想路径会把已复用节点置为 undefined，四端比对前先跳过空洞
+    if (!oldChildren[oldStartIdx]) {
+      oldStartIdx++;
+      continue;
+    }
+    if (!oldChildren[oldEndIdx]) {
+      oldEndIdx--;
+      continue;
+    }
+
     // 头头比对
     if (isSameVNode(oldChildren[oldStartIdx], newChildren[newStartIdx])) {
       patchVNode(oldChildren[oldStartIdx], newChildren[newStartIdx]);
@@ -399,16 +409,16 @@ function vue2Diff(oldChildren, newChildren, container) {
       const newStartKey = newChildren[newStartIdx].key;
       const oldIndex = keyIndexMap[newStartKey];
 
-      if (oldIndex !== undefined) {
+      if (oldIndex !== undefined && oldChildren[oldIndex]) {
         const oldVNode = oldChildren[oldIndex];
         // 移动找到的旧节点
         const anchor = oldChildren[oldStartIdx].el;
         container.insertBefore(oldVNode.el, anchor);
-        // 标记已处理节点
+        // 标记已处理节点，后续四端比对会跳过
         oldChildren[oldIndex] = undefined;
         patchVNode(oldVNode, newChildren[newStartIdx]);
       } else {
-        // 挂载新节点
+        // 挂载新节点（锚点为当前旧头真实 DOM）
         mountElement(
           newChildren[newStartIdx],
           container,
@@ -419,7 +429,7 @@ function vue2Diff(oldChildren, newChildren, container) {
     }
   }
 
-  // 处理剩余新节点
+  // 处理剩余新节点（此时旧区间已耗尽；锚点用下一个已处理新节点的 el）
   if (newStartIdx <= newEndIdx) {
     const anchor =
       newEndIdx + 1 < newChildren.length ? newChildren[newEndIdx + 1].el : null;
@@ -428,7 +438,7 @@ function vue2Diff(oldChildren, newChildren, container) {
     }
   }
 
-  // 处理剩余旧节点
+  // 处理剩余旧节点（跳过已被置为 undefined 的项）
   if (oldStartIdx <= oldEndIdx) {
     for (let i = oldStartIdx; i <= oldEndIdx; i++) {
       if (oldChildren[i]) {
@@ -463,19 +473,19 @@ oldVNode = 'hello JavaScript, how are you?'
 2. while 循环比对 newVNode[i]和 oldVNode[i]的 key 是否相等，相等则 i++，直到 i 越界(i >= e1 || i >= e2)或 newVNode[i]和 oldVNode[i]的 key 不相等为止。
 3. while 循环比对 newVNode[e2]和 oldVNode[e1]的 key 是否相等，相等则 e1--，e2--，直到 e1 < i 或 e2 < i 或 newVNode[e2]和 oldVNode[e1]的 key 不相等为止。
 4. 两个 while 循环结束后，如果：
-   1. i > e1，说明旧节点中所有节点都被预处理了，如果此时 i <= e2，说明新节点剩余未处理的节点都是新节点，需要挂载，以 oldVNode[i].el(newVNode[e2 + 1].el)为锚点，进行 patch 操作挂载新节点 DOM。
+   1. i > e1，说明旧节点中所有节点都被预处理了，如果此时 i <= e2，说明新节点剩余未处理的节点都是新节点，需要挂载。锚点取 `newVNode[e2 + 1].el`（若 `e2 + 1` 已越界则用 `parentAnchor`），依次 patch 挂载。
    2. i <= e1 && i > e2，说明新节点中所有节点都被预处理了，旧节点剩余未处理的节点都是旧节点，需要卸载。
 
 #### 寻找需要移动的节点
 
 1. 经过预处理后，此时新旧节点的头部指针为 s2 = s1 = i，尾部指针为 e2，e1
 2. 获取新节点在旧节点中的索引位置数组：
-   1. 初始化一个长度为 e2 - s2 + 1 的数组 source（初始为 -1， ？？？ 为什么源码设置为 0，应为source是记录下标且获取最长递增子序列下标的初始result=[0]，所以后续的0是没有还是头部节点没有区别），用于存储新节点在旧节点中的索引位置。
+   1. 初始化一个长度为 e2 - s2 + 1 的数组 source。教学实现常初始为 -1；Vue 3 源码初始为 0，并用 `oldIndex + 1` 写入（0 表示「该新节点没有对应旧节点」，`getSequence` 会跳过 0）。
    2. 创建 map 对象，用于存储新节点（s2~e2）中每个节点的 key 和索引位置。
-   3. 初始 patched 变量记录更新的节点数量，moved 变量标记是否需要移动节点，pos 当前遍历时新节点在旧节点中的最大下标用于判断是否需要移动节点。遍历未处理的旧节点（s1~e1）,在 map 对象中查找对应 key 的新节点：
-      1. 如果找到则执行 patch，patched++，并将该节点的索引位置(j)存储到数组 source 中，用 j 于 pos 比较，判断是否更新 pos 和 moved。（source[map.get(key)] = j，表示新节点在旧节点中的下标为 j）
+   3. 初始 patched 记录已更新节点数，moved 标记是否发生过逆序，pos（源码中为 `maxNewIndexSoFar`）记录遍历过程中遇到的**最大新下标**。遍历未处理的旧节点（s1~e1），在 map 中查找对应 key 的新节点：
+      1. 如果找到（设新下标为 `newIndex`，旧下标为 `i`），则执行 patch，patched++，并写入 `source[newIndex - s2] = i`（Vue 3 为 `i + 1`）。用 **newIndex** 与 pos 比较：若 `newIndex >= pos` 则更新 pos，否则说明相对顺序发生逆序，设 `moved = true`。
       2. 如果找不到则将该旧节点卸载。
-      3. 如果遍历时 patched 大于未处理的新节点数量(e2 - s2 + 1)，则卸载后续所有对应的旧节点。
+      3. 如果遍历时 patched 大于等于未处理的新节点数量(e2 - s2 + 1)，则卸载后续所有剩余旧节点。
 3. 获得 source 数组的最长递增子序列 seq(source 数组中的下标)：
 
    1. 二分查找 + 贪心算法
@@ -539,10 +549,10 @@ oldVNode = 'hello JavaScript, how are you?'
 
 4. 根据最长递增子序列(source 数组中的下标)，将新节点移动到正确位置：
    1. 设定指针 s 和 i 分别指向 seq 和 source 数组的末尾
-   2. for 循环 i >= 0，
-      1. 如果 i 和 seq[s]相等，说明当前位置的节点不需要移动，将 s--，i--。
-      2. 如果 source[i] == -1, 说明当前位置的节点是新节点，需要挂载，以 newVNode[i + s2 + 1].el 为锚点，进行 patch 操作挂载新节点 DOM。
-      3. 如果 i 和 seq[s]不相等，说明当前位置的节点需要移动，以 newVNode[i + s2 + 1].el 为锚点，进行 patch 操作移动节点。
+   2. for 循环 i >= 0（倒序便于用「下一个已处理节点」当锚点），
+      1. 如果 i 和 seq[s] 相等，说明当前位置的节点不需要移动，将 s--。
+      2. 如果 source[i] == -1（Vue 3 为 `=== 0`），说明当前位置的节点是新节点，需要挂载；锚点为 `newVNode[i + s2 + 1].el`（越界则用 `parentAnchor`）。
+      3. 如果 i 和 seq[s] 不相等，说明当前位置的节点需要移动；锚点同样为 `newVNode[i + s2 + 1].el`（越界则用 `parentAnchor`）。
 
 ```js
   const patchKeyedChildren = (
