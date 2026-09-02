@@ -504,65 +504,65 @@ oldVNode = 'hello JavaScript, how are you?'
       如 10 9 2 5 3 7 101 18 1，所获得的 result 数组为[8, 4, 5, 7]，应为后续较小的值下标会覆盖先前的值，所以最终获得的数组不能直接使用。
       需要记录 result 中的每个值是从哪一个值转移而来的，即记录每个值的前驱索引。最后从 result 的最后一直回溯正确是最长递增子序列的下标。
 
-   ```js
-   function getSequence(arr: number[]): number[] {
-     const p = arr.slice(); // 用于记录每个元素的前驱索引
-     const result = [0]; // 存储当前找到的最长递增子序列的索引
-     let i, j, u, v, c;
-     const len = arr.length;
+```js
+function getSequence(arr: number[]): number[] {
+  const p = arr.slice(); // 用于记录每个元素的前驱索引
+  const result = [0]; // 存储当前找到的最长递增子序列的索引
+  let i, j, u, v, c;
+  const len = arr.length;
 
-     // 构建最长递增子序列的优化路径
-     for (i = 0; i < len; i++) {
-       const arrI = arr[i];
-       if (arrI !== 0) {
-         j = result[result.length - 1];
+  // 构建最长递增子序列的优化路径
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i];
+    if (arrI !== 0) {
+      j = result[result.length - 1];
 
-         // 当前元素大于序列最后一个元素，直接扩展序列
-         if (arr[j] < arrI) {
-           p[i] = j; // 记录前驱位置
-           result.push(i); // 将当前索引加入结果序列
-           continue;
-         }
+      // 当前元素大于序列最后一个元素，直接扩展序列
+      if (arr[j] < arrI) {
+        p[i] = j; // 记录前驱位置
+        result.push(i); // 将当前索引加入结果序列
+        continue;
+      }
 
-         // 二分查找找到最合适的插入位置
-         u = 0;
-         v = result.length - 1;
-         while (u < v) {
-           c = (u + v) >> 1; // 取中间位置
-           if (arr[result[c]] < arrI) {
-             u = c + 1; // 在右半部分继续查找
-           } else {
-             v = c; // 在左半部分继续查找
-           }
-         }
+      // 二分查找找到最合适的插入位置
+      u = 0;
+      v = result.length - 1;
+      while (u < v) {
+        c = (u + v) >> 1; // 取中间位置
+        if (arr[result[c]] < arrI) {
+          u = c + 1; // 在右半部分继续查找
+        } else {
+          v = c; // 在左半部分继续查找
+        }
+      }
 
-         // 替换序列中第一个大于当前元素的值
-         if (arrI < arr[result[u]]) {
-           if (u > 0) {
-             p[i] = result[u - 1]; // 记录前驱索引
-           }
-           result[u] = i; // 替换当前位置的索引
-         }
-       }
-     }
+      // 替换序列中第一个大于当前元素的值
+      if (arrI < arr[result[u]]) {
+        if (u > 0) {
+          p[i] = result[u - 1]; // 记录前驱索引
+        }
+        result[u] = i; // 替换当前位置的索引
+      }
+    }
+  }
 
-     // 回溯重构最长递增子序列
-     u = result.length;
-     v = result[u - 1];
-     while (u-- > 0) {
-       // 从后往前填充最终结果
-       result[u] = v; // 填入正确的索引顺序
-       v = p[v]; // 通过前驱索引回溯
-     }
-     return result;
-   }
-   ```
+  // 回溯重构最长递增子序列
+  u = result.length;
+  v = result[u - 1];
+  while (u-- > 0) {
+    // 从后往前填充最终结果
+    result[u] = v; // 填入正确的索引顺序
+    v = p[v]; // 通过前驱索引回溯
+  }
+  return result;
+}
+```
 
 4. 根据最长递增子序列(source 数组中的下标)，将新节点移动到正确位置：
    1. 设定指针 s 和 i 分别指向 seq 和 source 数组的末尾
    2. for 循环 i >= 0（倒序便于用「下一个已处理节点」当锚点），
       1. 如果 i 和 seq[s] 相等，说明当前位置的节点不需要移动，将 s--。
-      2. 如果 source[i] == -1（Vue 3 为 `=== 0`），说明当前位置的节点是新节点，需要挂载；锚点为 `newVNode[i + s2 + 1].el`（越界则用 `parentAnchor`）。
+      2. 如果 source[i] == -1（Vue 3 为 `=== 0`），说明当前位置的节点是新节点，需要挂载；锚点为 `newVNode[i + s2 + 1].el`（新子节点数组里的下一个，越界则用 `parentAnchor`）。
       3. 如果 i 和 seq[s] 不相等，说明当前位置的节点需要移动；锚点同样为 `newVNode[i + s2 + 1].el`（越界则用 `parentAnchor`）。
 
 ```js
