@@ -218,3 +218,38 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 3. 低代码 JSON Schema 渲染与 Monaco SFC 实时编译共存，拖拽状态、代码编辑状态双向同步；
 4. 高级表格插件架构设计，保证插件扩展能力同时维持大数据场景渲染性能；
 5. RBAC 权限树海量节点渲染优化，解决权限树加载卡顿、节点切换性能开销大的问题。
+
+
+### RAG智能问答
+
+技术栈：NestJS 11 + Fastify + TypeORM + MySQL + PostgreSQL(pgvector) + Redis + BullMQ + MCP ｜ Vue3 + Ant Design Vue + Vite
+
+
+
+项目描述：面向企业知识库场景的 RAG 智能问答系统。支持多格式文档（Markdown / PDF / Word / Excel）上传、异步摄取、向量化检索与大模型流式问答；通过「意图树 + 多通道检索 + MCP 工具调用」实现问题路由，配套完整的运营管理后台（知识库管理、切片预览、意图树编排、摄取 Pipeline 配置、调用链 Trace 观测）。
+
+核心工作与成果：
+
+- 设计并实现 DB 驱动的文档摄取 Pipeline 编排引擎：Fetcher → Parser → Enhancer → Chunker → Enricher → Indexer 六类节点注册表化管理，节点间以 `nextNodeId` 链式编排、支持 `conditionJson` 条件跳过；每次执行落 Task/TaskNode 双表，单节点失败可定位、可重试；Indexer 在单事务内完成「删旧 chunk → 落库 → 向量写入 → 状态机流转」，避免半向量化不一致。
+
+-  实现结构感知分块（Structure-Aware Chunking）：自研 Parser 层将文档解析为 Block 模型（heading / paragraph / table / code / list），Chunker 按块语义贪心合并、表格与代码块原子保留，并用 HeadingBlock 累积 outlinePath 形成章节层级路径，显著提升切片语义完整度与召回准确率。
+
+-  实现意图树驱动的多通道并行检索引擎：三级意图树（域 / 类目 / 主题）整树 JSON 缓存于 Redis（7 天 TTL + 主动失效）；对话侧一次 LLM 调用完成全候选打分（temperature=0.1 强确定性 + JSON 输出防幻觉 ID 校验）；检索侧 IntentDirected（意图定向过滤）/ VectorGlobal（全局向量）/ Keyword（关键词）多通道并行召回、按优先级融合。意图定向通道通过向量元数据 `intentNodeId` SQL 过滤实现「写侧打标、读侧过滤」，并设计空结果自动降级避免高置信意图零召回。
+
+-  基于 MCP（Model Context Protocol）实现工具调用体系：独立 mcp-server 子进程（HTTP Streamable Transport）对外提供天气 / 工单 / 销售等工具；后端启动时自动发现注册工具，LLM 从口语化问题中提取结构化参数；实现工具发现层 / 意图分类层 / 运行时执行层的三层权限校验，无权工具对 LLM 不可见。
+
+-  实现多模型 LLM 网关与稳定性体系：统一封装 OpenAI / Claude / DeepSeek / Qwen / Ollama 等多家模型，模型路由 + 三态熔断器 + 降级链兜底；SSE 流式输出支持首包探测超时、任务取消（Redis 广播）、限流队列；修复全局超时拦截器与 SSE 长连接冲突导致的 408 问题。
+
+-  摄取期 chunk 意图离线打标：Enricher 节点用意图叶子的名称 / 路径 / 示例与 chunk 文本做加权关键词打分（零 LLM 成本、可解释），Top-1 写入 chunk 元数据，供检索定向过滤。
+
+- 全链路可观测：每次问答生成 Trace 树（改写 → 意图识别 → 各通道检索 → 生成），记录节点耗时与产出，管理后台可视化排查「召回为空」「意图误判」等问题。
+
+- 管理后台（Vue3）：知识库 / 文档 / 切片三级管理，切片页实现「原文预览与切片双向定位」（Markdown 用 marked 渲染 + offset 高亮，PDF 用 pdf.js 分页渲染 + 文本匹配定位页码）；意图树 CRUD、摄取 Pipeline 可视化配置、OpenAPI 自动生成类型安全的前端 API 层。
+
+技术难点：
+
+1. 向量库（PostgreSQL）与业务库（MySQL）双数据源下的一致性设计——摄取事务边界、文档删除时两库级联清理；
+
+2. 意图体系「树变更后存量数据元数据过期」问题——通过检索侧空结果降级兜底，并规划只更新元数据、不重算向量的重打标任务；
+
+3. SSE 流式响应与全局拦截器 / 异常过滤器的冲突——手动接管 Fastify 响应流、按 headersSent 状态分流处理。
