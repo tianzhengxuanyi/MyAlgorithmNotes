@@ -30,6 +30,7 @@ function generateSidebarRoutes(basePath: string, targetPath: string, excludeFile
 
     // 处理目录（递归）
     for (const dir of directories) {
+        if (excludeFiles.includes(dir.name)) continue; // 跳过排除的目录
         const dirPath = path.join(targetPath, dir.name);
         const childItems = generateSidebarRoutes(basePath, dirPath, excludeFiles);
 
@@ -101,7 +102,7 @@ const projectSidebar = generateSidebarRoutes(
 const interviewSidebar = generateSidebarRoutes(
     path.join(process.cwd(), "interview"),
     ".",
-    ["resume.md"]
+    ["resume.md", "resume"]
 );
 
 // 生成面试目录的sidebar配置（排除resume.md）
