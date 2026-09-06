@@ -114,7 +114,8 @@ const agentSidebar = generateSidebarRoutes(
 // 生成面试目录的sidebar配置（排除resume.md）
 const vueSidebar = generateSidebarRoutes(
     path.join(process.cwd(), "vue"),
-    "."
+    ".",
+    ["vue设计与实现.md"]
 );
 
 // https://vitepress.dev/reference/site-config
