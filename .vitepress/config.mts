@@ -58,7 +58,7 @@ function generateSidebarRoutes(basePath: string, targetPath: string, excludeFile
         const linkPath = `/${relativePath.replace(/\\/g, "/")}`;
 
         items.push({
-            text: fileName.replace(/^\d+\.\d+\s*/, "").replace(/^\d+\s*/, ""), // 移除开头的数字和点号
+            text: fileName, // 移除开头的数字和点号
             link: linkPath,
         });
     }
