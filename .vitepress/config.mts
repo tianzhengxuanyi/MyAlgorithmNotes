@@ -4,6 +4,20 @@ import path from "path";
 
 const srcDir = "./";
 const absoluteSrcDir = path.resolve(srcDir);
+
+/** 从文件名/目录名提取开头序号，没有序号则排到最后 */
+function getLeadingNumber(name: string): number {
+    const match = name.match(/^(\d+)/);
+    return match ? Number(match[1]) : Number.POSITIVE_INFINITY;
+}
+
+/** 按文件名开头的数字排序：1、2、10，而不是 1、10、2 */
+function compareByLeadingNumber(a: string, b: string): number {
+    const diff = getLeadingNumber(a) - getLeadingNumber(b);
+    if (diff !== 0) return diff;
+    return a.localeCompare(b, "zh");
+}
+
 /**
  * 生成sidebar路由配置
  * @param basePath 基础路径
@@ -22,11 +36,13 @@ function generateSidebarRoutes(basePath: string, targetPath: string, excludeFile
     // 读取目录内容
     const entries = fs.readdirSync(fullPath, { withFileTypes: true });
 
-    // 先处理目录，再处理文件，保持顺序
-    const directories = entries.filter((entry) => entry.isDirectory());
-    const files = entries.filter(
-        (entry) => entry.isFile() && entry.name.endsWith(".md"),
-    );
+    // 先处理目录，再处理文件；各自按文件名开头序号数值排序
+    const directories = entries
+        .filter((entry) => entry.isDirectory())
+        .sort((a, b) => compareByLeadingNumber(a.name, b.name));
+    const files = entries
+        .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+        .sort((a, b) => compareByLeadingNumber(a.name, b.name));
 
     // 处理目录（递归）
     for (const dir of directories) {
