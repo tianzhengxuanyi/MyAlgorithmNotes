@@ -46,6 +46,10 @@
    封装对「纯 DOM」的底层操作（聚焦、埋点、权限隐藏、懒加载）。钩子：Vue2 的 bind/inserted/update…；Vue3 的 created/mounted/updated/unmounted。能用组件表达的优先组件，指令侧重 DOM。
 10. **常用修饰符**  
     事件：`.stop` / `.prevent` / `.capture` / `.self` / `.once` / `.passive`。按键：`.enter` 等。表单：`.lazy` / `.number` / `.trim`。Vue2 `.sync` 已由 Vue3 `v-model:prop` 替代。
+11. **forceUpdate**
+   在 Vue 3 中，$forceUpdate 的原理是绕过响应式依赖收集的比较，直接通过调度器强制将组件的更新任务推入异步队列，从而触发重新渲染。其源码主要位于 packages/runtime-core/src/componentPublicInstance.ts。
+   - 触发时机：当响应式数据变化时，Vue 3 会自动追踪并触发更新；而调用 $forceUpdate() 是手动强制触发更新的第二种途径，用于处理极少数边缘情况（如依赖了非响应式数据源）。
+   - 核心逻辑：在 setup 中需通过 getCurrentInstance() 获取组件实例，并访问其 proxy.$forceUpdate 方法（推荐）。该方法内部会调用 queueJob，将组件的重新渲染任务直接推入 Vue 的异步更新队列。这与响应式数据变化触发的更新走的是同一条调度路径，但 $forceUpdate 跳过了依赖对比的步骤。
 
 ## 四、生命周期与实例挂载
 

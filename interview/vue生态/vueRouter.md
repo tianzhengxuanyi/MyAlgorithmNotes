@@ -21,6 +21,8 @@
 
 - Router4：移除`*`通配符，写法：`{path:'/:pathMatch(.*)*',component:NotFound}`。
 
+- 如果业务中使用需要addRoute方法添加路由，需要再beforeEach中判断`to.matched`是否有匹配项，没有则跳转404。
+
 ## 3、切换路由保存草稿如何实现？
 
 使用`<keep‑alive>`包裹`<router‑view>`；通过`include`指定组件 name，被缓存组件表单草稿保留。
