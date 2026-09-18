@@ -40,7 +40,7 @@ scrollElement (overflow: auto)
 
 定义位置：`packages/virtual-core/src/index.ts`。
 
-```54:70:packages/virtual-core/src/index.ts
+```ts
 export interface Range {
   startIndex: number
   endIndex: number
@@ -198,7 +198,7 @@ start[i+1] = end[i] + gap
 1. 在 `measurements[i].start` 上二分，找到最后一个 `start <= scrollOffset` 的 index → `startIndex`
 2. 从 `startIndex` 往前走，直到 `end >= scrollOffset + outerSize` → `endIndex`
 
-```2173:2202:packages/virtual-core/src/index.ts
+```ts
 function calculateRangeImpl(
   measurements: Array<VirtualItem>,
   outerSize: number,
