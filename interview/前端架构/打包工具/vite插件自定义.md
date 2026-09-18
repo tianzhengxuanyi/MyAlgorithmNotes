@@ -129,6 +129,7 @@ export default function mockServerPlugin() {
 这个插件解决了一个关键问题：让 Element Plus 的自动导入能够被模块联邦正确共享。
 
 核心问题
+```ts
 // unplugin-vue-components 默认生成的代码
 import { ElButton } from "element-plus/es";
 
@@ -136,6 +137,7 @@ import { ElButton } from "element-plus/es";
 shared: {
   "element-plus": { ... }  // 只匹配 "element-plus"，不匹配 "element-plus/es"
 }
+```
 问题：element-plus/es 和 element-plus 是不同的 specifier，federation 无法识别并共享。
 
 解决方案：两层拦截
@@ -157,6 +159,7 @@ shared: {
 │  Federation 识别为 shared，改写成 importShared                   │
 └─────────────────────────────────────────────────────────────────┘
 第一层：Resolver 拦截（自动导入）
+```ts
 // element-plus-share.ts 第 23-36 行
 export function createElementPlusShareResolvers() {
   const resolvers = ElementPlusResolver({ importStyle: false });
@@ -172,7 +175,9 @@ export function createElementPlusShareResolvers() {
     };
   });
 }
+```
 示例转换
+```ts
 // 原始 resolver 返回
 {
   from: "element-plus/es",
@@ -193,9 +198,10 @@ Components({
     createJhPlatformResolver()
   ]
 })
+```
 第二层：Transform 拦截（手写代码）
 开发者可能手写导入语句：
-
+```ts
 // 手写的代码
 import { ElMessage } from "element-plus/es";
 
@@ -230,7 +236,9 @@ export function createElementPlusSharedSpecifierPlugin(): PluginOption {
     }
   };
 }
+```
 正则解释
+```ts
 /(["'])element-plus\/(?:es|lib)\1/g
 
 // 匹配：
@@ -240,7 +248,8 @@ export function createElementPlusSharedSpecifierPlugin(): PluginOption {
 
 // \1 是反向引用，确保引号配对
 // "element-plus/es'  ✗ (引号不配对)
-插件顺序要求
+
+// 插件顺序要求
 // sub-remote-plugins.ts 第 49-68 行
 return [
   // ... 其他插件
@@ -257,6 +266,7 @@ return [
     }
   }),
 ];
+```
 为什么必须在 federation 之前？
 
 federation 插件在 enforce: "post" 阶段扫描 import 语句
