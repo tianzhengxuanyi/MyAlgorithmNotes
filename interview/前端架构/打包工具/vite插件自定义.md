@@ -129,7 +129,7 @@ export default function mockServerPlugin() {
 这个插件解决了一个关键问题：让 Element Plus 的自动导入能够被模块联邦正确共享。
 
 核心问题
-```ts
+```plaintext
 // unplugin-vue-components 默认生成的代码
 import { ElButton } from "element-plus/es";
 
@@ -159,7 +159,7 @@ shared: {
 │  Federation 识别为 shared，改写成 importShared                   │
 └─────────────────────────────────────────────────────────────────┘
 第一层：Resolver 拦截（自动导入）
-```ts
+```plaintext
 // element-plus-share.ts 第 23-36 行
 export function createElementPlusShareResolvers() {
   const resolvers = ElementPlusResolver({ importStyle: false });
@@ -177,19 +177,19 @@ export function createElementPlusShareResolvers() {
 }
 ```
 示例转换
-```ts
+```plaintext
 // 原始 resolver 返回
-{
-  from: "element-plus/es",
-  name: "ElButton"
-}
+// {
+//  from: "element-plus/es",
+//  name: "ElButton"
+// }
 
 // toSharedElementPlusFrom 改写后
-{
-  from: "element-plus",  // 改成包名
-  name: "ElButton"
-}
-在构建链中使用
+// {
+//   from: "element-plus",  // 改成包名
+//   name: "ElButton"
+// }
+// 在构建链中使用
 // sub-remote-plugins.ts 第 40-45 行
 Components({
   dts: false,
@@ -201,7 +201,7 @@ Components({
 ```
 第二层：Transform 拦截（手写代码）
 开发者可能手写导入语句：
-```ts
+```plaintext
 // 手写的代码
 import { ElMessage } from "element-plus/es";
 
@@ -238,8 +238,8 @@ export function createElementPlusSharedSpecifierPlugin(): PluginOption {
 }
 ```
 正则解释
-```ts
-/(["'])element-plus\/(?:es|lib)\1/g
+```plaintext
+// /(["'])element-plus\/(?:es|lib)\1/g
 
 // 匹配：
 // "element-plus/es"  ✓
