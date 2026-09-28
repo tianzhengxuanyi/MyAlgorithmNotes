@@ -141,6 +141,8 @@ shared: {
 问题：element-plus/es 和 element-plus 是不同的 specifier，federation 无法识别并共享。
 
 解决方案：两层拦截
+
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Element Plus 共享处理流程                     │
 ├─────────────────────────────────────────────────────────────────┤
@@ -158,6 +160,8 @@ shared: {
 │         ↓                                                        │
 │  Federation 识别为 shared，改写成 importShared                   │
 └─────────────────────────────────────────────────────────────────┘
+```
+
 第一层：Resolver 拦截（自动导入）
 ```plaintext
 // element-plus-share.ts 第 23-36 行
@@ -273,6 +277,8 @@ federation 插件在 enforce: "post" 阶段扫描 import 语句
 如果先执行 federation，element-plus/es 已经被识别为普通依赖
 必须先改写成 element-plus，federation 才能识别为 shared
 完整数据流示例
+
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │ 源码                                                          │
 ├──────────────────────────────────────────────────────────────┤
@@ -315,6 +321,8 @@ federation 插件在 enforce: "post" 阶段扫描 import 语句
 │ 从宿主 share scope 获取共享的 element-plus 实例              │
 │ 所有子模块使用同一份 Element Plus，避免重复加载              │
 └──────────────────────────────────────────────────────────────┘
+```
+
 关键设计点
 设计点	实现方式
 统一 specifier	element-plus/es 和 element-plus/lib 都改成 element-plus
