@@ -162,10 +162,3 @@ function createPinia(){
 
 ### 22、setupStore模式有什么优势？
 > 答案：store内部可以直接使用任意组合式函数，逻辑拆分更灵活，类似组件的setup。
-
----
-
-### ✅保存操作
-复制全部文本 → 新建文本文档粘贴 → 另存为 `pinia‑interview.md`，编码 UTF‑8。
-
-如果你需要，我可以把「vue‑router面试题 + pinia面试题」合并成一份完整Vue面试markdown。
