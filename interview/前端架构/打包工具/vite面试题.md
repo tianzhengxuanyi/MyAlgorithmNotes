@@ -231,7 +231,7 @@ export default defineConfig({
 三种核心策略：
 
 1. **Tree Shaking**：基于 ES Module 静态分析，构建时移除未使用 export；依赖库需要提供ESM版本；`package.json sideEffects`标记副作用文件。
-2. **代码分割**：动态导入，大依赖拆分为独立chunk。
+2. **代码分割**：动态导入，大依赖拆分为独立chunk。`build.rollupOptions.output.experimentalMinChunkSize` 来设置一个合并阈值(建议10*1024)，将小于阈值的chunk合并为一个chunk，避免生成过多小chunk造成请求次数增加。
 3. **按需加载**：路由懒加载，延迟非首屏代码。
 
 > 
