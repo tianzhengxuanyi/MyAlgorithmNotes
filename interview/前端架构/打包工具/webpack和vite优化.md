@@ -2,13 +2,18 @@
 
 
 
-|                 | webpack                                                      | vite                                                         |
-| --------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Thead多线程     | loader中使用thread-loader，代码压缩使用terser-webpack-plugin | vite默认使用esbuild压缩代码（比terser快20-40 倍），所以无需使用terser多线程（`rollup-plugin-terser`的多线程模式（需安装 terser））。 |
-| Cache缓存       | 对babel-loader和EsLintWebpackPlugin缓存                      | vite预构建的缓存在nodemodules/.vite，通过cacheDir配置缓存路径 |
-| Include/Exclude | babel-loader和EsLintWebpackPlugin使用include/exclude排除不需要的文件如nodemoudles | - 预构建时使用optimizeDeps.exclude排除已经是esm的包，optimizeDeps.include强制预构建链接的包；      - 通过 `esbuild.include` 和 `esbuild.exclude` 对要处理的文件类型进行配置(**文件数量多 / 体积大**，且本身**已经是标准 ES5/ES6**，**不需要 TS/JSX 转译**) |
-| OneOf           | 只能匹配上一个 loader, 剩下的就不匹配了(vue-loader不支持oneOf) | -                                                            |
-|                 |                                                              |                                                              |
+| 优化项 | webpack | vite |
+| ---- | ---- | ---- |
+| 多线程处理 | loader 使用 `thread-loader`；代码压缩用 `terser-webpack-plugin`，内置 `parallel` 多进程压缩 | 生产构建用 esbuild 做压缩，速度远快于 terser，一般不需要 terser 多线程；rollup 阶段如需 terser 可使用 `rollup-plugin-terser`（需手动安装 terser） |
+| 缓存策略 | Webpack5：顶层 `cache: {type:'filesystem'}` 持久化缓存；<br>babel-loader 开启 `cacheDirectory:true`；<br>EslintWebpackPlugin 开启缓存 | 依赖预构建缓存默认存放 `node_modules/.vite`，可通过 `cacheDir` 修改缓存路径 |
+| Include / Exclude | babel-loader、EslintWebpackPlugin，通过 `include` 指定源码目录、`exclude: /node_modules/` 跳过第三方依赖 | 1. 预构建：`optimizeDeps.exclude` 排除原生 ESM 包；`optimizeDeps.include` 强制预构建依赖<br>2. `esbuild.include` / `esbuild.exclude`：控制 esbuild 处理文件；适合量大、标准ES5/ES6、无需TS/JSX转译的文件 |
+| OneOf | module.rules.oneOf：命中一条loader后不再继续匹配；**vue-loader不支持oneOf** | 无此配置（Vite基于esbuild+rollup，无webpack的loader匹配机制） |
+| 构建耗时分析 | `speed-measure-webpack-plugin` / `--profile` 定位loader/plugin耗时 | `vite --profile`，或 `vite-plugin-inspect` 查看模块处理耗时 |
+| 减少打包模块 | `IgnorePlugin` 忽略无用子模块（moment语言包）；`noParse` 跳过无依赖库的依赖解析 | `optimizeDeps.exclude` 跳过依赖预构建；`optimizeDeps.entries` 控制预构建入口 |
+| 开发环境热更新 | HMR，`HotModuleReplacementPlugin`；需要手动处理模块accept（框架脚手架内部封装） | 原生ESM HMR，细粒度模块更新，**无需额外插件配置**，开箱即用 |
+| 产物分包&缓存 | `splitChunks` 抽公共/vendor包；`runtimeChunk`；`[contenthash]` 文件名哈希，浏览器缓存 | rollup自动分包；`build.rollupOptions.output` 自定义分包；`build.rollupOptions.output.entryFileNames` 配置contenthash |
+| Tree-Shaking | mode:production，依赖ESM静态导入；CommonJS无法tree-shake | 生产构建rollup自动tree-shaking，同样要求ESM；对CJS兼容性更好 |
+                                                 |
 
 #### Thead多线程
 
