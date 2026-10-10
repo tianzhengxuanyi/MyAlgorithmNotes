@@ -96,7 +96,9 @@
 
 ## 10、路由独享守卫是什么？
 
-`beforeEnter`，写在 routes 某一项配置中，**仅进入该路由触发**。
+`beforeEnter`，写在 routes 某一项配置中，**仅进入该路由触发**，如果是query参数变化，会触发`beforeRouteUpdate`。
+
+嵌套路由时，如果父路由有`beforeEnter`，在不同子路由之间切换时，**不会**触发父路由的`beforeEnter`。
 
 ```js
 {path:'/foo',component:Foo,beforeEnter:(to,from,next)=>{}}
@@ -231,10 +233,3 @@ window.open(href, "_blank");
 
 > Router4：`const {href}=router.resolve({path:'xxx'})`
 
----
-
-### 复制全部内容，保存为 `vue‑router‑interview.md`，即可本地打开查看。
-
-需要我把这份 md 导出为可以直接下载的文件链接吗？或者需要我再把这份题做成填空 / 自测版本？
-
-> （注：部分内容可能由 AI 生成）
