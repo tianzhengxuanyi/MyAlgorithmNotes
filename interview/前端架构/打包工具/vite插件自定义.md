@@ -23,11 +23,15 @@ export default function myVitePlugin(options = {}) {
 钩子分为两大类：**通用钩子（继承Rollup，dev+build均可使用）**、**Vite独有钩子**。
 > 通用钩子执行主线：`resolveId → load → transform`
 
+```text
+config → configResolved → configureServer → buildStart → resolveId → load → transform → buildEnd
+```
+
 ### 通用钩子（模块处理管道）
 | 钩子 | 调用时机 | 常见用途 |
 | :--- | :--- | :--- |
-| `resolveId` | 解析模块导入路径时 | 自定义路径解析，**创建虚拟模块** |
-| `load` | 加载模块内容时 | 返回模块代码，与 `resolveId` 配合实现虚拟模块 |
+| `resolveId` | 解析模块导入路径时，把导入路径映射为模块 ID | 自定义路径解析，**创建虚拟模块** |
+| `load` | 加载模块内容时，根据模块 ID 提供源码 | 返回模块代码，与 `resolveId` 配合实现虚拟模块 |
 | `transform` | 转换模块内容时 | 修改源码（如移除 `console`、编译自定义语法） |
 | `buildStart` | 构建开始时 | 初始化操作（仅build阶段） |
 | `generateBundle` | 产物生成前 | 修改/增删打包产物文件（仅build阶段） |
@@ -71,6 +75,13 @@ export default {
 
 ### 2. 虚拟模块（高频考点）
 `resolveId` + `load` 配合；虚拟id前缀 `\0` 是Rollup约定，用来区分真实文件，防止循环解析
+
+resolveId会存在短路，所以如果需要自定义解析路径，需添加enforce: 'pre'在默认resolveId执行之前。
+
+- 插件按顺序执行，返回非 null 即短路，后续插件的 resolveId 不再执行。
+- 返回 null 才继续下一个插件。
+- 短路只影响当前这一次导入，下次导入重新从头遍历。
+
 ```javascript
 // virtual-module-plugin.js
 export default function virtualModulePlugin() {
