@@ -79,3 +79,16 @@ export default [
 ```bash
 npx @eslint/migrate-config .eslintrc.json
 ```
+
+## prettier 和 eslint 冲突
+
+`eslint-config-prettier` 是一个专门用于关闭与 Prettier 冲突的规则的配置。
+
+```js
+import prettierConfig from "eslint-config-prettier";
+
+export default defineConfig([
+  // ... 其他配置
+  prettierConfig, // 必须放在最后，以关闭所有与 Prettier 冲突的格式规则
+]);
+```
