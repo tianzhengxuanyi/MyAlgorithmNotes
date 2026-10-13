@@ -27,6 +27,8 @@ git add .husky/pre-commit
 # 创建好这个文件之后，你就可以根据你的需要去编写这个 shell 脚本了
 ```
 
+**注意：在客户端 hooks 中，可以通过 git commit -m "commit message" -n (-n 等价于 --no-verify) 来忽略掉 pre-commit hook 的执行！**
+
 ## lint-staged
 
 lint-staged 是一个专门用于在通过 git 提交代码之前，对暂存区的代码执行一系列的格式化。
