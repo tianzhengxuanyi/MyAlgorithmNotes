@@ -276,10 +276,9 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 
 核心工作与成果：
 
-- 主导平台微前端架构改造，基于 Module‑Federation 完成主应用与多业务子应用架构拆分，实现子应用独立开发、独立部署，运行时动态加载远程业务模块；采用 pnpm workspace 搭建 Monorepo 仓库，完成多包依赖隔离与版本统一管控；针对多应用共存场景设计共享依赖抽取与版本协商策略，规避跨子应用依赖版本冲突；为提升本地开发效率，实现**开发环境「本地 Monorepo 源码优先、远程联邦兜底」**的联调方案；同时开发自定义 Vite 插件，修复`unplugin‑vue‑components`自动导入 Element‑Plus 引发的模块联邦共享 scope 失效问题；配套落地 husky、lint‑staged、commitlint，统一代码校验与 Git 提交规范，保障多人协作工程质量。
-- 深度参与可视化低代码组件库建设，负责数据表格（AdvanceTable）、用户挑选框（UserPicker）等核心组件的开发、维护与性能优化(通过 Chrome Performance 面板定位用户挑选框万级数据量下的选中卡顿瓶颈，以 Map 哈希查找替代数组遍历，时间复杂度由 O (n²) 降至 O (n))；熟悉组件库基于 JSON Schema 的声明式渲染架构，参与可视化拖拽编排、实时预览等能力的迭代开发。
-- 开发 AdvanceTable 高级表格组件：基于 TanStack Table 二次封装，采用 Engine + Feature 插件架构，通过 TableFeature 机制扩展单元格编辑、行列合并能力，实现逻辑关注点分离；单元格编辑支持 AsyncValidator 异步校验、自定义校验器与自定义触发时机，编辑态 / 展示态无缝切换；集成行、列双维度虚拟滚动，支持万级数据量下的流畅渲染和单元格编辑；封装 DataSource 数据层，统一处理后端请求、分页、排序、筛选、树形数据转换。
-- 前端性能专项治理：主导平台首屏加载性能专项，首屏资源体积由 23.1MB 降至 3.5MB，LCP 由 10.8s 优化至 2.3s，Lighthouse 性能评分由 52 提升至 98；基于 Module Federation 将平台组件拆分为独立远程模块，首屏按需懒加载；首页图片统一转 WebP 并压缩；针对中文字体包体积问题，编写脚本扫描页面源码正则提取中文字符集，配合 subset-font 生成字体子集，未收录字符回退全量字体并在首屏加载完成后通过 link prefetch 异步加载。
+- 主导平台微前端架构改造。基于 Module‑Federation 完成主应用与多业务子应用架构拆分，实现子应用独立开发、独立部署，运行时动态加载远程业务模块；采用 pnpm workspace 搭建 Monorepo 仓库，完成多包依赖隔离与版本统一管控；为提升本地开发效率，实现**开发环境「本地 Monorepo 源码优先、远程联邦兜底」**的联调方案；针对多应用共存场景设计共享依赖抽取与版本协商策略，规避跨子应用依赖版本冲突；同时开发自定义 Vite 插件，修复`unplugin‑vue‑components`自动导入 Element‑Plus 引发的模块联邦共享 scope 失效问题；配套落地 husky、lint‑staged、commitlint，统一代码校验与 Git 提交规范，保障多人协作工程质量。
+- 低代码组件库与核心组件建设。负责低代码组件库 AdvanceTable、UserPicker 等核心组件开发与性能优化，参与 JSON Schema 声明式渲染、拖拽编排、实时预览能力迭代。 AdvanceTable 基于 TanStack Table 二次封装，采用 Engine + Feature 插件架构，通过 TableFeature 扩展单元格编辑、行列合并；编辑能力支持 AsyncValidator、自定义校验器与触发时机，编辑/展示态无缝切换；集成行列双维度虚拟滚动，支撑万级数据渲染与编辑；封装 DataSource 统一请求、分页、排序、筛选、树形转换。 UserPicker 通过 Chrome Performance 定位万级数据选中卡顿，以 Map 哈希查找替代数组遍历，单次查找 O(n)→O(1)，整体 O(n²)→O(n)。 参与组件库 JSON Schema 声明式渲染与可视化编排能力建设，支撑低代码页面搭建与实时预览。
+- 前端性能专项治理。主导平台首屏加载性能专项，首屏资源体积由 23.1MB 降至 3.5MB，LCP 由 10.8s 优化至 2.3s，Lighthouse 性能评分由 52 提升至 98；基于 Module Federation 将平台组件拆分为独立远程模块，首屏按需懒加载；首页图片统一转 WebP 并压缩；针对中文字体包体积问题，编写脚本扫描页面源码正则提取中文字符集，配合 subset-font 生成字体子集，未收录字符回退全量字体并在首屏加载完成后通过 link prefetch 异步加载。
 - 平台内置 AI 智能开发助手：基于 SSE 流式输出对接 LangGraph 工作流，搭建自然语言转页面 Schema、再到页面渲染产物的端到端生成链路；支持上下文感知代码补全、组件智能推荐，页面搭建开发效率提升约 30%；后端基于 NestJS + LangChain RAG 构建知识库检索，优化 AI 生成内容准确率。
 
 **技术难点：**
