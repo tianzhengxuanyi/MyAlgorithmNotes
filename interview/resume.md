@@ -321,3 +321,20 @@ JH4J-CODE（2023 年 10 月-2024 年 2 月）
 2. 意图体系「树变更后存量数据元数据过期」问题——通过检索侧空结果降级兜底，并规划只更新元数据、不重算向量的重打标任务；
 
 3. SSE 流式响应与全局拦截器 / 异常过滤器的冲突——手动接管 Fastify 响应流、按 headersSent 状态分流处理。
+
+
+技术栈：NestJS 11 + Fastify + TypeORM + MySQL + PostgreSQL(pgvector) + Redis + BullMQ + MCP ｜ Vue3 + Ant Design Vue + Vite
+
+面向企业知识库的 RAG 问答系统，支持多格式文档异步摄取、向量检索与大模型流式问答，配套运营管理后台。
+
+- 摄取 Pipeline：设计 DB 驱动的六类节点注册表编排引擎，节点以 nextNodeId 链式编排、支持条件跳过；Task/TaskNode 双表记录执行，单节点失败可定位、可重试，重试按幂等设计避免重复写入。
+
+- 结构感知分块：自研 Parser 将文档解析为 Block 模型（heading/paragraph/table/code/list），Chunker 按块语义贪心合并、表格与代码块原子保留，并用 HeadingBlock 累积 outlinePath 形成章节层级路径。
+
+- 意图树 + 多通道检索：三级意图树缓存于 Redis；对话侧一次 LLM 调用完成候选打分，JSON 输出 + ID 校验防幻觉，校验失败走 fallback；检索侧 IntentDirected / VectorGlobal / Keyword 三通道并行召回、按优先级融合，意图定向空结果自动降级。
+
+- MCP 工具调用：独立 mcp-server 提供工具，后端启动自动发现注册；LLM 从口语化问题提取结构化参数并做参数校验；工具发现层 / 意图分类层 / 运行时执行层三层权限校验，无权工具对 LLM 不可见。
+
+- LLM 网关与 SSE：统一封装多模型，模型路由 + 三态熔断 + 降级链；SSE 支持首包超时、Redis 广播取消、真正终止上游请求；手动接管 Fastify 响应流，按 headersSent 分流处理流式响应。
+
+- 可观测与后台：问答生成 Trace 树，支持排查“召回为空”“意图误判”；配套运营后台（知识库/切片/意图树/Pipeline 配置）。
