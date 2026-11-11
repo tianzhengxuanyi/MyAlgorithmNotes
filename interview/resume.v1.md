@@ -5,7 +5,7 @@
 - 工程化能力：熟练使用 Vite/Webpack 进行构建配置与优化，具备自定义 Vite 插件开发能力；熟练使用 pnpm workspace 管理 Monorepo，熟悉 ESLint/Prettier/Husky/Lint-Staged 工程规范体系
 - 架构与性能：具备 Module Federation 微前端架构从设计到落地经验；熟悉虚拟滚动、Tree Shaking、Code Splitting 等优化手段，有首屏 LCP/FCP 专项治理实战
 - AI 应用开发：具备 RAG/LLM 应用全栈工程经验，熟悉 Prompt 工程、SSE 流式交互、向量检索（pgvector）、MCP 工具调用与 LangGraph Agent 编排；有大模型 API 统一封装、模型路由、熔断降级的落地实践
-- 服务端能力：掌握 Node.js + NestJS 后端开发，熟悉常用数据结构与算法，具备万级数据渲染与查询的复杂业务处理经验
+- 服务端能力：了解 Node.js + NestJS 服务端开发，实践过完整后端项目（企业知识库 RAG 问答系统），熟悉常用数据结构与算法
 
 ## 项目经历
 
