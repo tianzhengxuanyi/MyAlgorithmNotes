@@ -1,0 +1,186 @@
+{
+  "title": "个人简历",
+  "photo": "assets/photo.png",
+  "icons": [
+    "assets/icon-edu.png",
+    "assets/icon-job.png"
+  ],
+  "basic": {
+    "section": "基本信息",
+    "rows": [
+      [
+        [
+          "姓　　名",
+          "谢飞"
+        ],
+        [
+          "年　　龄",
+          "27岁"
+        ]
+      ],
+      [
+        [
+          "性　　别",
+          "男"
+        ],
+        [
+          "工作年限",
+          "3年经验"
+        ]
+      ],
+      [
+        [
+          "籍　　贯",
+          "安徽芜湖"
+        ],
+        [
+          "学　　历",
+          "硕士研究生"
+        ]
+      ],
+      [
+        [
+          "求职岗位",
+          "前端开发工程师"
+        ],
+        [
+          "意向城市",
+          "合肥"
+        ]
+      ],
+      [
+        [
+          "期望薪资",
+          "12k-14k"
+        ],
+        [
+          "电　　话",
+          "18355362032"
+        ]
+      ],
+      [
+        [
+          "邮　　箱",
+          "1145986889@qq.com"
+        ],
+        [
+          "",
+          ""
+        ]
+      ]
+    ]
+  },
+  "sections": [
+    {
+      "type": "entries",
+      "title": "教育背景",
+      "items": [
+        {
+          "date": "2020.09 - 2023.06",
+          "org": "南京信息工程大学",
+          "detail": "管理科学与工程（硕士研究生）"
+        },
+        {
+          "date": "2016.09 - 2020.06",
+          "org": "安徽财经大学",
+          "detail": "管理科学与工程（本科）"
+        }
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "工作经历",
+      "items": [
+        {
+          "date": "2023.07 - 至今",
+          "org": "江苏金恒信息科技股份有限公司",
+          "detail": "前端开发工程师",
+          "bullets": [
+            "负责企业级中后台产品的前端开发与版本迭代，基于 Vue3 + TypeScript + Vite 搭建前端底座，按设计规范完成组件与页面实现，与后端协同完成接口设计与联调",
+            "参与通用业务组件库建设，以插件化架构保证组件的可维护与可扩展；参与团队 Code Review，统一代码风格与 Git 提交规范",
+            "主导平台首屏性能专项治理，基于 Chrome DevTools 与 Lighthouse 定位瓶颈并落地优化方案；负责前端构建打包、发布上线与线上问题响应"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "title": "技能特长",
+      "items": [
+        [
+          "语言与样式",
+          "熟练掌握 HTML5 / CSS3 / JavaScript（ES6+）与 TypeScript；熟悉 Flex / Grid 布局、Sass 预处理器与 CSS 变量主题定制，能按设计规范完成高保真页面实现"
+        ],
+        [
+          "框架与生态",
+          "熟练掌握 Vue3 全家桶（Vue Router、Pinia、Element Plus、VueUse），深入理解响应式原理与编译时优化"
+        ],
+        [
+          "工程规范与代码质量",
+          "熟悉 ESLint / Prettier / Husky / Lint-Staged / Commitlint 工程规范体系并落地到团队；有 Code Review 实践，代码组织注重可维护性与可扩展性"
+        ],
+        [
+          "性能优化",
+          "熟悉 Chrome DevTools（Performance / Lighthouse / Network）定位性能瓶颈；有首屏专项治理实战（体积 23.1MB→3.5MB、LCP 10.8s→2.3s、评分 52→98），熟练运用虚拟滚动、懒加载、Code Splitting、Tree Shaking、WebP 压缩与字体子集化"
+        ],
+        [
+          "架构与新技术",
+          "具备 Module Federation 微前端架构从设计到落地的经验；熟悉 pnpm workspace Monorepo 管理与自定义 Vite 插件开发，有新技术选型评估与引入的实践"
+        ],
+        [
+          "全栈与 AI",
+          "了解 Node.js + NestJS 服务端开发，实践过完整后端项目（RAG 问答系统）；了解 LLM 应用与 SSE 流式交互"
+        ]
+      ]
+    },
+    {
+      "type": "projects",
+      "title": "项目经验",
+      "pageBreak": true,
+      "items": [
+        {
+          "date": "2023.09 - 至今",
+          "org": "JH4J 企业业务平台前端底座",
+          "detail": "前端开发",
+          "meta": [
+            [
+              "技术栈",
+              "Vue3、TypeScript、Pinia、Vue Router、Element Plus、TanStack Table、Module Federation、Vite"
+            ],
+            [
+              "项目描述",
+              "面向企业级业务的中后台前端底座，基于 Module Federation 搭建微前端 Monorepo 架构，配套自研低代码组件库与插件化高级表格组件，支撑多条业务线页面快速搭建。"
+            ]
+          ],
+          "bulletsTitle": "核心工作与成果",
+          "bullets": [
+            "首屏性能专项治理：基于 Chrome DevTools 与 Lighthouse 定位瓶颈并落地三项优化——组件拆分为远程模块按需懒加载、首页图片统一转 WebP 压缩、编写脚本扫描源码提取中文字符集配合 subset-font 生成字体子集（未收录字符回退全量字体，首屏完成后 link prefetch 异步加载）；首屏资源体积 23.1MB→3.5MB，LCP 10.8s→2.3s，Lighthouse 性能评分 52→98",
+            "低代码组件库建设：负责 AdvanceTable、UserPicker 等核心组件的开发与性能优化，参与 JSON Schema 声明式渲染与可视化编排迭代。AdvanceTable 基于 TanStack Table 二次封装，采用 Engine + Feature 插件架构扩展单元格编辑、行列合并等能力，新增能力以插件接入而不改动核心，集成行列双维度虚拟滚动支撑万级数据渲染与编辑；UserPicker 通过 Performance 面板定位万级数据选中卡顿，以 Map 哈希查找替代数组遍历，整体复杂度 O(n²)→O(n)",
+            "微前端架构改造：主导基于 Module Federation 的主应用 / 多业务子应用拆分，实现子应用独立开发、独立构建部署与运行时动态加载；针对多应用共存设计共享依赖抽取与版本协商策略，规避跨子应用依赖版本冲突；实现「本地源码优先、远程联邦兜底」的联调方案，提升多应用协作效率",
+            "工程化与规范建设：采用 pnpm workspace 搭建 Monorepo，完成多包依赖隔离与版本统一管控；开发自定义 Vite 插件，修复自动导入组件库引发的模块联邦共享 scope 失效问题；落地 husky + lint-staged + commitlint 统一代码校验与提交规范，并在团队内推行 Code Review"
+          ]
+        },
+        {
+          "date": "2026.05 - 至今",
+          "org": "RAG 智能问答系统",
+          "detail": "全栈开发",
+          "meta": [
+            [
+              "技术栈",
+              "NestJS 11 + Fastify + TypeORM + PostgreSQL(pgvector) + Redis + BullMQ + MCP ｜ Vue3 + Ant Design Vue"
+            ],
+            [
+              "项目描述",
+              "企业知识库 RAG 问答系统，覆盖文档异步摄取、语义分块、多通道检索与大模型流式问答全链路，支持 MCP 工具调用，配套运营管理后台。"
+            ]
+          ],
+          "bulletsTitle": "核心工作与成果",
+          "bullets": [
+            "全链路工程实现：设计 DB 驱动的节点编排引擎支撑六类文档处理节点，节点链式编排并支持条件跳过，失败可定位、可重试；自研 Parser / Chunker 将文档解析为语义 Block 并保留章节层级路径；检索侧以意图定向 / 全局向量 / 关键词三通道并行召回、按优先级融合，兼顾准确率与召回率",
+            "大模型网关与流式输出：统一封装多模型接入，实现模型路由、三态熔断与降级链；基于 SSE 实现流式输出，支持首包超时、Redis 广播取消与上游请求真正终止"
+          ]
+        }
+      ]
+    }
+  ]
+}
