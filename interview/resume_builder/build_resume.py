@@ -328,9 +328,10 @@ def entry_header(doc, date, org, detail, after=2.0):
 
 def bullet(doc, text, bold_head=None):
     p = para(doc, indent=IND_BULLET, hang=IND_BULLET_HANG)
-    p.paragraph_format.tab_stops.add_tab_stop(Pt(IND_BULLET), WD_TAB_ALIGNMENT.LEFT)
+    # 不用制表符：Word 对悬挂缩进+tab 的渲染不稳定（个别行 tab 塌陷导致符号与文字粘连），
+    # 改用固定空格，符号后文字起点 ≈ 续行缩进位置（误差 <0.5pt）
     style_run(p.add_run("•"), SZ_BODY, C_TEXT_B)
-    style_run(p.add_run("\t"), SZ_BODY, C_TEXT_B)
+    style_run(p.add_run("  "), SZ_BODY, C_TEXT_B)
     if bold_head:
         style_run(p.add_run(bold_head), SZ_BODY, C_TEXT_B, bold=True)
     style_run(p.add_run(text), SZ_BODY, C_TEXT_B)
